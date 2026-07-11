@@ -5,45 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>SIPANDA Mobile</title>
 
-<!-- Tailwind CSS (CDN) -->
 <script src="https://cdn.tailwindcss.com"></script>
-
-<!-- Alpine.js (CDN) -->
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
-
-<!-- Lucide Icons -->
 <script src="https://unpkg.com/lucide@latest"></script>
-
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
-<!-- FullCalendar -->
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
 
-<!-- Firebase SDK -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <style>
 * { box-sizing: border-box; }
-
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
+html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
 
 #sipanda-app-root {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100%; height: 100%;
   padding-bottom: env(safe-area-inset-bottom);
   z-index: 999999999;
   background: #F4F6F9;
@@ -84,22 +65,13 @@ html, body {
   margin-top: 2px;
 }
 
-.modal-inner {
-  max-height: 90vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
 @media (min-width: 768px) {
-  .app-sidebar { display: flex !important; }
   .app-bottombar { display: none !important; }
 }
 @media (max-width: 767px) {
-  .app-sidebar { display: none !important; }
   .app-bottombar { display: flex !important; }
 }
 
-/* Animasi loading */
 .spinner {
   border: 3px solid #f3f3f3;
   border-top: 3px solid #C9A227;
@@ -115,9 +87,6 @@ html, body {
 </style>
 
 <script>
-// ============================================================
-// FIREBASE CONFIG
-// ============================================================
 const firebaseConfig = {
   apiKey: "AIzaSyCCaOPjOh1UxaliCm0GIJeYv6NJOBGyOtA",
   authDomain: "sipanda-8045f.firebaseapp.com",
@@ -127,98 +96,50 @@ const firebaseConfig = {
   appId: "1:791646404329:web:1b225b79ee358b2e55ba78"
 };
 
-// Inisialisasi Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-
-// ============================================================
 </script>
 
 </head>
 <body>
 
-<div id="sipanda-app-root" x-data="sipandaApp()" x-init="initApp()" class="min-h-screen flex flex-col">
+<div id="sipanda-app-root" x-data="sipandaApp()" x-init="initApp()">
 
-<!-- ============================================================ -->
-<!-- LOGIN SCREEN -->
-<!-- ============================================================ -->
-<div x-show="!isLoggedIn" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0B2341] p-4" style="display:flex;">
+<!-- LOGIN -->
+<div x-show="!isLoggedIn" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0B2341] p-4">
   <div class="bg-white/95 rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl">
     <div class="w-16 h-16 bg-[#C9A227] rounded-full flex items-center justify-center mx-auto mb-3">
       <i data-lucide="shield" class="w-8 h-8 text-white"></i>
     </div>
     <h1 class="text-2xl font-bold text-[#0B2341]">SIPANDA</h1>
     <p class="text-[10px] text-slate-500">Lapas Kelas IIA Banyuasin</p>
+    <p class="text-[10px] text-amber-600 mt-1">🔐 Hanya Admin yang dapat login</p>
     
-    <!-- Toggle Login / Register -->
-    <div class="flex bg-slate-100 rounded-lg p-1 mt-4 text-xs">
-      <button @click="authMode = 'login'" :class="authMode === 'login' ? 'bg-white shadow font-bold' : ''" class="flex-1 py-1.5 rounded transition">Login</button>
-      <button @click="authMode = 'register'" :class="authMode === 'register' ? 'bg-white shadow font-bold' : ''" class="flex-1 py-1.5 rounded transition">Daftar</button>
-    </div>
-
-    <!-- LOGIN FORM -->
-    <form x-show="authMode === 'login'" @submit.prevent="handleLogin" class="mt-4 text-left space-y-3">
+    <form @submit.prevent="handleLogin" class="mt-6 text-left space-y-4">
       <div>
-        <label class="text-xs font-medium text-slate-600">Email</label>
-        <input type="email" x-model="loginForm.email" placeholder="email@kemenimipas.go.id" class="w-full px-3 py-2 border rounded-lg text-sm" required>
+        <label class="text-xs font-medium text-slate-600">Email Admin</label>
+        <input type="email" x-model="loginForm.email" placeholder="admin@sipanda.com" class="w-full px-3 py-2.5 border rounded-lg text-sm" required>
       </div>
       <div>
         <label class="text-xs font-medium text-slate-600">Password</label>
-        <input type="password" x-model="loginForm.password" placeholder="Password" class="w-full px-3 py-2 border rounded-lg text-sm" required>
+        <input type="password" x-model="loginForm.password" placeholder="Password" class="w-full px-3 py-2.5 border rounded-lg text-sm" required>
       </div>
-      <div class="flex items-center justify-between">
-        <label class="flex items-center text-xs text-slate-500">
-          <input type="checkbox" x-model="loginForm.remember" class="mr-1"> Ingat saya
-        </label>
-        <button type="button" @click="handleResetPassword" class="text-xs text-[#C9A227] font-medium">Lupa Password?</button>
-      </div>
-      <button type="submit" class="w-full bg-[#0B2341] text-white py-2.5 rounded-lg font-bold text-sm flex items-center justify-center" :disabled="authLoading">
+      
+      <button type="submit" class="w-full bg-[#0B2341] text-white py-3 rounded-lg font-bold text-sm flex items-center justify-center" :disabled="authLoading">
         <span x-show="authLoading" class="spinner w-5 h-5 mr-2"></span>
-        <span x-text="authLoading ? 'Memproses...' : 'Masuk'"></span>
+        <span x-text="authLoading ? 'Memproses...' : 'Masuk sebagai Admin'"></span>
       </button>
     </form>
 
-    <!-- REGISTER FORM -->
-    <form x-show="authMode === 'register'" @submit.prevent="handleRegister" class="mt-4 text-left space-y-3">
-      <div>
-        <label class="text-xs font-medium text-slate-600">Nama Lengkap</label>
-        <input type="text" x-model="registerForm.nama" placeholder="Nama lengkap" class="w-full px-3 py-2 border rounded-lg text-sm" required>
-      </div>
-      <div>
-        <label class="text-xs font-medium text-slate-600">NIP</label>
-        <input type="text" x-model="registerForm.nip" placeholder="NIP" class="w-full px-3 py-2 border rounded-lg text-sm" required>
-      </div>
-      <div>
-        <label class="text-xs font-medium text-slate-600">Email</label>
-        <input type="email" x-model="registerForm.email" placeholder="email@kemenimipas.go.id" class="w-full px-3 py-2 border rounded-lg text-sm" required>
-      </div>
-      <div>
-        <label class="text-xs font-medium text-slate-600">Password (min 6 karakter)</label>
-        <input type="password" x-model="registerForm.password" placeholder="Password" class="w-full px-3 py-2 border rounded-lg text-sm" minlength="6" required>
-      </div>
-      <div>
-        <label class="text-xs font-medium text-slate-600">Konfirmasi Password</label>
-        <input type="password" x-model="registerForm.confirmPassword" placeholder="Konfirmasi password" class="w-full px-3 py-2 border rounded-lg text-sm" required>
-      </div>
-      <select x-model="registerForm.role" class="w-full px-3 py-2 border rounded-lg text-sm">
-        <option value="pegawai">Pegawai</option>
-        <option value="admin">Administrator</option>
-      </select>
-      <button type="submit" class="w-full bg-[#C9A227] text-slate-900 py-2.5 rounded-lg font-bold text-sm flex items-center justify-center" :disabled="authLoading">
-        <span x-show="authLoading" class="spinner w-5 h-5 mr-2"></span>
-        <span x-text="authLoading ? 'Memproses...' : 'Daftar'"></span>
-      </button>
-    </form>
-
-    <p class="text-[9px] text-slate-400 mt-3">* Data Anda aman dan terenkripsi</p>
+    <p class="text-[9px] text-slate-400 mt-3">
+      💡 Akun Admin dibuat via Firebase Console
+    </p>
   </div>
 </div>
 
-<!-- ============================================================ -->
 <!-- MAIN APP -->
-<!-- ============================================================ -->
-<div x-show="isLoggedIn" class="flex-1 flex flex-col overflow-hidden" style="min-height:0">
+<div x-show="isLoggedIn" class="flex-1 flex flex-col overflow-hidden">
 
   <!-- HEADER -->
   <header class="glass flex-shrink-0 flex justify-between items-center px-3 py-2 shadow-sm border-b z-30">
@@ -228,16 +149,13 @@ const db = firebase.firestore();
       </div>
       <div>
         <h1 class="text-sm font-bold text-[#0B2341]">SIPANDA</h1>
-        <p class="text-[8px] text-slate-500" x-text="sessionUser.nama + ' · ' + sessionUser.email"></p>
+        <p class="text-[8px] text-slate-500">Admin: <span x-text="sessionUser.nama"></span></p>
       </div>
     </div>
-    <div class="flex items-center gap-2">
-      <span class="text-[8px] bg-slate-100 px-2 py-0.5 rounded-full" x-text="role.toUpperCase()"></span>
-      <button @click="showNotifications = !showNotifications" class="relative p-1.5 bg-slate-100 rounded-lg">
-        <i data-lucide="bell" class="w-4 h-4"></i>
-        <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center" x-text="notifications.length"></span>
-      </button>
-    </div>
+    <button @click="handleLogout" class="text-red-500 text-xs bg-red-50 px-3 py-1 rounded-full flex items-center gap-1">
+      <i data-lucide="log-out" class="w-3 h-3"></i>
+      Logout
+    </button>
   </header>
 
   <!-- CONTENT -->
@@ -246,9 +164,9 @@ const db = firebase.firestore();
     <!-- DASHBOARD -->
     <div x-show="activeMenu === 'dashboard'" class="space-y-3">
       <div class="bg-gradient-to-br from-[#0B2341] to-[#123B63] rounded-2xl p-4 text-white">
-        <h2 class="text-lg font-bold">SIPANDA</h2>
+        <h2 class="text-lg font-bold">Dashboard Admin</h2>
         <p class="text-[10px] text-slate-300">Lapas Kelas IIA Banyuasin</p>
-        <p class="text-[10px] text-slate-300 mt-1">👋 Selamat datang, <span x-text="sessionUser.nama"></span></p>
+        <p class="text-[10px] text-slate-300 mt-1">👋 Halo, <span x-text="sessionUser.nama"></span></p>
         <div class="flex gap-2 mt-3">
           <button @click="showModalAddPegawai = true" class="bg-[#C9A227] text-slate-900 text-[10px] font-bold px-3 py-1 rounded">+ Pegawai</button>
           <button @click="showModalAddCuti = true" class="bg-white/20 text-white text-[10px] font-bold px-3 py-1 rounded">+ Cuti</button>
@@ -287,7 +205,7 @@ const db = firebase.firestore();
         <button @click="showModalAddPegawai = true" class="bg-[#0B2341] text-white text-[10px] font-bold px-3 py-1 rounded">+ Tambah</button>
       </div>
       <div class="bg-white rounded-2xl p-3 shadow-sm border">
-        <input type="text" x-model="pegawaiSearch" placeholder="Cari..." class="w-full px-3 py-2 border rounded-lg text-sm">
+        <input type="text" x-model="pegawaiSearch" placeholder="Cari pegawai..." class="w-full px-3 py-2 border rounded-lg text-sm">
         <div class="mt-2 space-y-1 max-h-96 overflow-y-auto">
           <template x-for="(p, index) in filteredPegawaiList.slice(0, 15)" :key="index">
             <div class="flex justify-between items-center p-2 border-b text-sm">
@@ -308,7 +226,7 @@ const db = firebase.firestore();
     <!-- CUTI -->
     <div x-show="activeMenu === 'cuti'" class="space-y-3">
       <div class="flex justify-between items-center">
-        <h2 class="text-base font-bold text-[#0B2341]">Cuti</h2>
+        <h2 class="text-base font-bold text-[#0B2341]">Cuti Pegawai</h2>
         <button @click="showModalAddCuti = true" class="bg-[#0B2341] text-white text-[10px] font-bold px-3 py-1 rounded">+ Cuti</button>
       </div>
       <div class="bg-white rounded-2xl p-3 shadow-sm border">
@@ -357,13 +275,6 @@ const db = firebase.firestore();
       </div>
     </div>
 
-    <!-- ADMIN -->
-    <div x-show="activeMenu === 'admin'" class="space-y-3">
-      <h2 class="text-base font-bold text-[#0B2341]">Admin</h2>
-      <button @click="exportDatabaseBackup()" class="w-full bg-[#0B2341] text-white py-2 rounded font-bold text-sm">Backup Database</button>
-      <button @click="handleLogout" class="w-full bg-red-600 text-white py-2 rounded font-bold text-sm">Logout</button>
-    </div>
-
   </div>
 
   <!-- BOTTOM NAV -->
@@ -391,10 +302,6 @@ const db = firebase.firestore();
   </nav>
 
 </div>
-
-<!-- ============================================================ -->
-<!-- MODALS -->
-<!-- ============================================================ -->
 
 <!-- MODAL PEGAWAI -->
 <div x-show="showModalAddPegawai" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-3" style="display:none;">
@@ -433,40 +340,16 @@ const db = firebase.firestore();
   </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- JAVASCRIPT APP -->
-<!-- ============================================================ -->
+</div>
+
 <script>
 function sipandaApp() {
   return {
-    // ===== AUTH STATE =====
     isLoggedIn: false,
     authLoading: false,
-    authMode: 'login', // 'login' | 'register'
-    role: 'pegawai',
-    sessionUser: { 
-      nama: '', 
-      nip: '', 
-      email: '', 
-      uid: '' 
-    },
+    sessionUser: { nama: 'Admin', email: '' },
+    loginForm: { email: '', password: '' },
     
-    // ===== LOGIN / REGISTER FORMS =====
-    loginForm: { 
-      email: '', 
-      password: '', 
-      remember: false 
-    },
-    registerForm: {
-      nama: '',
-      nip: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      role: 'pegawai'
-    },
-
-    // ===== APP STATE =====
     activeMenu: 'dashboard',
     pegawaiSearch: '',
     showNotifications: false,
@@ -477,18 +360,16 @@ function sipandaApp() {
     pegawaiList: [],
     cutiList: [],
     notifications: [],
-    todoList: [],
     stats: { totalPegawai: 0, pegawaiCuti: 0, pegawaiCutiName: 'Tidak ada', pangkatSegera: 0, kgbSegera: 0 },
     _calendar: null,
 
-    // ============================================================
-    // INIT
-    // ============================================================
     async initApp() {
-      // Cek apakah user sudah login
       auth.onAuthStateChanged(async (user) => {
         if (user) {
-          await this.loadUserData(user);
+          this.sessionUser = {
+            nama: user.displayName || user.email?.split('@')[0] || 'Admin',
+            email: user.email || ''
+          };
           this.isLoggedIn = true;
           await this.syncDatabase();
           this.generateNotifications();
@@ -504,37 +385,6 @@ function sipandaApp() {
       });
     },
 
-    // ============================================================
-    // AUTH METHODS
-    // ============================================================
-    async loadUserData(user) {
-      try {
-        const userDoc = await db.collection('users').doc(user.uid).get();
-        const userData = userDoc.data();
-        this.sessionUser = {
-          uid: user.uid,
-          email: user.email,
-          nama: userData?.nama || user.email?.split('@')[0] || 'User',
-          nip: userData?.nip || '',
-        };
-        this.role = userData?.role || 'pegawai';
-        
-        // Jika role admin, aktifkan menu admin
-        if (this.role === 'admin') {
-          // admin bisa akses semua
-        }
-      } catch (error) {
-        console.error('Error loading user data:', error);
-        this.sessionUser = {
-          uid: user.uid,
-          email: user.email,
-          nama: user.email?.split('@')[0] || 'User',
-          nip: '',
-        };
-        this.role = 'pegawai';
-      }
-    },
-
     async handleLogin() {
       if (!this.loginForm.email || !this.loginForm.password) {
         alert('⚠️ Email dan password wajib diisi!');
@@ -547,11 +397,11 @@ function sipandaApp() {
           this.loginForm.email,
           this.loginForm.password
         );
-        
-        // Load user data
-        await this.loadUserData(userCredential.user);
+        this.sessionUser = {
+          nama: userCredential.user.displayName || userCredential.user.email?.split('@')[0] || 'Admin',
+          email: userCredential.user.email || ''
+        };
         this.isLoggedIn = true;
-        
         this.$nextTick(() => {
           setTimeout(() => {
             lucide.createIcons();
@@ -562,96 +412,17 @@ function sipandaApp() {
         let message = '❌ Login gagal!';
         switch (error.code) {
           case 'auth/user-not-found':
-            message = '❌ Email tidak terdaftar!';
+            message = '❌ Email tidak terdaftar! Hubungi admin.';
             break;
           case 'auth/wrong-password':
             message = '❌ Password salah!';
             break;
-          case 'auth/invalid-email':
-            message = '❌ Format email tidak valid!';
-            break;
-          case 'auth/too-many-requests':
-            message = '❌ Terlalu banyak percobaan. Coba lagi nanti.';
-            break;
           default:
             message = '❌ ' + error.message;
         }
         alert(message);
       } finally {
         this.authLoading = false;
-      }
-    },
-
-    async handleRegister() {
-      // Validasi
-      if (!this.registerForm.nama || !this.registerForm.nip || !this.registerForm.email || !this.registerForm.password) {
-        alert('⚠️ Semua field wajib diisi!');
-        return;
-      }
-      if (this.registerForm.password.length < 6) {
-        alert('⚠️ Password minimal 6 karakter!');
-        return;
-      }
-      if (this.registerForm.password !== this.registerForm.confirmPassword) {
-        alert('⚠️ Password dan konfirmasi password tidak sama!');
-        return;
-      }
-
-      this.authLoading = true;
-      try {
-        // Buat user di Firebase Auth
-        const userCredential = await auth.createUserWithEmailAndPassword(
-          this.registerForm.email,
-          this.registerForm.password
-        );
-
-        // Simpan data user ke Firestore
-        await db.collection('users').doc(userCredential.user.uid).set({
-          nama: this.registerForm.nama,
-          nip: this.registerForm.nip,
-          email: this.registerForm.email,
-          role: this.registerForm.role || 'pegawai',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        alert('✅ Registrasi berhasil! Silakan login.');
-        
-        // Reset form dan switch ke login
-        this.registerForm = { nama: '', nip: '', email: '', password: '', confirmPassword: '', role: 'pegawai' };
-        this.authMode = 'login';
-        this.loginForm.email = this.registerForm.email;
-        
-      } catch (error) {
-        let message = '❌ Registrasi gagal!';
-        switch (error.code) {
-          case 'auth/email-already-in-use':
-            message = '❌ Email sudah terdaftar!';
-            break;
-          case 'auth/invalid-email':
-            message = '❌ Format email tidak valid!';
-            break;
-          case 'auth/weak-password':
-            message = '❌ Password terlalu lemah!';
-            break;
-          default:
-            message = '❌ ' + error.message;
-        }
-        alert(message);
-      } finally {
-        this.authLoading = false;
-      }
-    },
-
-    async handleResetPassword() {
-      if (!this.loginForm.email) {
-        alert('⚠️ Masukkan email Anda terlebih dahulu!');
-        return;
-      }
-      try {
-        await auth.sendPasswordResetEmail(this.loginForm.email);
-        alert('✅ Email reset password telah dikirim ke ' + this.loginForm.email);
-      } catch (error) {
-        alert('❌ Gagal mengirim email reset: ' + error.message);
       }
     },
 
@@ -659,29 +430,21 @@ function sipandaApp() {
       if (confirm('Yakin ingin keluar?')) {
         auth.signOut();
         this.isLoggedIn = false;
-        this.activeMenu = 'dashboard';
-        // Reset forms
-        this.loginForm = { email: '', password: '', remember: false };
+        this.loginForm = { email: '', password: '' };
       }
     },
 
-    // ============================================================
-    // DATABASE METHODS
-    // ============================================================
     async syncDatabase() {
       try {
-        // Load pegawai
         const pegawaiSnap = await db.collection('pegawai').get();
         if (!pegawaiSnap.empty) {
           let listPegawai = [];
           pegawaiSnap.forEach(doc => listPegawai.push({ id: doc.id, ...doc.data() }));
           this.pegawaiList = listPegawai;
         } else {
-          // Seed dummy data jika kosong
           await this.seedDummyPegawai();
         }
 
-        // Load cuti
         const cutiSnap = await db.collection('cuti').get();
         if (!cutiSnap.empty) {
           let listCuti = [];
@@ -690,7 +453,6 @@ function sipandaApp() {
         }
       } catch (error) {
         console.error('❌ Sync error:', error);
-        // Fallback ke localStorage
         this.loadFromLocalStorage();
       }
       this.recalculateSystemStats();
@@ -719,9 +481,6 @@ function sipandaApp() {
       this.pegawaiList = dummy;
     },
 
-    // ============================================================
-    // CRUD METHODS
-    // ============================================================
     async saveNewPegawai() {
       if (!this.newPegawaiForm.nip || !this.newPegawaiForm.nama) {
         alert('⚠️ NIP dan Nama wajib diisi!');
@@ -784,9 +543,6 @@ function sipandaApp() {
       alert('✅ Cuti ' + matched.nama + ' berhasil!');
     },
 
-    // ============================================================
-    // UTILITY METHODS
-    // ============================================================
     recalculateSystemStats() {
       this.stats.totalPegawai = this.pegawaiList.length;
       this.stats.pegawaiCuti = this.cutiList.length;
@@ -820,8 +576,7 @@ function sipandaApp() {
 
     generateNotifications() {
       this.notifications = [
-        { id: 1, nip: '198708122010011002', nama: "Ahmad Subarjo", msg: "KGB akan jatuh tempo dalam 30 hari.", type: "danger", time: "Baru saja" },
-        { id: 2, nip: '198608122010011003', nama: "Siti Aminah", msg: "Naik pangkat dalam 45 hari.", type: "warning", time: "1 jam lalu" }
+        { id: 1, nip: '198708122010011002', nama: "Ahmad Subarjo", msg: "KGB akan jatuh tempo dalam 30 hari.", type: "danger", time: "Baru saja" }
       ];
     },
 
@@ -895,9 +650,6 @@ function sipandaApp() {
   };
 }
 
-// ============================================================
-// AUTO-INIT ICONS
-// ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => lucide.createIcons(), 200);
 });
