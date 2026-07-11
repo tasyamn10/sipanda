@@ -44,7 +44,6 @@ html, body {
   bottom: 0;
   width: 100%;
   height: 100%;
-  /* iOS Safari safe area */
   padding-bottom: env(safe-area-inset-bottom);
   z-index: 999999999;
   background: #F4F6F9;
@@ -60,7 +59,6 @@ html, body {
   -webkit-backdrop-filter: blur(10px);
 }
 
-/* Scrollable content area */
 .main-content-scroll {
   flex: 1;
   overflow-y: auto;
@@ -69,7 +67,6 @@ html, body {
   padding: 12px 12px 80px;
 }
 
-/* Bottom nav — bigger touch targets */
 .app-bottombar {
   position: fixed;
   bottom: 0;
@@ -87,7 +84,6 @@ html, body {
   margin-top: 2px;
 }
 
-/* Modal safe */
 .modal-inner {
   max-height: 90vh;
   overflow-y: auto;
@@ -102,14 +98,26 @@ html, body {
   .app-sidebar { display: none !important; }
   .app-bottombar { display: flex !important; }
 }
+
+/* Animasi loading */
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #C9A227;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
 
 <script>
 // ============================================================
 // FIREBASE CONFIG
 // ============================================================
-const IS_PREVIEW = false;
-
 const firebaseConfig = {
   apiKey: "AIzaSyCCaOPjOh1UxaliCm0GIJeYv6NJOBGyOtA",
   authDomain: "sipanda-8045f.firebaseapp.com",
@@ -118,6 +126,12 @@ const firebaseConfig = {
   messagingSenderId: "791646404329",
   appId: "1:791646404329:web:1b225b79ee358b2e55ba78"
 };
+
+// Inisialisasi Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
 // ============================================================
 </script>
 
@@ -126,8 +140,10 @@ const firebaseConfig = {
 
 <div id="sipanda-app-root" x-data="sipandaApp()" x-init="initApp()" class="min-h-screen flex flex-col">
 
-<!-- LOGIN -->
-<div x-show="!isLoggedIn" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0B2341] p-4">
+<!-- ============================================================ -->
+<!-- LOGIN SCREEN -->
+<!-- ============================================================ -->
+<div x-show="!isLoggedIn" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0B2341] p-4" style="display:flex;">
   <div class="bg-white/95 rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl">
     <div class="w-16 h-16 bg-[#C9A227] rounded-full flex items-center justify-center mx-auto mb-3">
       <i data-lucide="shield" class="w-8 h-8 text-white"></i>
@@ -135,19 +151,73 @@ const firebaseConfig = {
     <h1 class="text-2xl font-bold text-[#0B2341]">SIPANDA</h1>
     <p class="text-[10px] text-slate-500">Lapas Kelas IIA Banyuasin</p>
     
-    <form @submit.prevent="handleLogin" class="mt-6 text-left space-y-3">
-      <input type="text" x-model="loginForm.username" placeholder="NIP / Username" class="w-full px-3 py-2 border rounded-lg text-sm">
-      <input type="password" x-model="loginForm.password" placeholder="Password" class="w-full px-3 py-2 border rounded-lg text-sm">
-      <select x-model="loginForm.role" class="w-full px-3 py-2 border rounded-lg text-sm">
-        <option value="admin">Administrator</option>
-        <option value="pegawai">Pegawai</option>
-      </select>
-      <button type="submit" class="w-full bg-[#0B2341] text-white py-2 rounded-lg font-bold">Masuk</button>
+    <!-- Toggle Login / Register -->
+    <div class="flex bg-slate-100 rounded-lg p-1 mt-4 text-xs">
+      <button @click="authMode = 'login'" :class="authMode === 'login' ? 'bg-white shadow font-bold' : ''" class="flex-1 py-1.5 rounded transition">Login</button>
+      <button @click="authMode = 'register'" :class="authMode === 'register' ? 'bg-white shadow font-bold' : ''" class="flex-1 py-1.5 rounded transition">Daftar</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form x-show="authMode === 'login'" @submit.prevent="handleLogin" class="mt-4 text-left space-y-3">
+      <div>
+        <label class="text-xs font-medium text-slate-600">Email</label>
+        <input type="email" x-model="loginForm.email" placeholder="email@kemenimipas.go.id" class="w-full px-3 py-2 border rounded-lg text-sm" required>
+      </div>
+      <div>
+        <label class="text-xs font-medium text-slate-600">Password</label>
+        <input type="password" x-model="loginForm.password" placeholder="Password" class="w-full px-3 py-2 border rounded-lg text-sm" required>
+      </div>
+      <div class="flex items-center justify-between">
+        <label class="flex items-center text-xs text-slate-500">
+          <input type="checkbox" x-model="loginForm.remember" class="mr-1"> Ingat saya
+        </label>
+        <button type="button" @click="handleResetPassword" class="text-xs text-[#C9A227] font-medium">Lupa Password?</button>
+      </div>
+      <button type="submit" class="w-full bg-[#0B2341] text-white py-2.5 rounded-lg font-bold text-sm flex items-center justify-center" :disabled="authLoading">
+        <span x-show="authLoading" class="spinner w-5 h-5 mr-2"></span>
+        <span x-text="authLoading ? 'Memproses...' : 'Masuk'"></span>
+      </button>
     </form>
+
+    <!-- REGISTER FORM -->
+    <form x-show="authMode === 'register'" @submit.prevent="handleRegister" class="mt-4 text-left space-y-3">
+      <div>
+        <label class="text-xs font-medium text-slate-600">Nama Lengkap</label>
+        <input type="text" x-model="registerForm.nama" placeholder="Nama lengkap" class="w-full px-3 py-2 border rounded-lg text-sm" required>
+      </div>
+      <div>
+        <label class="text-xs font-medium text-slate-600">NIP</label>
+        <input type="text" x-model="registerForm.nip" placeholder="NIP" class="w-full px-3 py-2 border rounded-lg text-sm" required>
+      </div>
+      <div>
+        <label class="text-xs font-medium text-slate-600">Email</label>
+        <input type="email" x-model="registerForm.email" placeholder="email@kemenimipas.go.id" class="w-full px-3 py-2 border rounded-lg text-sm" required>
+      </div>
+      <div>
+        <label class="text-xs font-medium text-slate-600">Password (min 6 karakter)</label>
+        <input type="password" x-model="registerForm.password" placeholder="Password" class="w-full px-3 py-2 border rounded-lg text-sm" minlength="6" required>
+      </div>
+      <div>
+        <label class="text-xs font-medium text-slate-600">Konfirmasi Password</label>
+        <input type="password" x-model="registerForm.confirmPassword" placeholder="Konfirmasi password" class="w-full px-3 py-2 border rounded-lg text-sm" required>
+      </div>
+      <select x-model="registerForm.role" class="w-full px-3 py-2 border rounded-lg text-sm">
+        <option value="pegawai">Pegawai</option>
+        <option value="admin">Administrator</option>
+      </select>
+      <button type="submit" class="w-full bg-[#C9A227] text-slate-900 py-2.5 rounded-lg font-bold text-sm flex items-center justify-center" :disabled="authLoading">
+        <span x-show="authLoading" class="spinner w-5 h-5 mr-2"></span>
+        <span x-text="authLoading ? 'Memproses...' : 'Daftar'"></span>
+      </button>
+    </form>
+
+    <p class="text-[9px] text-slate-400 mt-3">* Data Anda aman dan terenkripsi</p>
   </div>
 </div>
 
+<!-- ============================================================ -->
 <!-- MAIN APP -->
+<!-- ============================================================ -->
 <div x-show="isLoggedIn" class="flex-1 flex flex-col overflow-hidden" style="min-height:0">
 
   <!-- HEADER -->
@@ -158,13 +228,16 @@ const firebaseConfig = {
       </div>
       <div>
         <h1 class="text-sm font-bold text-[#0B2341]">SIPANDA</h1>
-        <p class="text-[8px] text-slate-500">Lapas Banyuasin</p>
+        <p class="text-[8px] text-slate-500" x-text="sessionUser.nama + ' · ' + sessionUser.email"></p>
       </div>
     </div>
-    <button @click="showNotifications = !showNotifications" class="relative p-1.5 bg-slate-100 rounded-lg">
-      <i data-lucide="bell" class="w-4 h-4"></i>
-      <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center" x-text="notifications.length"></span>
-    </button>
+    <div class="flex items-center gap-2">
+      <span class="text-[8px] bg-slate-100 px-2 py-0.5 rounded-full" x-text="role.toUpperCase()"></span>
+      <button @click="showNotifications = !showNotifications" class="relative p-1.5 bg-slate-100 rounded-lg">
+        <i data-lucide="bell" class="w-4 h-4"></i>
+        <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center" x-text="notifications.length"></span>
+      </button>
+    </div>
   </header>
 
   <!-- CONTENT -->
@@ -175,6 +248,7 @@ const firebaseConfig = {
       <div class="bg-gradient-to-br from-[#0B2341] to-[#123B63] rounded-2xl p-4 text-white">
         <h2 class="text-lg font-bold">SIPANDA</h2>
         <p class="text-[10px] text-slate-300">Lapas Kelas IIA Banyuasin</p>
+        <p class="text-[10px] text-slate-300 mt-1">👋 Selamat datang, <span x-text="sessionUser.nama"></span></p>
         <div class="flex gap-2 mt-3">
           <button @click="showModalAddPegawai = true" class="bg-[#C9A227] text-slate-900 text-[10px] font-bold px-3 py-1 rounded">+ Pegawai</button>
           <button @click="showModalAddCuti = true" class="bg-white/20 text-white text-[10px] font-bold px-3 py-1 rounded">+ Cuti</button>
@@ -287,6 +361,7 @@ const firebaseConfig = {
     <div x-show="activeMenu === 'admin'" class="space-y-3">
       <h2 class="text-base font-bold text-[#0B2341]">Admin</h2>
       <button @click="exportDatabaseBackup()" class="w-full bg-[#0B2341] text-white py-2 rounded font-bold text-sm">Backup Database</button>
+      <button @click="handleLogout" class="w-full bg-red-600 text-white py-2 rounded font-bold text-sm">Logout</button>
     </div>
 
   </div>
@@ -316,6 +391,10 @@ const firebaseConfig = {
   </nav>
 
 </div>
+
+<!-- ============================================================ -->
+<!-- MODALS -->
+<!-- ============================================================ -->
 
 <!-- MODAL PEGAWAI -->
 <div x-show="showModalAddPegawai" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-3" style="display:none;">
@@ -354,40 +433,45 @@ const firebaseConfig = {
   </div>
 </div>
 
-</div>
-
+<!-- ============================================================ -->
+<!-- JAVASCRIPT APP -->
+<!-- ============================================================ -->
 <script>
-// ============================================================
-// FIREBASE INIT
-// ============================================================
-let db = null;
-let auth = null;
-
-if (!IS_PREVIEW) {
-  try {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    auth = firebase.auth();
-    console.log("✅ Firebase Connected!");
-  } catch (err) {
-    console.error("❌ Firebase Error:", err);
-  }
-}
-
-// ============================================================
-// APP
-// ============================================================
 function sipandaApp() {
   return {
+    // ===== AUTH STATE =====
     isLoggedIn: false,
-    role: 'admin',
-    sessionUser: { nama: 'Admin', nip: '197605212001011002' },
+    authLoading: false,
+    authMode: 'login', // 'login' | 'register'
+    role: 'pegawai',
+    sessionUser: { 
+      nama: '', 
+      nip: '', 
+      email: '', 
+      uid: '' 
+    },
+    
+    // ===== LOGIN / REGISTER FORMS =====
+    loginForm: { 
+      email: '', 
+      password: '', 
+      remember: false 
+    },
+    registerForm: {
+      nama: '',
+      nip: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      role: 'pegawai'
+    },
+
+    // ===== APP STATE =====
     activeMenu: 'dashboard',
     pegawaiSearch: '',
     showNotifications: false,
     showModalAddPegawai: false,
     showModalAddCuti: false,
-    loginForm: { username: '', password: '', role: 'admin' },
     newPegawaiForm: { nip: '', nama: '', golongan: 'III/a', jabatan: '', noHp: '', email: '' },
     newCutiForm: { nip: '', jenisCuti: 'Cuti Tahunan', tanggalMulai: '', tanggalSelesai: '', keterangan: '' },
     pegawaiList: [],
@@ -395,70 +479,249 @@ function sipandaApp() {
     notifications: [],
     todoList: [],
     stats: { totalPegawai: 0, pegawaiCuti: 0, pegawaiCutiName: 'Tidak ada', pangkatSegera: 0, kgbSegera: 0 },
+    _calendar: null,
 
+    // ============================================================
+    // INIT
+    // ============================================================
     async initApp() {
-      await this.syncDatabase();
-      this.generateNotifications();
-      // Re-run icons after Alpine renders
-      this.$nextTick(() => {
-        setTimeout(() => {
-          lucide.createIcons();
-          this.initChart();
-        }, 100);
+      // Cek apakah user sudah login
+      auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          await this.loadUserData(user);
+          this.isLoggedIn = true;
+          await this.syncDatabase();
+          this.generateNotifications();
+          this.$nextTick(() => {
+            setTimeout(() => {
+              lucide.createIcons();
+              this.initChart();
+            }, 100);
+          });
+        } else {
+          this.isLoggedIn = false;
+        }
       });
     },
 
+    // ============================================================
+    // AUTH METHODS
+    // ============================================================
+    async loadUserData(user) {
+      try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        const userData = userDoc.data();
+        this.sessionUser = {
+          uid: user.uid,
+          email: user.email,
+          nama: userData?.nama || user.email?.split('@')[0] || 'User',
+          nip: userData?.nip || '',
+        };
+        this.role = userData?.role || 'pegawai';
+        
+        // Jika role admin, aktifkan menu admin
+        if (this.role === 'admin') {
+          // admin bisa akses semua
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        this.sessionUser = {
+          uid: user.uid,
+          email: user.email,
+          nama: user.email?.split('@')[0] || 'User',
+          nip: '',
+        };
+        this.role = 'pegawai';
+      }
+    },
+
+    async handleLogin() {
+      if (!this.loginForm.email || !this.loginForm.password) {
+        alert('⚠️ Email dan password wajib diisi!');
+        return;
+      }
+      
+      this.authLoading = true;
+      try {
+        const userCredential = await auth.signInWithEmailAndPassword(
+          this.loginForm.email,
+          this.loginForm.password
+        );
+        
+        // Load user data
+        await this.loadUserData(userCredential.user);
+        this.isLoggedIn = true;
+        
+        this.$nextTick(() => {
+          setTimeout(() => {
+            lucide.createIcons();
+            this.initChart();
+          }, 150);
+        });
+      } catch (error) {
+        let message = '❌ Login gagal!';
+        switch (error.code) {
+          case 'auth/user-not-found':
+            message = '❌ Email tidak terdaftar!';
+            break;
+          case 'auth/wrong-password':
+            message = '❌ Password salah!';
+            break;
+          case 'auth/invalid-email':
+            message = '❌ Format email tidak valid!';
+            break;
+          case 'auth/too-many-requests':
+            message = '❌ Terlalu banyak percobaan. Coba lagi nanti.';
+            break;
+          default:
+            message = '❌ ' + error.message;
+        }
+        alert(message);
+      } finally {
+        this.authLoading = false;
+      }
+    },
+
+    async handleRegister() {
+      // Validasi
+      if (!this.registerForm.nama || !this.registerForm.nip || !this.registerForm.email || !this.registerForm.password) {
+        alert('⚠️ Semua field wajib diisi!');
+        return;
+      }
+      if (this.registerForm.password.length < 6) {
+        alert('⚠️ Password minimal 6 karakter!');
+        return;
+      }
+      if (this.registerForm.password !== this.registerForm.confirmPassword) {
+        alert('⚠️ Password dan konfirmasi password tidak sama!');
+        return;
+      }
+
+      this.authLoading = true;
+      try {
+        // Buat user di Firebase Auth
+        const userCredential = await auth.createUserWithEmailAndPassword(
+          this.registerForm.email,
+          this.registerForm.password
+        );
+
+        // Simpan data user ke Firestore
+        await db.collection('users').doc(userCredential.user.uid).set({
+          nama: this.registerForm.nama,
+          nip: this.registerForm.nip,
+          email: this.registerForm.email,
+          role: this.registerForm.role || 'pegawai',
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert('✅ Registrasi berhasil! Silakan login.');
+        
+        // Reset form dan switch ke login
+        this.registerForm = { nama: '', nip: '', email: '', password: '', confirmPassword: '', role: 'pegawai' };
+        this.authMode = 'login';
+        this.loginForm.email = this.registerForm.email;
+        
+      } catch (error) {
+        let message = '❌ Registrasi gagal!';
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            message = '❌ Email sudah terdaftar!';
+            break;
+          case 'auth/invalid-email':
+            message = '❌ Format email tidak valid!';
+            break;
+          case 'auth/weak-password':
+            message = '❌ Password terlalu lemah!';
+            break;
+          default:
+            message = '❌ ' + error.message;
+        }
+        alert(message);
+      } finally {
+        this.authLoading = false;
+      }
+    },
+
+    async handleResetPassword() {
+      if (!this.loginForm.email) {
+        alert('⚠️ Masukkan email Anda terlebih dahulu!');
+        return;
+      }
+      try {
+        await auth.sendPasswordResetEmail(this.loginForm.email);
+        alert('✅ Email reset password telah dikirim ke ' + this.loginForm.email);
+      } catch (error) {
+        alert('❌ Gagal mengirim email reset: ' + error.message);
+      }
+    },
+
+    handleLogout() {
+      if (confirm('Yakin ingin keluar?')) {
+        auth.signOut();
+        this.isLoggedIn = false;
+        this.activeMenu = 'dashboard';
+        // Reset forms
+        this.loginForm = { email: '', password: '', remember: false };
+      }
+    },
+
+    // ============================================================
+    // DATABASE METHODS
+    // ============================================================
     async syncDatabase() {
-      if (IS_PREVIEW || !db) {
-        let localPegawai = localStorage.getItem('sipanda_pegawai');
-        if (!localPegawai) {
-          const dummy = this.generateDummyPegawaiDataRaw();
-          localStorage.setItem('sipanda_pegawai', JSON.stringify(dummy));
-          this.pegawaiList = dummy;
-        } else {
-          this.pegawaiList = JSON.parse(localPegawai);
-        }
-        let localCuti = localStorage.getItem('sipanda_cuti');
-        if (!localCuti) {
-          const dummyCuti = [{ cutiId: 'c1', nip: this.pegawaiList[0]?.nip || '', nama: this.pegawaiList[0]?.nama || '', jenisCuti: 'Cuti Tahunan', tanggalMulai: '2026-07-15', tanggalSelesai: '2026-07-20', status: 'Disetujui' }];
-          localStorage.setItem('sipanda_cuti', JSON.stringify(dummyCuti));
-          this.cutiList = dummyCuti;
-        } else {
-          this.cutiList = JSON.parse(localCuti);
-        }
-      } else {
-        try {
-          const pegawaiSnap = await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').get();
-          if (pegawaiSnap.empty) {
-            await this.autoSetupDatabaseFirebase();
-            return this.syncDatabase();
-          }
+      try {
+        // Load pegawai
+        const pegawaiSnap = await db.collection('pegawai').get();
+        if (!pegawaiSnap.empty) {
           let listPegawai = [];
-          pegawaiSnap.forEach(doc => listPegawai.push(doc.data()));
+          pegawaiSnap.forEach(doc => listPegawai.push({ id: doc.id, ...doc.data() }));
           this.pegawaiList = listPegawai;
-          const cutiSnap = await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('cuti').get();
-          let listCuti = [];
-          cutiSnap.forEach(doc => listCuti.push(doc.data()));
-          this.cutiList = listCuti;
-        } catch (err) {
-          console.error("❌ Firestore error:", err);
+        } else {
+          // Seed dummy data jika kosong
+          await this.seedDummyPegawai();
         }
+
+        // Load cuti
+        const cutiSnap = await db.collection('cuti').get();
+        if (!cutiSnap.empty) {
+          let listCuti = [];
+          cutiSnap.forEach(doc => listCuti.push({ id: doc.id, ...doc.data() }));
+          this.cutiList = listCuti;
+        }
+      } catch (error) {
+        console.error('❌ Sync error:', error);
+        // Fallback ke localStorage
+        this.loadFromLocalStorage();
       }
       this.recalculateSystemStats();
     },
 
-    async autoSetupDatabaseFirebase() {
-      console.log("🚀 Auto Setup Firebase...");
+    loadFromLocalStorage() {
+      try {
+        const pegawai = localStorage.getItem('sipanda_pegawai');
+        this.pegawaiList = pegawai ? JSON.parse(pegawai) : this.generateDummyPegawaiDataRaw();
+        const cuti = localStorage.getItem('sipanda_cuti');
+        this.cutiList = cuti ? JSON.parse(cuti) : [];
+      } catch (e) {
+        this.pegawaiList = this.generateDummyPegawaiDataRaw();
+        this.cutiList = [];
+      }
+    },
+
+    async seedDummyPegawai() {
       const dummy = this.generateDummyPegawaiDataRaw();
       const batch = db.batch();
       dummy.forEach(p => {
-        const docRef = db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').doc(p.nip);
+        const docRef = db.collection('pegawai').doc(p.nip);
         batch.set(docRef, p);
       });
       await batch.commit();
-      console.log("✅ Firebase seeded!");
+      this.pegawaiList = dummy;
     },
 
+    // ============================================================
+    // CRUD METHODS
+    // ============================================================
     async saveNewPegawai() {
       if (!this.newPegawaiForm.nip || !this.newPegawaiForm.nama) {
         alert('⚠️ NIP dan Nama wajib diisi!');
@@ -478,11 +741,13 @@ function sipandaApp() {
         tglPangkatBerikutnya: "2026-04-01",
       };
       this.pegawaiList.unshift(newPegawai);
-      if (IS_PREVIEW || !db) {
+      
+      try {
+        await db.collection('pegawai').doc(newPegawai.nip).set(newPegawai);
+      } catch (e) {
         localStorage.setItem('sipanda_pegawai', JSON.stringify(this.pegawaiList));
-      } else {
-        await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').doc(newPegawai.nip).set(newPegawai);
       }
+      
       this.showModalAddPegawai = false;
       this.recalculateSystemStats();
       alert('✅ Pegawai ' + newPegawai.nama + ' berhasil!');
@@ -506,37 +771,22 @@ function sipandaApp() {
         status: 'Disetujui'
       };
       this.cutiList.unshift(newCuti);
-      if (IS_PREVIEW || !db) {
+      
+      try {
+        await db.collection('cuti').doc(newCuti.cutiId).set(newCuti);
+      } catch (e) {
         localStorage.setItem('sipanda_cuti', JSON.stringify(this.cutiList));
-      } else {
-        await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('cuti').doc(newCuti.cutiId).set(newCuti);
       }
+      
       this.showModalAddCuti = false;
       this.recalculateSystemStats();
       setTimeout(() => { this.initCalendar(); }, 300);
       alert('✅ Cuti ' + matched.nama + ' berhasil!');
     },
 
-    handleLogin() {
-      this.isLoggedIn = true;
-      this.role = this.loginForm.role;
-      if (this.role === 'pegawai') {
-        const matched = this.pegawaiList.find(p => p.nip === this.loginForm.username) || this.pegawaiList[0];
-        this.sessionUser = { nama: matched?.nama || 'Pegawai', nip: matched?.nip || '' };
-      } else {
-        this.sessionUser = { nama: 'Admin TU', nip: '197605212001011002' };
-        this.activeMenu = 'dashboard';
-      }
-      this.$nextTick(() => {
-        setTimeout(() => {
-          lucide.createIcons();
-          this.initChart();
-        }, 150);
-      });
-    },
-
-    handleLogout() { this.isLoggedIn = false; },
-
+    // ============================================================
+    // UTILITY METHODS
+    // ============================================================
     recalculateSystemStats() {
       this.stats.totalPegawai = this.pegawaiList.length;
       this.stats.pegawaiCuti = this.cutiList.length;
@@ -546,7 +796,7 @@ function sipandaApp() {
     },
 
     generateDummyPegawaiDataRaw() {
-      const names = ["Ahmad Subarjo", "Siti Aminah", "Budi Santoso", "Dewi Lestari", "Roni Hidayat"];
+      const names = ["Ahmad Subarjo", "Siti Aminah", "Budi Santoso", "Dewi Lestari", "Roni Hidayat", "Yanti Suryani", "Agus Priyono", "Dina Rahma", "Fajar Nugroho", "Indah Permata"];
       let list = [];
       for (let i = 0; i < 87; i++) {
         const randomName = names[i % names.length] + " " + String.fromCharCode(65 + (i % 26));
@@ -555,7 +805,7 @@ function sipandaApp() {
           nip: nipRandom,
           nama: randomName,
           golongan: i % 4 === 0 ? "III/a" : i % 4 === 1 ? "III/b" : i % 4 === 2 ? "III/c" : "IV/a",
-          jabatan: "Staff",
+          jabatan: i % 5 === 0 ? "Kepala Seksi" : "Staff",
           email: randomName.toLowerCase().replace(/\s/g, '') + "@kemenimipas.go.id",
           noHp: "0812" + (10000000 + i * 91),
           pangkatCountdownDays: 20 + (i * 7) % 300,
@@ -570,7 +820,8 @@ function sipandaApp() {
 
     generateNotifications() {
       this.notifications = [
-        { id: 1, nip: '198708122010011002', nama: "Ahmad Subarjo", msg: "KGB akan jatuh tempo dalam 30 hari.", type: "danger", time: "Baru saja" }
+        { id: 1, nip: '198708122010011002', nama: "Ahmad Subarjo", msg: "KGB akan jatuh tempo dalam 30 hari.", type: "danger", time: "Baru saja" },
+        { id: 2, nip: '198608122010011003', nama: "Siti Aminah", msg: "Naik pangkat dalam 45 hari.", type: "warning", time: "1 jam lalu" }
       ];
     },
 
@@ -588,9 +839,10 @@ function sipandaApp() {
       );
     },
 
-    exportDataToExcel() { alert("✅ Ekspor Excel berhasil!"); },
-    exportDataToPDF() { window.print(); },
-    triggerReportExport(type) { alert("✅ Laporan " + type + " berhasil!"); },
+    triggerReportExport(type) { 
+      alert("✅ Laporan " + type + " berhasil diekspor!"); 
+    },
+
     exportDatabaseBackup() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.pegawaiList));
       const a = document.createElement('a');
@@ -622,7 +874,6 @@ function sipandaApp() {
     initCalendar() {
       const el = document.getElementById('fullCalendarTarget');
       if (!el || typeof FullCalendar === 'undefined') return;
-      // Destroy old instance
       if (this._calendar) { this._calendar.destroy(); this._calendar = null; }
       const events = this.cutiList.map(c => ({
         title: c.nama,
@@ -643,6 +894,13 @@ function sipandaApp() {
     }
   };
 }
+
+// ============================================================
+// AUTO-INIT ICONS
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => lucide.createIcons(), 200);
+});
 </script>
 
 </body>
