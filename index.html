@@ -112,7 +112,6 @@ const firebaseConfig = {
 <p class="text-xs font-semibold text-[#123B63] mt-1 uppercase tracking-wide">Sistem Informasi Pengelolaan Data & Arsip Pegawai</p>
 <p class="text-[11px] text-slate-500 mt-0.5">Lapas Kelas IIA Banyuasin</p>
 
-<!-- FORM LOGIN - HANYA EMAIL & PASSWORD -->
 <form @submit.prevent="handleLogin" class="mt-8 text-left space-y-4">
 <div>
 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Email Admin</label>
@@ -182,7 +181,7 @@ const firebaseConfig = {
 </nav>
 <div class="p-4 border-t border-slate-800 bg-slate-950/40">
 <div class="flex items-center space-x-3">
-<img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150" class="w-10 h-10 rounded-full border border-[#C9A227] object-cover" alt="User avatar">
+<img :src="sessionUser.foto || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150'" class="w-10 h-10 rounded-full border border-[#C9A227] object-cover" alt="User avatar">
 <div class="flex-1 min-w-0">
 <p class="text-xs font-bold text-white truncate" x-text="sessionUser.nama"></p>
 <p class="text-[10px] text-slate-400 capitalize truncate">Admin</p>
@@ -220,32 +219,6 @@ const firebaseConfig = {
 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
 <i data-lucide="sparkles" class="w-4 h-4"></i>
 </span>
-</div>
-<div class="relative">
-<button @click="showNotifications = !showNotifications" class="relative p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition">
-<i data-lucide="bell" class="w-5 h-5"></i>
-<span class="absolute -top-1 -right-1 bg-red-600 text-white font-bold text-[9px] w-5 h-5 rounded-full flex items-center justify-center animate-pulse" x-text="notifications.length"></span>
-</button>
-<div x-show="showNotifications" @click.outside="showNotifications = false" class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50" style="display: none;">
-<div class="bg-[#0B2341] px-4 py-3 text-white flex justify-between items-center">
-<span class="font-bold text-xs tracking-wide">NOTIFIKASI</span>
-<span class="bg-[#C9A227] text-slate-900 font-bold text-[10px] px-2 py-0.5 rounded-full" x-text="notifications.length + ' Peringatan'"></span>
-</div>
-<div class="max-h-96 overflow-y-auto divide-y divide-slate-100">
-<template x-for="(notif, index) in notifications" :key="index">
-<div class="p-3 text-xs flex space-x-3 hover:bg-slate-50 transition cursor-pointer" @click="viewPegawaiProfileByNip(notif.nip); showNotifications = false">
-<span :class="{'bg-red-100 text-red-600': notif.type === 'danger', 'bg-amber-100 text-amber-600': notif.type === 'warning', 'bg-emerald-100 text-emerald-600': notif.type === 'success'}" class="w-8 h-8 rounded-full flex items-center justify-center shrink-0">
-<i data-lucide="alert-circle" class="w-4 h-4"></i>
-</span>
-<div class="flex-1">
-<p class="font-semibold text-slate-800" x-text="notif.nama"></p>
-<p class="text-slate-500 mt-0.5 text-[11px]" x-text="notif.msg"></p>
-<p class="text-[10px] text-slate-400 mt-1" x-text="notif.time"></p>
-</div>
-</div>
-</template>
-</div>
-</div>
 </div>
 </div>
 </header>
@@ -408,7 +381,11 @@ const firebaseConfig = {
 <td class="p-4"><div class="flex items-center space-x-1.5"><span :class="getUrgensiColorClass(pegawai.pangkatCountdownDays)" class="w-2.5 h-2.5 rounded-full inline-block"></span><span class="font-bold" x-text="pegawai.pangkatCountdownDays + ' Hari'"></span></div><span class="text-[9px] text-slate-400 block" x-text="'TMT: ' + pegawai.tglPangkatBerikutnya"></span></td>
 <td class="p-4"><div class="flex items-center space-x-1.5"><span :class="getUrgensiColorClass(pegawai.kgbCountdownDays)" class="w-2.5 h-2.5 rounded-full inline-block"></span><span class="font-bold" x-text="pegawai.kgbCountdownDays + ' Hari'"></span></div><span class="text-[9px] text-slate-400 block" x-text="'TMT: ' + pegawai.tglKgbBerikutnya"></span></td>
 <td class="p-4"><div class="flex items-center space-x-2"><div class="w-12 bg-slate-100 rounded-full h-1.5 overflow-hidden"><div class="bg-emerald-500 h-1.5 rounded-full" :style="'width: ' + pegawai.progressBerkas + '%'"></div></div><span class="font-bold text-[10px] text-slate-700" x-text="pegawai.progressBerkas + '%'"></span></div></td>
-<td class="p-4 text-center"><button @click="viewPegawaiProfileByNip(pegawai.nip)" class="bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-sm">Lihat Profil</button></td>
+<td class="p-4 text-center space-y-1">
+<button @click="viewPegawaiProfileByNip(pegawai.nip)" class="bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-sm w-full">Lihat Profil</button>
+<button @click="showEditPegawai(pegawai)" class="bg-[#C9A227] hover:bg-[#b08e20] text-slate-900 font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-sm w-full">Edit</button>
+<button @click="hapusPegawai(pegawai.nip)" class="bg-red-600 hover:bg-red-700 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-sm w-full">Hapus</button>
+</td>
 </tr>
 </template>
 </tbody>
@@ -425,7 +402,13 @@ const firebaseConfig = {
 <div class="bg-[#0B2341] text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
 <div class="absolute right-0 top-0 opacity-10"><i data-lucide="user-check" class="w-80 h-80"></i></div>
 <div class="relative flex flex-col md:flex-row items-center gap-6 z-10">
+<div class="relative">
 <img :src="selectedPegawai.foto || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=250'" class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-yellow-500 object-cover shadow-2xl" alt="Profil">
+<label class="absolute bottom-0 right-0 bg-[#C9A227] p-1.5 rounded-full cursor-pointer hover:bg-[#b08e20]">
+<i data-lucide="camera" class="w-4 h-4 text-slate-900"></i>
+<input type="file" accept="image/*" @change="uploadFoto($event)" class="hidden">
+</label>
+</div>
 <div class="flex-1 text-center md:text-left">
 <div class="flex flex-col md:flex-row md:items-center gap-2">
 <h2 class="text-2xl font-extrabold" x-text="selectedPegawai.nama"></h2>
@@ -457,69 +440,124 @@ const firebaseConfig = {
 <button @click="selectedTab = 'cuti'" :class="selectedTab === 'cuti' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">Riwayat Cuti</button>
 </div>
 <div class="mt-6">
+<!-- IDENTITAS -->
 <div x-show="selectedTab === 'identitas'" class="space-y-4">
 <h3 class="font-bold text-[#0B2341] text-xs">Informasi Data Pribadi Pegawai</h3>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-700">
-<div><span class="block text-slate-400">Tempat, Tanggal Lahir:</span><span class="font-bold" x-text="selectedPegawai.tglLahir"></span></div>
-<div><span class="block text-slate-400">Jenis Kelamin:</span><span class="font-bold" x-text="selectedPegawai.gender"></span></div>
-<div><span class="block text-slate-400">Alamat Tempat Tinggal:</span><span class="font-bold">Jl. Merdeka No. 87, Banyuasin, Sumsel</span></div>
-<div><span class="block text-slate-400">Email Kepegawaian:</span><span class="font-bold text-blue-600" x-text="selectedPegawai.email"></span></div>
+<div><span class="block text-slate-400">Tempat, Tanggal Lahir:</span>
+<input type="date" x-model="selectedPegawai.tglLahir" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg">
+</div>
+<div><span class="block text-slate-400">Jenis Kelamin:</span>
+<select x-model="selectedPegawai.gender" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg">
+<option value="Laki-laki">Laki-laki</option>
+<option value="Perempuan">Perempuan</option>
+</select>
+</div>
+<div><span class="block text-slate-400">TMT CPNS:</span>
+<input type="date" x-model="selectedPegawai.tmtCpns" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg">
+</div>
+<div><span class="block text-slate-400">TMT PNS:</span>
+<input type="date" x-model="selectedPegawai.tmtPns" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg">
+</div>
+<div><span class="block text-slate-400">Email:</span>
+<input type="email" x-model="selectedPegawai.email" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg">
+</div>
+<div><span class="block text-slate-400">Nomor HP/WA:</span>
+<input type="text" x-model="selectedPegawai.noHp" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg">
 </div>
 </div>
+</div>
+
+<!-- PANGKAT -->
 <div x-show="selectedTab === 'pangkat'" class="space-y-4">
-<div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Arsip SK Pangkat (Wajib PDF)</h3><template x-if="selectedPegawai.dokumen.skPangkat && selectedPegawai.dokumen.skPangkat.fileUrl"><button @click="triggerPdfPreview(selectedPegawai.dokumen.skPangkat)" class="bg-[#123B63] text-white font-bold text-[10px] px-3 py-1.5 rounded-lg">Preview SK</button></template></div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-2">
-<p><strong>Nomor SK:</strong> <span x-text="selectedPegawai.dokumen.skPangkat ? selectedPegawai.dokumen.skPangkat.nomor : 'Belum diisi'"></span></p>
-<p><strong>Tanggal Terbit SK:</strong> <span x-text="selectedPegawai.dokumen.skPangkat ? selectedPegawai.dokumen.skPangkat.tanggal : '-'"></span></p>
-<p><strong>TMT Berlaku:</strong> <span x-text="selectedPegawai.tglPangkatTerakhir"></span></p>
-<p><strong>File Dokumen:</strong> <template x-if="selectedPegawai.dokumen.skPangkat && selectedPegawai.dokumen.skPangkat.namaFile"><span class="text-blue-600 underline cursor-pointer" x-text="selectedPegawai.dokumen.skPangkat.namaFile" @click="triggerPdfPreview(selectedPegawai.dokumen.skPangkat)"></span></template><template x-if="!selectedPegawai.dokumen.skPangkat || !selectedPegawai.dokumen.skPangkat.namaFile"><span class="text-red-500 font-semibold">Belum Diunggah</span></template></p>
+<div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Edit Data Kepangkatan</h3></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-xs font-bold">Golongan Saat Ini</label>
+<select x-model="selectedPegawai.golongan" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg bg-white">
+<option value="III/a">III/a (Penata Muda)</option>
+<option value="III/b">III/b (Penata Muda Tk. I)</option>
+<option value="III/c">III/c (Penata)</option>
+<option value="IV/a">IV/a (Pembina)</option>
+</select>
+<label class="text-xs font-bold">TMT Pangkat Terakhir</label>
+<input type="date" x-model="selectedPegawai.tglPangkatTerakhir" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg">
+<label class="text-xs font-bold">TMT Pangkat Berikutnya</label>
+<input type="date" x-model="selectedPegawai.tglPangkatBerikutnya" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg">
 </div>
 <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center text-slate-400 bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative">
 <input type="file" accept="application/pdf" @change="handleDocUpload($event, 'skPangkat')" class="absolute inset-0 opacity-0 cursor-pointer">
 <i data-lucide="upload-cloud" class="w-8 h-8 text-[#C9A227] mb-2"></i>
-<p class="text-[11px] font-bold text-center">Pilih atau Tarik file SK Pangkat PDF</p>
+<p class="text-[11px] font-bold text-center">Upload SK Pangkat PDF</p>
 <span class="text-[9px] text-slate-500">Maks. 5MB (Hanya PDF)</span>
+<template x-if="selectedPegawai.dokumen.skPangkat && selectedPegawai.dokumen.skPangkat.namaFile">
+<p class="text-xs text-emerald-600 mt-2 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skPangkat.namaFile"></p>
+</template>
 </div>
 </div>
 </div>
+
+<!-- JABATAN -->
 <div x-show="selectedTab === 'jabatan'" class="space-y-4">
-<div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Arsip SK Jabatan (Wajib PDF)</h3><template x-if="selectedPegawai.dokumen.skJabatan && selectedPegawai.dokumen.skJabatan.fileUrl"><button @click="triggerPdfPreview(selectedPegawai.dokumen.skJabatan)" class="bg-[#123B63] text-white font-bold text-[10px] px-3 py-1.5 rounded-lg">Preview SK</button></template></div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-2">
-<p><strong>Jabatan Aktif:</strong> <span x-text="selectedPegawai.jabatan"></span></p>
-<p><strong>Nomor SK Jabatan:</strong> <span x-text="selectedPegawai.dokumen.skJabatan ? selectedPegawai.dokumen.skJabatan.nomor : 'Belum diisi'"></span></p>
-<p><strong>Tanggal Terbit SK:</strong> <span x-text="selectedPegawai.dokumen.skJabatan ? selectedPegawai.dokumen.skJabatan.tanggal : '-'"></span></p>
-<p><strong>File Dokumen:</strong> <template x-if="selectedPegawai.dokumen.skJabatan && selectedPegawai.dokumen.skJabatan.namaFile"><span class="text-blue-600 underline cursor-pointer" x-text="selectedPegawai.dokumen.skJabatan.namaFile" @click="triggerPdfPreview(selectedPegawai.dokumen.skJabatan)"></span></template><template x-if="!selectedPegawai.dokumen.skJabatan || !selectedPegawai.dokumen.skJabatan.namaFile"><span class="text-red-500 font-semibold">Belum Diunggah</span></template></p>
+<div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Edit Data Jabatan</h3></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-xs font-bold">Jabatan</label>
+<input type="text" x-model="selectedPegawai.jabatan" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg" placeholder="Nama Jabatan">
+<label class="text-xs font-bold">Nomor SK Jabatan</label>
+<input type="text" x-model="selectedPegawai.dokumen.skJabatan.nomor" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg" placeholder="Nomor SK">
+<label class="text-xs font-bold">Tanggal Terbit SK</label>
+<input type="date" x-model="selectedPegawai.dokumen.skJabatan.tanggal" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg">
 </div>
 <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center text-slate-400 bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative">
 <input type="file" accept="application/pdf" @change="handleDocUpload($event, 'skJabatan')" class="absolute inset-0 opacity-0 cursor-pointer">
 <i data-lucide="upload-cloud" class="w-8 h-8 text-[#C9A227] mb-2"></i>
-<p class="text-[11px] font-bold text-center">Pilih atau Tarik file SK Jabatan PDF</p>
+<p class="text-[11px] font-bold text-center">Upload SK Jabatan PDF</p>
 <span class="text-[9px] text-slate-500">Maks. 5MB (Hanya PDF)</span>
+<template x-if="selectedPegawai.dokumen.skJabatan && selectedPegawai.dokumen.skJabatan.namaFile">
+<p class="text-xs text-emerald-600 mt-2 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skJabatan.namaFile"></p>
+</template>
 </div>
 </div>
 </div>
+
+<!-- SKP -->
 <div x-show="selectedTab === 'skp'" class="space-y-4">
 <h3 class="font-bold text-[#0B2341] text-xs">Sasaran Kinerja Pegawai (SKP)</h3>
-<div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-2">
-<p><strong>Nilai SKP:</strong> <span class="font-bold text-emerald-600" x-text="selectedPegawai.dokumen.skpKgb ? selectedPegawai.dokumen.skpKgb.nilai : '85'"></span></p>
-<p><strong>Predikat Kinerja:</strong> <span class="font-bold" x-text="selectedPegawai.dokumen.skpKgb ? selectedPegawai.dokumen.skpKgb.predikat : 'Baik'"></span></p>
-<p><strong>Tahun Penilaian:</strong> <span x-text="selectedPegawai.dokumen.skpKgb ? selectedPegawai.dokumen.skpKgb.tahun : '2025'"></span></p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div><label class="text-xs font-bold">Nilai SKP</label>
+<input type="number" x-model="selectedPegawai.dokumen.skpKgb.nilai" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg">
+</div>
+<div><label class="text-xs font-bold">Predikat</label>
+<select x-model="selectedPegawai.dokumen.skpKgb.predikat" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg bg-white">
+<option value="Sangat Baik">Sangat Baik</option>
+<option value="Baik">Baik</option>
+<option value="Cukup">Cukup</option>
+<option value="Kurang">Kurang</option>
+</select>
+</div>
+<div><label class="text-xs font-bold">Tahun</label>
+<input type="number" x-model="selectedPegawai.dokumen.skpKgb.tahun" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg">
 </div>
 </div>
+</div>
+
+<!-- CUTI -->
 <div x-show="selectedTab === 'cuti'" class="space-y-4">
 <div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Sisa Kuota Cuti Tahunan</h3><span class="bg-blue-100 text-[#0B2341] text-[10px] font-bold px-2 py-0.5 rounded-full">Sisa Cuti: 12 Hari</span></div>
 <div class="overflow-x-auto rounded-xl border border-slate-200">
 <table class="w-full text-left text-[11px] border-collapse">
-<thead class="bg-slate-100"><tr><th class="p-3">Jenis Aktivitas</th><th class="p-3">Tanggal Mulai</th><th class="p-3">Tanggal Selesai</th><th class="p-3">Status</th></tr></thead>
+<thead class="bg-slate-100"><tr><th class="p-3">Jenis Aktivitas</th><th class="p-3">Tanggal Mulai</th><th class="p-3">Tanggal Selesai</th><th class="p-3">Status</th><th class="p-3">Aksi</th></tr></thead>
 <tbody>
 <template x-for="(cuti, index) in filteredCutiList.filter(c => c.nip === selectedPegawai.nip)" :key="index">
-<tr class="border-t border-slate-100"><td class="p-3 font-semibold" x-text="cuti.jenisCuti"></td><td class="p-3" x-text="cuti.tanggalMulai"></td><td class="p-3" x-text="cuti.tanggalSelesai"></td><td class="p-3"><span class="bg-green-100 text-green-800 text-[9px] px-2 py-0.5 rounded-full font-bold" x-text="cuti.status"></span></td></tr>
+<tr class="border-t border-slate-100"><td class="p-3 font-semibold" x-text="cuti.jenisCuti"></td><td class="p-3" x-text="cuti.tanggalMulai"></td><td class="p-3" x-text="cuti.tanggalSelesai"></td><td class="p-3"><span class="bg-green-100 text-green-800 text-[9px] px-2 py-0.5 rounded-full font-bold" x-text="cuti.status"></span></td>
+<td class="p-3"><button @click="hapusCuti(cuti.cutiId)" class="text-red-600 hover:text-red-800 font-bold text-[10px]">Hapus</button></td></tr>
 </template>
 </tbody>
 </table>
 </div>
+</div>
+
 </div>
 </div>
 </div>
@@ -536,7 +574,11 @@ const firebaseConfig = {
 <thead class="bg-slate-50 font-bold text-[#0B2341]"><tr><th class="p-4">Nama Pegawai</th><th class="p-4">Golongan / Jabatan</th><th class="p-4">Tanggal KGB Terakhir</th><th class="p-4">Tanggal KGB Berikutnya</th><th class="p-4">Hari Tersisa</th><th class="p-4 text-center">Aksi</th></tr></thead>
 <tbody>
 <template x-for="(pegawai, index) in pegawaiList.slice(0, 10)" :key="index">
-<tr class="hover:bg-slate-50/50 transition"><td class="p-4 font-bold text-slate-800" x-text="pegawai.nama"></td><td class="p-4" x-text="pegawai.golongan + ' - ' + pegawai.jabatan"></td><td class="p-4" x-text="pegawai.tglKgbTerakhir"></td><td class="p-4 font-semibold text-slate-700" x-text="pegawai.tglKgbBerikutnya"></td><td class="p-4 font-extrabold" :class="getCountdownClass(pegawai.kgbCountdownDays)" x-text="pegawai.kgbCountdownDays + ' Hari'"></td><td class="p-4 text-center"><button @click="triggerSimulatedReminder(pegawai)" class="bg-[#C9A227] text-slate-900 font-bold text-[10px] px-3 py-1.5 rounded-lg hover:bg-yellow-600 transition">Kirim Reminder</button></td></tr>
+<tr class="hover:bg-slate-50/50 transition"><td class="p-4 font-bold text-slate-800" x-text="pegawai.nama"></td><td class="p-4" x-text="pegawai.golongan + ' - ' + pegawai.jabatan"></td>
+<td class="p-4"><input type="date" x-model="pegawai.tglKgbTerakhir" @change="savePegawaiEdit()" class="w-full px-1 py-0.5 border rounded text-xs"></td>
+<td class="p-4"><input type="date" x-model="pegawai.tglKgbBerikutnya" @change="savePegawaiEdit()" class="w-full px-1 py-0.5 border rounded text-xs"></td>
+<td class="p-4 font-extrabold" :class="getCountdownClass(pegawai.kgbCountdownDays)" x-text="pegawai.kgbCountdownDays + ' Hari'"></td>
+<td class="p-4 text-center"><button @click="triggerSimulatedReminder(pegawai)" class="bg-[#C9A227] text-slate-900 font-bold text-[10px] px-3 py-1.5 rounded-lg hover:bg-yellow-600 transition">Kirim Reminder</button></td></tr>
 </template>
 </tbody>
 </table>
@@ -553,7 +595,14 @@ const firebaseConfig = {
 <thead class="bg-slate-50 font-bold text-[#0B2341]"><tr><th class="p-4">Nama Pegawai</th><th class="p-4">Golongan Saat Ini</th><th class="p-4">TMT Kenaikan Terakhir</th><th class="p-4">Tanggal Kenaikan Berikutnya</th><th class="p-4">Hari Tersisa</th><th class="p-4">Kelengkapan Berkas</th></tr></thead>
 <tbody>
 <template x-for="(pegawai, index) in pegawaiList.slice(10, 20)" :key="index">
-<tr class="hover:bg-slate-50/50 transition"><td class="p-4 font-bold text-slate-800" x-text="pegawai.nama"></td><td class="p-4 font-semibold text-slate-600" x-text="pegawai.golongan"></td><td class="p-4" x-text="pegawai.tglPangkatTerakhir"></td><td class="p-4 font-bold text-slate-800" x-text="pegawai.tglPangkatBerikutnya"></td><td class="p-4 font-extrabold text-red-600" x-text="pegawai.pangkatCountdownDays + ' Hari'"></td><td class="p-4"><div class="flex items-center space-x-2"><span class="text-slate-500 font-bold" x-text="pegawai.progressBerkas + '%'"></span><div class="w-16 bg-slate-100 rounded-full h-1.5 overflow-hidden"><div class="bg-[#C9A227] h-1.5 rounded-full" :style="'width: ' + pegawai.progressBerkas + '%'"></div></div></div></td></tr>
+<tr class="hover:bg-slate-50/50 transition"><td class="p-4 font-bold text-slate-800" x-text="pegawai.nama"></td>
+<td class="p-4"><select x-model="pegawai.golongan" @change="savePegawaiEdit()" class="w-full px-1 py-0.5 border rounded text-xs bg-white">
+<option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="IV/a">IV/a</option>
+</select></td>
+<td class="p-4"><input type="date" x-model="pegawai.tglPangkatTerakhir" @change="savePegawaiEdit()" class="w-full px-1 py-0.5 border rounded text-xs"></td>
+<td class="p-4"><input type="date" x-model="pegawai.tglPangkatBerikutnya" @change="savePegawaiEdit()" class="w-full px-1 py-0.5 border rounded text-xs"></td>
+<td class="p-4 font-extrabold text-red-600" x-text="pegawai.pangkatCountdownDays + ' Hari'"></td>
+<td class="p-4"><div class="flex items-center space-x-2"><span class="text-slate-500 font-bold" x-text="pegawai.progressBerkas + '%'"></span><div class="w-16 bg-slate-100 rounded-full h-1.5 overflow-hidden"><div class="bg-[#C9A227] h-1.5 rounded-full" :style="'width: ' + pegawai.progressBerkas + '%'"></div></div></div></td></tr>
 </template>
 </tbody>
 </table>
@@ -681,25 +730,23 @@ function sipandaApp() {
   return {
     isLoggedIn: false,
     role: 'admin',
-    sessionUser: { nama: 'Admin SIPANDA', nip: 'ADMIN001' },
+    sessionUser: { nama: 'Admin SIPANDA', nip: 'ADMIN001', foto: '' },
     activeMenu: 'dashboard',
     pegawaiSearch: '',
     filterGolongan: '',
     filterUrgensi: '',
     searchQuery: '',
-    showNotifications: false,
     showPdfViewer: false,
     previewDoc: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
     showModalAddPegawai: false,
     showModalAddCuti: false,
-    loginForm: { username: '', password: '' }, // HANYA email & password
+    loginForm: { username: '', password: '' },
     newTodoText: '',
     newPegawaiForm: { nip: '', nama: '', golongan: 'III/a', jabatan: '', noHp: '', email: '' },
     newCutiForm: { nip: '', jenisCuti: 'Cuti Tahunan', tanggalMulai: '', tanggalSelesai: '', keterangan: '' },
     pegawaiList: [],
     cutiList: [],
     prioritasList: [],
-    notifications: [],
     auditLogs: [],
     todoList: [],
     stats: {
@@ -714,23 +761,22 @@ function sipandaApp() {
       pensiunSegera: 0
     },
     selectedPegawai: null,
+    editMode: false,
 
     // ============ INIT ============
     async initApp() {
       await this.syncDatabase();
-      this.generateNotifications();
       this.generateLogs();
       
-      // 🔍 Cek status login (jika sudah login sebelumnya)
       if (auth) {
         auth.onAuthStateChanged((user) => {
           if (user) {
-            // Auto login jika session masih aktif
             this.isLoggedIn = true;
             this.sessionUser = {
               nama: 'Admin SIPANDA',
               nip: 'ADMIN' + user.uid.slice(0, 6),
-              email: user.email
+              email: user.email,
+              foto: ''
             };
             setTimeout(() => {
               lucide.createIcons();
@@ -751,7 +797,6 @@ function sipandaApp() {
     // ============ SYNC DATABASE ============
     async syncDatabase() {
       if (IS_PREVIEW || !db) {
-        // LOCAL STORAGE
         console.log("📦 Using Local Storage");
         let localPegawai = localStorage.getItem('sipanda_pegawai');
         let localCuti = localStorage.getItem('sipanda_cuti');
@@ -782,7 +827,6 @@ function sipandaApp() {
         }
 
       } else {
-        // FIRESTORE
         console.log("☁️ Using Firebase Firestore");
         try {
           const pegawaiSnap = await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').get();
@@ -829,7 +873,7 @@ function sipandaApp() {
       console.log("✅ Firebase seeded!");
     },
 
-    // ============ LOGIN - PAKAI FIREBASE AUTH ============
+    // ============ LOGIN ============
     async handleLogin() {
       if (!this.loginForm.username || !this.loginForm.password) {
         alert('⚠️ Harap isi email dan password!');
@@ -837,22 +881,20 @@ function sipandaApp() {
       }
 
       try {
-        // 🔐 Login ke Firebase Auth
         const credential = await firebase.auth().signInWithEmailAndPassword(
           this.loginForm.username,
           this.loginForm.password
         );
-        
         const user = credential.user;
         console.log('✅ Login sukses:', user.email);
 
-        // ✅ LANGSUNG LOGIN - Semua user di Auth dianggap ADMIN
         this.isLoggedIn = true;
         this.role = 'admin';
         this.sessionUser = {
           nama: 'Admin SIPANDA',
           nip: 'ADMIN' + user.uid.slice(0, 6),
-          email: user.email
+          email: user.email,
+          foto: ''
         };
         this.activeMenu = 'dashboard';
 
@@ -864,8 +906,6 @@ function sipandaApp() {
 
       } catch (error) {
         console.error('❌ Login error:', error);
-        
-        // Tampilkan pesan error yang jelas
         let errorMsg = 'Login gagal! ';
         if (error.code === 'auth/user-not-found') {
           errorMsg += 'Email tidak terdaftar.';
@@ -883,17 +923,81 @@ function sipandaApp() {
     // ============ LOGOUT ============
     async handleLogout() {
       try {
-        if (auth) {
-          await auth.signOut();
-        }
+        if (auth) await auth.signOut();
         this.isLoggedIn = false;
         this.loginForm = { username: '', password: '' };
         console.log('✅ Logout sukses');
       } catch (error) {
         console.error('Logout error:', error);
-        // Force logout
         this.isLoggedIn = false;
       }
+    },
+
+    // ============ EDIT DATA PEGAWAI ============
+    showEditPegawai(pegawai) {
+      this.selectedPegawai = pegawai;
+      this.activeMenu = 'profil';
+    },
+
+    // ============ SAVE EDIT ============
+    async savePegawaiEdit() {
+      if (!this.selectedPegawai) return;
+      await this.updatePegawaiInStorage(this.selectedPegawai);
+      console.log('✅ Data pegawai tersimpan');
+    },
+
+    // ============ HAPUS PEGAWAI ============
+    async hapusPegawai(nip) {
+      if (!confirm('⚠️ Yakin ingin menghapus pegawai ini? Data akan hilang permanen!')) return;
+      
+      const idx = this.pegawaiList.findIndex(p => p.nip === nip);
+      if (idx !== -1) {
+        this.pegawaiList.splice(idx, 1);
+        if (IS_PREVIEW || !db) {
+          localStorage.setItem('sipanda_pegawai', JSON.stringify(this.pegawaiList));
+        } else {
+          await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').doc(nip).delete();
+        }
+        this.recalculateSystemStats();
+        if (this.selectedPegawai && this.selectedPegawai.nip === nip) {
+          this.selectedPegawai = this.pegawaiList[0] || null;
+        }
+        alert('✅ Pegawai berhasil dihapus!');
+      }
+    },
+
+    // ============ HAPUS CUTI ============
+    async hapusCuti(cutiId) {
+      if (!confirm('⚠️ Hapus data cuti ini?')) return;
+      const idx = this.cutiList.findIndex(c => c.cutiId === cutiId);
+      if (idx !== -1) {
+        this.cutiList.splice(idx, 1);
+        if (IS_PREVIEW || !db) {
+          localStorage.setItem('sipanda_cuti', JSON.stringify(this.cutiList));
+        } else {
+          await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('cuti').doc(cutiId).delete();
+        }
+        this.recalculateSystemStats();
+        alert('✅ Cuti dihapus!');
+        setTimeout(() => this.initCalendar(), 300);
+      }
+    },
+
+    // ============ UPLOAD FOTO ============
+    uploadFoto(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        alert('⚠️ Harap upload file gambar!');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        this.selectedPegawai.foto = e.target.result;
+        await this.updatePegawaiInStorage(this.selectedPegawai);
+        alert('✅ Foto berhasil diupload!');
+      };
+      reader.readAsDataURL(file);
     },
 
     // ============ UPDATE DATA ============
@@ -916,6 +1020,10 @@ function sipandaApp() {
         alert('⚠️ NIP dan Nama wajib diisi!');
         return;
       }
+      if (this.pegawaiList.find(p => p.nip === this.newPegawaiForm.nip)) {
+        alert('⚠️ NIP sudah terdaftar!');
+        return;
+      }
       const newPegawai = {
         nip: this.newPegawaiForm.nip,
         nama: this.newPegawaiForm.nama,
@@ -935,6 +1043,7 @@ function sipandaApp() {
         tglKgbBerikutnya: "2026-10-01",
         tglPangkatTerakhir: "2022-04-01",
         tglPangkatBerikutnya: "2026-04-01",
+        foto: '',
         dokumen: {
           skPangkat: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
           skJabatan: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
@@ -1108,6 +1217,7 @@ function sipandaApp() {
           tglKgbBerikutnya: "2026-10-01",
           tglPangkatTerakhir: "2022-04-01",
           tglPangkatBerikutnya: "2026-04-01",
+          foto: '',
           dokumen: {
             skPangkat: { nomor: "W12.PAS-01.KP.03." + i, tanggal: "2024-09-15", namaFile: "SK_Pangkat_" + randomName.replace(/\s/g, '') + "_2026.pdf", fileUrl: '' },
             skJabatan: { nomor: "W12.PAS-02.KP.04." + i, tanggal: "2021-03-05", namaFile: "SK_Jabatan_" + randomName.replace(/\s/g, '') + "_2026.pdf", fileUrl: '' },
@@ -1118,14 +1228,7 @@ function sipandaApp() {
       return list;
     },
 
-    // ============ NOTIFICATIONS ============
-    generateNotifications() {
-      this.notifications = [
-        { id: 1, nip: '198708122010011002', nama: "Ahmad Subarjo", msg: "KGB akan jatuh tempo dalam 30 hari.", type: "danger", time: "Baru saja" },
-        { id: 2, nip: '198808122011011003', nama: "Siti Aminah", msg: "Kenaikan Pangkat 60 hari lagi.", type: "warning", time: "1 jam lalu" }
-      ];
-    },
-
+    // ============ LOGS ============
     generateLogs() {
       this.auditLogs = [
         { timestamp: "10:15", aksi: "Upload SK", detail: "Admin mengunggah SK Pangkat" },
