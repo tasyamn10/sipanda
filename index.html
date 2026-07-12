@@ -361,7 +361,20 @@ const firebaseConfig = {
 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i data-lucide="search" class="w-4 h-4"></i></span>
 </div>
 <select x-model="filterGolongan" class="bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#C9A227] bg-white">
-<option value="">Semua Golongan</option><option value="III/a">III/a (Penata Muda)</option><option value="III/b">III/b (Penata Muda Tk. I)</option><option value="III/c">III/c (Penata)</option><option value="IV/a">IV/a (Pembina)</option>
+<option value="">Semua Golongan</option>
+<option value="II/a">II/a (Juru Muda)</option>
+<option value="II/b">II/b (Juru Muda Tk. I)</option>
+<option value="II/c">II/c (Juru)</option>
+<option value="II/d">II/d (Juru Tk. I)</option>
+<option value="III/a">III/a (Penata Muda)</option>
+<option value="III/b">III/b (Penata Muda Tk. I)</option>
+<option value="III/c">III/c (Penata)</option>
+<option value="III/d">III/d (Penata Tk. I)</option>
+<option value="IV/a">IV/a (Pembina)</option>
+<option value="IV/b">IV/b (Pembina Tk. I)</option>
+<option value="IV/c">IV/c (Pembina Utama Muda)</option>
+<option value="IV/d">IV/d (Pembina Utama Madya)</option>
+<option value="IV/e">IV/e (Pembina Utama)</option>
 </select>
 <select x-model="filterUrgensi" class="bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#C9A227] bg-white">
 <option value="">Semua Status Urgensi</option><option value="red">🔴 Mendesak (≤30 hari)</option><option value="orange">🟠 Perhatian (31-90 hari)</option><option value="yellow">🟡 Persiapan (91-180 hari)</option><option value="green">🟢 Aman (>180 hari)</option>
@@ -434,8 +447,9 @@ const firebaseConfig = {
 <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
 <div class="flex overflow-x-auto space-x-1 border-b border-slate-150 pb-2">
 <button @click="selectedTab = 'identitas'" :class="selectedTab === 'identitas' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">Identitas Diri</button>
-<button @click="selectedTab = 'pangkat'" :class="selectedTab === 'pangkat' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">Riwayat Pangkat</button>
+<button @click="selectedTab = 'pangkat'" :class="selectedTab === 'pangkat' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">Kepangkatan</button>
 <button @click="selectedTab = 'jabatan'" :class="selectedTab === 'jabatan' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">SK Jabatan</button>
+<button @click="selectedTab = 'kgb'" :class="selectedTab === 'kgb' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">KGB & SK</button>
 <button @click="selectedTab = 'skp'" :class="selectedTab === 'skp' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">SKP Tahunan</button>
 <button @click="selectedTab = 'cuti'" :class="selectedTab === 'cuti' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">Riwayat Cuti</button>
 </div>
@@ -444,8 +458,8 @@ const firebaseConfig = {
 <div x-show="selectedTab === 'identitas'" class="space-y-4">
 <h3 class="font-bold text-[#0B2341] text-xs">Informasi Data Pribadi Pegawai</h3>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-700">
-<div><span class="block text-slate-400">Tempat, Tanggal Lahir:</span>
-<input type="date" x-model="selectedPegawai.tglLahir" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg">
+<div><span class="block text-slate-400">Tanggal Lahir:</span>
+<input type="date" x-model="selectedPegawai.tglLahir" @change="savePegawaiEdit(); updatePensiun();" class="w-full px-2 py-1 border rounded-lg">
 </div>
 <div><span class="block text-slate-400">Jenis Kelamin:</span>
 <select x-model="selectedPegawai.gender" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg">
@@ -468,22 +482,31 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- PANGKAT -->
+<!-- KEPANGKATAN -->
 <div x-show="selectedTab === 'pangkat'" class="space-y-4">
 <div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Edit Data Kepangkatan</h3></div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <div class="space-y-2">
 <label class="text-xs font-bold">Golongan Saat Ini</label>
 <select x-model="selectedPegawai.golongan" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg bg-white">
+<option value="II/a">II/a (Juru Muda)</option>
+<option value="II/b">II/b (Juru Muda Tk. I)</option>
+<option value="II/c">II/c (Juru)</option>
+<option value="II/d">II/d (Juru Tk. I)</option>
 <option value="III/a">III/a (Penata Muda)</option>
 <option value="III/b">III/b (Penata Muda Tk. I)</option>
 <option value="III/c">III/c (Penata)</option>
+<option value="III/d">III/d (Penata Tk. I)</option>
 <option value="IV/a">IV/a (Pembina)</option>
+<option value="IV/b">IV/b (Pembina Tk. I)</option>
+<option value="IV/c">IV/c (Pembina Utama Muda)</option>
+<option value="IV/d">IV/d (Pembina Utama Madya)</option>
+<option value="IV/e">IV/e (Pembina Utama)</option>
 </select>
 <label class="text-xs font-bold">TMT Pangkat Terakhir</label>
-<input type="date" x-model="selectedPegawai.tglPangkatTerakhir" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg">
+<input type="date" x-model="selectedPegawai.tglPangkatTerakhir" @change="savePegawaiEdit(); updatePangkatCountdown()" class="w-full px-3 py-2 border rounded-lg">
 <label class="text-xs font-bold">TMT Pangkat Berikutnya</label>
-<input type="date" x-model="selectedPegawai.tglPangkatBerikutnya" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg">
+<input type="date" x-model="selectedPegawai.tglPangkatBerikutnya" @change="savePegawaiEdit(); updatePangkatCountdown()" class="w-full px-3 py-2 border rounded-lg">
 </div>
 <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center text-slate-400 bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative">
 <input type="file" accept="application/pdf" @change="handleDocUpload($event, 'skPangkat')" class="absolute inset-0 opacity-0 cursor-pointer">
@@ -521,6 +544,30 @@ const firebaseConfig = {
 </div>
 </div>
 
+<!-- KGB & SK KGB -->
+<div x-show="selectedTab === 'kgb'" class="space-y-4">
+<div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Edit Data KGB & Upload SK</h3></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-xs font-bold">TMT KGB Terakhir</label>
+<input type="date" x-model="selectedPegawai.tglKgbTerakhir" @change="savePegawaiEdit(); updateKgbCountdown()" class="w-full px-3 py-2 border rounded-lg">
+<label class="text-xs font-bold">TMT KGB Berikutnya</label>
+<input type="date" x-model="selectedPegawai.tglKgbBerikutnya" @change="savePegawaiEdit(); updateKgbCountdown()" class="w-full px-3 py-2 border rounded-lg">
+<label class="text-xs font-bold">Nomor SK KGB</label>
+<input type="text" x-model="selectedPegawai.dokumen.skKgb.nomor" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg" placeholder="Nomor SK KGB">
+</div>
+<div class="border-2 border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center text-slate-400 bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative">
+<input type="file" accept="application/pdf" @change="handleDocUpload($event, 'skKgb')" class="absolute inset-0 opacity-0 cursor-pointer">
+<i data-lucide="upload-cloud" class="w-8 h-8 text-[#C9A227] mb-2"></i>
+<p class="text-[11px] font-bold text-center">Upload SK KGB PDF</p>
+<span class="text-[9px] text-slate-500">Maks. 5MB (Hanya PDF)</span>
+<template x-if="selectedPegawai.dokumen.skKgb && selectedPegawai.dokumen.skKgb.namaFile">
+<p class="text-xs text-emerald-600 mt-2 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skKgb.namaFile"></p>
+</template>
+</div>
+</div>
+</div>
+
 <!-- SKP -->
 <div x-show="selectedTab === 'skp'" class="space-y-4">
 <h3 class="font-bold text-[#0B2341] text-xs">Sasaran Kinerja Pegawai (SKP)</h3>
@@ -544,14 +591,13 @@ const firebaseConfig = {
 
 <!-- CUTI -->
 <div x-show="selectedTab === 'cuti'" class="space-y-4">
-<div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Sisa Kuota Cuti Tahunan</h3><span class="bg-blue-100 text-[#0B2341] text-[10px] font-bold px-2 py-0.5 rounded-full">Sisa Cuti: 12 Hari</span></div>
+<div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Riwayat Cuti Pegawai</h3><span class="bg-blue-100 text-[#0B2341] text-[10px] font-bold px-2 py-0.5 rounded-full">Sisa Cuti: 12 Hari</span></div>
 <div class="overflow-x-auto rounded-xl border border-slate-200">
 <table class="w-full text-left text-[11px] border-collapse">
-<thead class="bg-slate-100"><tr><th class="p-3">Jenis Aktivitas</th><th class="p-3">Tanggal Mulai</th><th class="p-3">Tanggal Selesai</th><th class="p-3">Status</th><th class="p-3">Aksi</th></tr></thead>
+<thead class="bg-slate-100"><tr><th class="p-3">Jenis Aktivitas</th><th class="p-3">Tanggal Mulai</th><th class="p-3">Tanggal Selesai</th><th class="p-3">Keterangan</th><th class="p-3">Status</th><th class="p-3">Aksi</th></tr></thead>
 <tbody>
 <template x-for="(cuti, index) in filteredCutiList.filter(c => c.nip === selectedPegawai.nip)" :key="index">
-<tr class="border-t border-slate-100"><td class="p-3 font-semibold" x-text="cuti.jenisCuti"></td><td class="p-3" x-text="cuti.tanggalMulai"></td><td class="p-3" x-text="cuti.tanggalSelesai"></td><td class="p-3"><span class="bg-green-100 text-green-800 text-[9px] px-2 py-0.5 rounded-full font-bold" x-text="cuti.status"></span></td>
-<td class="p-3"><button @click="hapusCuti(cuti.cutiId)" class="text-red-600 hover:text-red-800 font-bold text-[10px]">Hapus</button></td></tr>
+<tr class="border-t border-slate-100"><td class="p-3 font-semibold" x-text="cuti.jenisCuti"></td><td class="p-3" x-text="cuti.tanggalMulai"></td><td class="p-3" x-text="cuti.tanggalSelesai"></td><td class="p-3 text-slate-500" x-text="cuti.keterangan || '-'"></td><td class="p-3"><span class="bg-green-100 text-green-800 text-[9px] px-2 py-0.5 rounded-full font-bold" x-text="cuti.status"></span></td><td class="p-3"><button @click="hapusCuti(cuti.cutiId)" class="text-red-600 hover:text-red-800 font-bold text-[10px]">Hapus</button></td></tr>
 </template>
 </tbody>
 </table>
@@ -571,14 +617,22 @@ const firebaseConfig = {
 <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
 <div class="overflow-x-auto">
 <table class="w-full text-left text-xs border-collapse">
-<thead class="bg-slate-50 font-bold text-[#0B2341]"><tr><th class="p-4">Nama Pegawai</th><th class="p-4">Golongan / Jabatan</th><th class="p-4">Tanggal KGB Terakhir</th><th class="p-4">Tanggal KGB Berikutnya</th><th class="p-4">Hari Tersisa</th><th class="p-4 text-center">Aksi</th></tr></thead>
+<thead class="bg-slate-50 font-bold text-[#0B2341]"><tr><th class="p-4">Nama Pegawai</th><th class="p-4">Golongan / Jabatan</th><th class="p-4">Tanggal KGB Terakhir</th><th class="p-4">Tanggal KGB Berikutnya</th><th class="p-4">Hari Tersisa</th><th class="p-4">SK KGB</th><th class="p-4 text-center">Aksi</th></tr></thead>
 <tbody>
-<template x-for="(pegawai, index) in pegawaiList.slice(0, 10)" :key="index">
+<template x-for="(pegawai, index) in pegawaiList" :key="index">
 <tr class="hover:bg-slate-50/50 transition"><td class="p-4 font-bold text-slate-800" x-text="pegawai.nama"></td><td class="p-4" x-text="pegawai.golongan + ' - ' + pegawai.jabatan"></td>
-<td class="p-4"><input type="date" x-model="pegawai.tglKgbTerakhir" @change="savePegawaiEdit()" class="w-full px-1 py-0.5 border rounded text-xs"></td>
-<td class="p-4"><input type="date" x-model="pegawai.tglKgbBerikutnya" @change="savePegawaiEdit()" class="w-full px-1 py-0.5 border rounded text-xs"></td>
+<td class="p-4"><input type="date" x-model="pegawai.tglKgbTerakhir" @change="savePegawaiEdit(); updateKgbCountdownForPegawai(pegawai)" class="w-full px-1 py-0.5 border rounded text-xs"></td>
+<td class="p-4"><input type="date" x-model="pegawai.tglKgbBerikutnya" @change="savePegawaiEdit(); updateKgbCountdownForPegawai(pegawai)" class="w-full px-1 py-0.5 border rounded text-xs"></td>
 <td class="p-4 font-extrabold" :class="getCountdownClass(pegawai.kgbCountdownDays)" x-text="pegawai.kgbCountdownDays + ' Hari'"></td>
-<td class="p-4 text-center"><button @click="triggerSimulatedReminder(pegawai)" class="bg-[#C9A227] text-slate-900 font-bold text-[10px] px-3 py-1.5 rounded-lg hover:bg-yellow-600 transition">Kirim Reminder</button></td></tr>
+<td class="p-4">
+<template x-if="pegawai.dokumen && pegawai.dokumen.skKgb && pegawai.dokumen.skKgb.namaFile">
+<span class="text-emerald-600 text-[10px] font-bold">✅ Ada</span>
+</template>
+<template x-if="!pegawai.dokumen || !pegawai.dokumen.skKgb || !pegawai.dokumen.skKgb.namaFile">
+<span class="text-red-500 text-[10px] font-bold">❌ Belum</span>
+</template>
+</td>
+<td class="p-4 text-center"><button @click="viewPegawaiProfileByNip(pegawai.nip); setTimeout(() => { selectedTab = 'kgb'; }, 300)" class="bg-[#C9A227] text-slate-900 font-bold text-[10px] px-3 py-1.5 rounded-lg hover:bg-yellow-600 transition">Upload SK</button></td></tr>
 </template>
 </tbody>
 </table>
@@ -592,16 +646,26 @@ const firebaseConfig = {
 <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
 <div class="overflow-x-auto">
 <table class="w-full text-left text-xs border-collapse">
-<thead class="bg-slate-50 font-bold text-[#0B2341]"><tr><th class="p-4">Nama Pegawai</th><th class="p-4">Golongan Saat Ini</th><th class="p-4">TMT Kenaikan Terakhir</th><th class="p-4">Tanggal Kenaikan Berikutnya</th><th class="p-4">Hari Tersisa</th><th class="p-4">Kelengkapan Berkas</th></tr></thead>
+<thead class="bg-slate-50 font-bold text-[#0B2341]"><tr><th class="p-4">Nama Pegawai</th><th class="p-4">Golongan Saat Ini</th><th class="p-4">TMT Kenaikan Terakhir</th><th class="p-4">Tanggal Kenaikan Berikutnya</th><th class="p-4">Hari Tersisa</th><th class="p-4">SK Pangkat</th><th class="p-4">Kelengkapan Berkas</th></tr></thead>
 <tbody>
-<template x-for="(pegawai, index) in pegawaiList.slice(10, 20)" :key="index">
+<template x-for="(pegawai, index) in pegawaiList" :key="index">
 <tr class="hover:bg-slate-50/50 transition"><td class="p-4 font-bold text-slate-800" x-text="pegawai.nama"></td>
 <td class="p-4"><select x-model="pegawai.golongan" @change="savePegawaiEdit()" class="w-full px-1 py-0.5 border rounded text-xs bg-white">
-<option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="IV/a">IV/a</option>
+<option value="II/a">II/a</option><option value="II/b">II/b</option><option value="II/c">II/c</option><option value="II/d">II/d</option>
+<option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="III/d">III/d</option>
+<option value="IV/a">IV/a</option><option value="IV/b">IV/b</option><option value="IV/c">IV/c</option><option value="IV/d">IV/d</option><option value="IV/e">IV/e</option>
 </select></td>
-<td class="p-4"><input type="date" x-model="pegawai.tglPangkatTerakhir" @change="savePegawaiEdit()" class="w-full px-1 py-0.5 border rounded text-xs"></td>
-<td class="p-4"><input type="date" x-model="pegawai.tglPangkatBerikutnya" @change="savePegawaiEdit()" class="w-full px-1 py-0.5 border rounded text-xs"></td>
-<td class="p-4 font-extrabold text-red-600" x-text="pegawai.pangkatCountdownDays + ' Hari'"></td>
+<td class="p-4"><input type="date" x-model="pegawai.tglPangkatTerakhir" @change="savePegawaiEdit(); updatePangkatCountdownForPegawai(pegawai)" class="w-full px-1 py-0.5 border rounded text-xs"></td>
+<td class="p-4"><input type="date" x-model="pegawai.tglPangkatBerikutnya" @change="savePegawaiEdit(); updatePangkatCountdownForPegawai(pegawai)" class="w-full px-1 py-0.5 border rounded text-xs"></td>
+<td class="p-4 font-extrabold" :class="getCountdownClass(pegawai.pangkatCountdownDays)" x-text="pegawai.pangkatCountdownDays + ' Hari'"></td>
+<td class="p-4">
+<template x-if="pegawai.dokumen && pegawai.dokumen.skPangkat && pegawai.dokumen.skPangkat.namaFile">
+<span class="text-emerald-600 text-[10px] font-bold">✅ Ada</span>
+</template>
+<template x-if="!pegawai.dokumen || !pegawai.dokumen.skPangkat || !pegawai.dokumen.skPangkat.namaFile">
+<span class="text-red-500 text-[10px] font-bold">❌ Belum</span>
+</template>
+</td>
 <td class="p-4"><div class="flex items-center space-x-2"><span class="text-slate-500 font-bold" x-text="pegawai.progressBerkas + '%'"></span><div class="w-16 bg-slate-100 rounded-full h-1.5 overflow-hidden"><div class="bg-[#C9A227] h-1.5 rounded-full" :style="'width: ' + pegawai.progressBerkas + '%'"></div></div></div></td></tr>
 </template>
 </tbody>
@@ -620,7 +684,7 @@ const firebaseConfig = {
 <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 lg:col-span-2"><div id="fullCalendarTarget" class="text-xs"></div></div>
 <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
 <h3 class="font-bold text-[#0B2341] text-xs">Kategori Warna Aktivitas</h3>
-<div class="space-y-2 text-xs"><div class="flex items-center space-x-2"><span class="w-3.5 h-3.5 bg-[#2E7D32] rounded-full block"></span><span class="font-medium text-slate-700">Cuti Tahunan Pegawai</span></div><div class="flex items-center space-x-2"><span class="w-3.5 h-3.5 bg-[#C62828] rounded-full block"></span><span class="font-medium text-slate-700">Sakit / Istirahat Medis</span></div><div class="flex items-center space-x-2"><span class="w-3.5 h-3.5 bg-[#123B63] rounded-full block"></span><span class="font-medium text-slate-700">Izin Keperluan Mendesak</span></div></div>
+<div class="space-y-2 text-xs"><div class="flex items-center space-x-2"><span class="w-3.5 h-3.5 bg-[#2E7D32] rounded-full block"></span><span class="font-medium text-slate-700">Cuti Tahunan</span></div><div class="flex items-center space-x-2"><span class="w-3.5 h-3.5 bg-[#C62828] rounded-full block"></span><span class="font-medium text-slate-700">Cuti Sakit</span></div><div class="flex items-center space-x-2"><span class="w-3.5 h-3.5 bg-[#123B63] rounded-full block"></span><span class="font-medium text-slate-700">Cuti Izin / Penting</span></div><div class="flex items-center space-x-2"><span class="w-3.5 h-3.5 bg-[#E65100] rounded-full block"></span><span class="font-medium text-slate-700">Cuti Besar / Melahirkan</span></div></div>
 <div class="pt-4 border-t border-slate-100 space-y-3"><h4 class="font-bold text-slate-800 text-xs">Status Cuti Hari Ini</h4><div class="bg-slate-50 p-3 rounded-xl"><p class="font-bold text-[10px] text-slate-400">AKTIF HARI INI</p><p class="text-xs font-semibold mt-1 text-[#0B2341]" x-text="stats.pegawaiCutiName || 'Semua pegawai hadir di kantor'"></p></div></div>
 </div>
 </div>
@@ -632,7 +696,7 @@ const firebaseConfig = {
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 text-center"><span class="w-12 h-12 bg-blue-50 text-[#0B2341] rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="file-spreadsheet" class="w-6 h-6"></i></span><h3 class="font-bold text-[#0B2341] text-sm">Laporan Naik Pangkat</h3><p class="text-slate-400 text-[11px] mt-1">Mengunduh daftar pegawai naik pangkat ≤6 bulan.</p><button @click="triggerReportExport('Pangkat')" class="bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-xs w-full py-2 rounded-xl mt-4">Unduh PDF</button></div>
 <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 text-center"><span class="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="hourglass" class="w-6 h-6"></i></span><h3 class="font-bold text-[#0B2341] text-sm">Laporan KGB Berkala</h3><p class="text-slate-400 text-[11px] mt-1">Mengunduh daftar jatuh tempo berkala ≤6 bulan.</p><button @click="triggerReportExport('KGB')" class="bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-xs w-full py-2 rounded-xl mt-4">Unduh PDF</button></div>
-<div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 text-center"><span class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="check-square" class="w-6 h-6"></i></span><h3 class="font-bold text-[#0B2341] text-sm">Rekapitulasi Pegawai</h3><p class="text-slate-400 text-[11px] mt-1">Unduh seluruh berkas 87 pegawai Lapas.</p><button @click="triggerReportExport('Pegawai')" class="bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-xs w-full py-2 rounded-xl mt-4">Unduh PDF</button></div>
+<div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 text-center"><span class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="check-square" class="w-6 h-6"></i></span><h3 class="font-bold text-[#0B2341] text-sm">Rekapitulasi Pegawai</h3><p class="text-slate-400 text-[11px] mt-1">Unduh seluruh berkas pegawai Lapas.</p><button @click="triggerReportExport('Pegawai')" class="bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-xs w-full py-2 rounded-xl mt-4">Unduh PDF</button></div>
 </div>
 </div>
 
@@ -666,7 +730,11 @@ const firebaseConfig = {
 <form @submit.prevent="saveNewPegawai" class="p-6 overflow-y-auto space-y-4 text-xs">
 <div><label class="block font-bold text-slate-700 mb-1">NIP Pegawai (Wajib Unik)</label><input type="text" x-model="newPegawaiForm.nip" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="Contoh: 199508122020011002"></div>
 <div><label class="block font-bold text-slate-700 mb-1">Nama Lengkap</label><input type="text" x-model="newPegawaiForm.nama" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="Nama Lengkap & Gelar"></div>
-<div class="grid grid-cols-2 gap-4"><div><label class="block font-bold text-slate-700 mb-1">Golongan</label><select x-model="newPegawaiForm.golongan" required class="w-full px-3 py-2 border rounded-lg bg-white"><option value="III/a">III/a (Penata Muda)</option><option value="III/b">III/b (Penata Muda Tk. I)</option><option value="III/c">III/c (Penata)</option><option value="IV/a">IV/a (Pembina)</option></select></div><div><label class="block font-bold text-slate-700 mb-1">Jabatan</label><input type="text" x-model="newPegawaiForm.jabatan" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="Contoh: Penjaga Tahanan"></div></div>
+<div class="grid grid-cols-2 gap-4"><div><label class="block font-bold text-slate-700 mb-1">Golongan</label><select x-model="newPegawaiForm.golongan" required class="w-full px-3 py-2 border rounded-lg bg-white">
+<option value="II/a">II/a (Juru Muda)</option><option value="II/b">II/b (Juru Muda Tk. I)</option><option value="II/c">II/c (Juru)</option><option value="II/d">II/d (Juru Tk. I)</option>
+<option value="III/a">III/a (Penata Muda)</option><option value="III/b">III/b (Penata Muda Tk. I)</option><option value="III/c">III/c (Penata)</option><option value="III/d">III/d (Penata Tk. I)</option>
+<option value="IV/a">IV/a (Pembina)</option><option value="IV/b">IV/b (Pembina Tk. I)</option><option value="IV/c">IV/c (Pembina Utama Muda)</option><option value="IV/d">IV/d (Pembina Utama Madya)</option><option value="IV/e">IV/e (Pembina Utama)</option>
+</select></div><div><label class="block font-bold text-slate-700 mb-1">Jabatan</label><input type="text" x-model="newPegawaiForm.jabatan" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="Contoh: Penjaga Tahanan"></div></div>
 <div class="grid grid-cols-2 gap-4"><div><label class="block font-bold text-slate-700 mb-1">Nomor WhatsApp</label><input type="text" x-model="newPegawaiForm.noHp" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="081234567..."></div><div><label class="block font-bold text-slate-700 mb-1">Email</label><input type="email" x-model="newPegawaiForm.email" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="nama@kemenimipas.go.id"></div></div>
 <div class="flex justify-end gap-2 pt-4 border-t"><button type="button" @click="showModalAddPegawai = false" class="bg-slate-100 px-4 py-2 rounded-lg font-bold">Batal</button><button type="submit" class="bg-[#0B2341] text-white px-4 py-2 rounded-lg font-bold">Simpan Pegawai</button></div>
 </form>
@@ -679,9 +747,17 @@ const firebaseConfig = {
 <div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between items-center rounded-t-3xl"><h3 class="font-bold text-xs tracking-wide uppercase">✏️ Input Pengajuan Cuti Pegawai</h3><button @click="showModalAddCuti = false" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
 <form @submit.prevent="saveNewCuti" class="p-6 space-y-4 text-xs">
 <div><label class="block font-bold text-slate-700 mb-1">Pilih Pegawai <span class="text-red-500">*</span></label><select x-model="newCutiForm.nip" required class="w-full px-3 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-[#C9A227]"><option value="">-- Pilih Pegawai --</option><template x-for="(p, index) in pegawaiList" :key="index"><option :value="p.nip" x-text="p.nama + ' (' + p.nip + ')'"></option></template></select></div>
-<div><label class="block font-bold text-slate-700 mb-1">Jenis Cuti <span class="text-red-500">*</span></label><select x-model="newCutiForm.jenisCuti" class="w-full px-3 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-[#C9A227]"><option value="Cuti Tahunan">Cuti Tahunan</option><option value="Cuti Sakit">Cuti Sakit</option><option value="Cuti Izin Alasan Penting">Cuti Izin Alasan Penting</option><option value="Cuti Besar">Cuti Besar</option><option value="Cuti Melahirkan">Cuti Melahirkan</option></select></div>
+<div><label class="block font-bold text-slate-700 mb-1">Jenis Cuti <span class="text-red-500">*</span></label><select x-model="newCutiForm.jenisCuti" class="w-full px-3 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-[#C9A227]">
+<option value="Cuti Tahunan">Cuti Tahunan</option>
+<option value="Cuti Sakit">Cuti Sakit</option>
+<option value="Cuti Izin">Cuti Izin / Alasan Penting</option>
+<option value="Cuti Besar">Cuti Besar</option>
+<option value="Cuti Melahirkan">Cuti Melahirkan</option>
+</select></div>
+<div><label class="block font-bold text-slate-700 mb-1">Keterangan / Izin <span class="text-red-500">*</span></label>
+<input type="text" x-model="newCutiForm.keterangan" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#C9A227]" placeholder="Contoh: Izin keperluan keluarga, sakit, dll...">
+</div>
 <div class="grid grid-cols-2 gap-4"><div><label class="block font-bold text-slate-700 mb-1">Mulai Cuti <span class="text-red-500">*</span></label><input type="date" x-model="newCutiForm.tanggalMulai" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#C9A227]"></div><div><label class="block font-bold text-slate-700 mb-1">Selesai Cuti <span class="text-red-500">*</span></label><input type="date" x-model="newCutiForm.tanggalSelesai" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#C9A227]"></div></div>
-<div><label class="block font-bold text-slate-700 mb-1">Keterangan Tambahan</label><input type="text" x-model="newCutiForm.keterangan" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#C9A227]" placeholder="Keperluan keluarga, pengobatan, dll..."></div>
 <div class="flex justify-end gap-2 pt-4 border-t"><button type="button" @click="showModalAddCuti = false" class="bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg font-bold text-xs transition">Batal</button><button type="submit" class="bg-[#2E7D32] hover:bg-[#1B5E20] text-white px-4 py-2 rounded-lg font-bold text-xs transition flex items-center space-x-2"><i data-lucide="check" class="w-4 h-4"></i><span>Setujui & Daftarkan Cuti</span></button></div>
 </form>
 </div>
@@ -761,7 +837,7 @@ function sipandaApp() {
       pensiunSegera: 0
     },
     selectedPegawai: null,
-    editMode: false,
+    selectedTab: 'identitas',
 
     // ============ INIT ============
     async initApp() {
@@ -811,7 +887,7 @@ function sipandaApp() {
         }
 
         if (!localCuti) {
-          const dummyCuti = [{ cutiId: 'c1', nip: this.pegawaiList[0]?.nip || '', nama: this.pegawaiList[0]?.nama || '', jenisCuti: 'Cuti Tahunan', tanggalMulai: '2026-07-15', tanggalSelesai: '2026-07-20', status: 'Disetujui' }];
+          const dummyCuti = [{ cutiId: 'c1', nip: this.pegawaiList[0]?.nip || '', nama: this.pegawaiList[0]?.nama || '', jenisCuti: 'Cuti Tahunan', tanggalMulai: '2026-07-15', tanggalSelesai: '2026-07-20', status: 'Disetujui', keterangan: 'Izin liburan' }];
           localStorage.setItem('sipanda_cuti', JSON.stringify(dummyCuti));
           this.cutiList = dummyCuti;
         } else {
@@ -937,6 +1013,7 @@ function sipandaApp() {
     showEditPegawai(pegawai) {
       this.selectedPegawai = pegawai;
       this.activeMenu = 'profil';
+      this.selectedTab = 'identitas';
     },
 
     // ============ SAVE EDIT ============
@@ -1000,12 +1077,54 @@ function sipandaApp() {
       reader.readAsDataURL(file);
     },
 
+    // ============ UPDATE COUNTDOWN ============
+    updatePangkatCountdown() {
+      if (!this.selectedPegawai) return;
+      const tglBerikutnya = new Date(this.selectedPegawai.tglPangkatBerikutnya);
+      const now = new Date();
+      const diff = Math.ceil((tglBerikutnya - now) / (1000 * 60 * 60 * 24));
+      this.selectedPegawai.pangkatCountdownDays = diff > 0 ? diff : 0;
+      this.savePegawaiEdit();
+    },
+
+    updatePangkatCountdownForPegawai(pegawai) {
+      const tglBerikutnya = new Date(pegawai.tglPangkatBerikutnya);
+      const now = new Date();
+      const diff = Math.ceil((tglBerikutnya - now) / (1000 * 60 * 60 * 24));
+      pegawai.pangkatCountdownDays = diff > 0 ? diff : 0;
+      this.savePegawaiEdit();
+    },
+
+    updateKgbCountdown() {
+      if (!this.selectedPegawai) return;
+      const tglBerikutnya = new Date(this.selectedPegawai.tglKgbBerikutnya);
+      const now = new Date();
+      const diff = Math.ceil((tglBerikutnya - now) / (1000 * 60 * 60 * 24));
+      this.selectedPegawai.kgbCountdownDays = diff > 0 ? diff : 0;
+      this.savePegawaiEdit();
+    },
+
+    updateKgbCountdownForPegawai(pegawai) {
+      const tglBerikutnya = new Date(pegawai.tglKgbBerikutnya);
+      const now = new Date();
+      const diff = Math.ceil((tglBerikutnya - now) / (1000 * 60 * 60 * 24));
+      pegawai.kgbCountdownDays = diff > 0 ? diff : 0;
+      this.savePegawaiEdit();
+    },
+
+    updatePensiun() {
+      if (!this.selectedPegawai) return;
+      // Pensiun dihitung otomatis dari tgl lahir (58 tahun)
+      // Fungsi ini dipanggil saat tgl lahir diubah
+      this.savePegawaiEdit();
+    },
+
     // ============ UPDATE DATA ============
     async updatePegawaiInStorage(pegawai) {
       if (IS_PREVIEW || !db) {
         const idx = this.pegawaiList.findIndex(p => p.nip === pegawai.nip);
         if (idx !== -1) {
-          this.pegawaiList[idx] = pegawai;
+          this.pegawaiList[idx] = JSON.parse(JSON.stringify(pegawai));
           localStorage.setItem('sipanda_pegawai', JSON.stringify(this.pegawaiList));
         }
       } else {
@@ -1024,10 +1143,16 @@ function sipandaApp() {
         alert('⚠️ NIP sudah terdaftar!');
         return;
       }
+      const now = new Date();
+      const tglPangkatBerikutnya = new Date(now);
+      tglPangkatBerikutnya.setFullYear(now.getFullYear() + 4);
+      const tglKgbBerikutnya = new Date(now);
+      tglKgbBerikutnya.setFullYear(now.getFullYear() + 2);
+
       const newPegawai = {
         nip: this.newPegawaiForm.nip,
         nama: this.newPegawaiForm.nama,
-        pangkat: this.newPegawaiForm.golongan === 'III/a' ? 'Penata Muda' : 'Penata',
+        pangkat: this.newPegawaiForm.golongan,
         golongan: this.newPegawaiForm.golongan,
         jabatan: this.newPegawaiForm.jabatan,
         gender: 'Laki-laki',
@@ -1036,17 +1161,18 @@ function sipandaApp() {
         tmtPns: '2016-03-01',
         email: this.newPegawaiForm.email,
         noHp: this.newPegawaiForm.noHp,
-        pangkatCountdownDays: 120,
-        kgbCountdownDays: 85,
+        pangkatCountdownDays: 1460,
+        kgbCountdownDays: 730,
         progressBerkas: 20,
-        tglKgbTerakhir: "2024-10-01",
-        tglKgbBerikutnya: "2026-10-01",
-        tglPangkatTerakhir: "2022-04-01",
-        tglPangkatBerikutnya: "2026-04-01",
+        tglKgbTerakhir: now.toISOString().split('T')[0],
+        tglKgbBerikutnya: tglKgbBerikutnya.toISOString().split('T')[0],
+        tglPangkatTerakhir: now.toISOString().split('T')[0],
+        tglPangkatBerikutnya: tglPangkatBerikutnya.toISOString().split('T')[0],
         foto: '',
         dokumen: {
           skPangkat: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
           skJabatan: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
+          skKgb: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
           skpKgb: { nilai: '85', predikat: 'Baik', tahun: '2025' }
         }
       };
@@ -1072,6 +1198,10 @@ function sipandaApp() {
         alert('⚠️ Silakan isi tanggal mulai dan selesai cuti!');
         return;
       }
+      if (!this.newCutiForm.keterangan || this.newCutiForm.keterangan === '') {
+        alert('⚠️ Silakan isi keterangan/izin cuti!');
+        return;
+      }
       if (this.newCutiForm.tanggalSelesai < this.newCutiForm.tanggalMulai) {
         alert('⚠️ Tanggal selesai harus lebih besar dari tanggal mulai!');
         return;
@@ -1088,7 +1218,7 @@ function sipandaApp() {
         jenisCuti: this.newCutiForm.jenisCuti,
         tanggalMulai: this.newCutiForm.tanggalMulai,
         tanggalSelesai: this.newCutiForm.tanggalSelesai,
-        keterangan: this.newCutiForm.keterangan || '-',
+        keterangan: this.newCutiForm.keterangan,
         status: 'Disetujui'
       };
       this.cutiList.unshift(newCuti);
@@ -1124,8 +1254,9 @@ function sipandaApp() {
           fileUrl: base64Data
         };
         let score = 20;
-        if (this.selectedPegawai.dokumen.skPangkat && this.selectedPegawai.dokumen.skPangkat.fileUrl) score += 40;
-        if (this.selectedPegawai.dokumen.skJabatan && this.selectedPegawai.dokumen.skJabatan.fileUrl) score += 40;
+        if (this.selectedPegawai.dokumen.skPangkat && this.selectedPegawai.dokumen.skPangkat.fileUrl) score += 30;
+        if (this.selectedPegawai.dokumen.skJabatan && this.selectedPegawai.dokumen.skJabatan.fileUrl) score += 30;
+        if (this.selectedPegawai.dokumen.skKgb && this.selectedPegawai.dokumen.skKgb.fileUrl) score += 20;
         this.selectedPegawai.progressBerkas = score;
         await this.updatePegawaiInStorage(this.selectedPegawai);
         alert('✅ Dokumen ' + file.name + ' berhasil diunggah!');
@@ -1192,35 +1323,44 @@ function sipandaApp() {
     // ============ DUMMY DATA ============
     generateDummyPegawaiDataRaw() {
       const names = ["Ahmad Subarjo", "Siti Aminah", "Budi Santoso", "Dewi Lestari", "Roni Hidayat", "Diana Putri", "Eko Prasetyo", "Indah Permata", "Fajar Nugraha", "Sri Wahyuni"];
-      const pangkatList = [{ gol: "III/a", nama: "Penata Muda", jab: "Pengelola IT" }, { gol: "III/b", nama: "Penata Muda Tk. I", jab: "Penjaga Tahanan" }, { gol: "III/c", nama: "Penata", jab: "Kasubseksi Registrasi" }, { gol: "IV/a", nama: "Pembina", jab: "Kepala KPLP" }];
+      const golonganList = ["II/a", "II/b", "II/c", "II/d", "III/a", "III/b", "III/c", "III/d", "IV/a", "IV/b", "IV/c", "IV/d", "IV/e"];
+      const jabatanList = ["Juru Muda", "Juru", "Penata Muda", "Penata", "Pembina", "Kepala Subseksi", "Kepala KPLP", "Pengelola IT"];
       let list = [];
       for (let i = 0; i < 87; i++) {
         const randomName = names[i % names.length] + " " + String.fromCharCode(65 + (i % 26));
-        const randomPangkat = pangkatList[i % pangkatList.length];
+        const gol = golonganList[i % golonganList.length];
+        const jab = jabatanList[i % jabatanList.length];
         const nipRandom = "19" + (75 + (i % 20)) + "0812" + (2000 + (i % 25)) + "01" + (1000 + i);
+        const now = new Date();
+        const tglPangkatBerikutnya = new Date(now);
+        tglPangkatBerikutnya.setFullYear(now.getFullYear() + 4);
+        const tglKgbBerikutnya = new Date(now);
+        tglKgbBerikutnya.setFullYear(now.getFullYear() + 2);
+        
         list.push({
           nip: nipRandom,
           nama: randomName,
-          pangkat: randomPangkat.nama,
-          golongan: randomPangkat.gol,
-          jabatan: randomPangkat.jab,
+          pangkat: gol,
+          golongan: gol,
+          jabatan: jab,
           gender: (i % 2 === 0) ? "Laki-laki" : "Perempuan",
           tglLahir: "19" + (75 + (i % 20)) + "-08-12",
           tmtCpns: "20" + (10 + (i % 10)) + "-01-01",
           tmtPns: "20" + (11 + (i % 10)) + "-03-01",
           email: randomName.toLowerCase().replace(/\s/g, '') + "@kemenimipas.go.id",
           noHp: "0812" + (10000000 + i * 91),
-          pangkatCountdownDays: 20 + (i * 7) % 300,
-          kgbCountdownDays: 10 + (i * 11) % 180,
-          progressBerkas: 60 + (i * 4) % 41,
-          tglKgbTerakhir: "2024-10-01",
-          tglKgbBerikutnya: "2026-10-01",
-          tglPangkatTerakhir: "2022-04-01",
-          tglPangkatBerikutnya: "2026-04-01",
+          pangkatCountdownDays: 100 + (i * 7) % 400,
+          kgbCountdownDays: 50 + (i * 11) % 300,
+          progressBerkas: 20 + (i * 8) % 80,
+          tglKgbTerakhir: now.toISOString().split('T')[0],
+          tglKgbBerikutnya: tglKgbBerikutnya.toISOString().split('T')[0],
+          tglPangkatTerakhir: now.toISOString().split('T')[0],
+          tglPangkatBerikutnya: tglPangkatBerikutnya.toISOString().split('T')[0],
           foto: '',
           dokumen: {
             skPangkat: { nomor: "W12.PAS-01.KP.03." + i, tanggal: "2024-09-15", namaFile: "SK_Pangkat_" + randomName.replace(/\s/g, '') + "_2026.pdf", fileUrl: '' },
             skJabatan: { nomor: "W12.PAS-02.KP.04." + i, tanggal: "2021-03-05", namaFile: "SK_Jabatan_" + randomName.replace(/\s/g, '') + "_2026.pdf", fileUrl: '' },
+            skKgb: { nomor: "W12.PAS-03.KP.05." + i, tanggal: "2024-10-01", namaFile: "SK_KGB_" + randomName.replace(/\s/g, '') + "_2026.pdf", fileUrl: '' },
             skpKgb: { nilai: 85 + (i % 15), predikat: (85 + (i % 15)) >= 90 ? "Sangat Baik" : "Baik", tahun: "2025" }
           }
         });
@@ -1242,6 +1382,7 @@ function sipandaApp() {
       if (match) {
         this.selectedPegawai = match;
         this.activeMenu = 'profil';
+        this.selectedTab = 'identitas';
       }
     },
 
@@ -1260,7 +1401,13 @@ function sipandaApp() {
     },
 
     calculatePensiunDays(tglLahir) {
-      return 580;
+      if (!tglLahir) return 0;
+      const lahir = new Date(tglLahir);
+      const batasPensiun = new Date(lahir);
+      batasPensiun.setFullYear(lahir.getFullYear() + 58);
+      const now = new Date();
+      const diff = Math.ceil((batasPensiun - now) / (1000 * 60 * 60 * 24));
+      return diff > 0 ? diff : 0;
     },
 
     runSmartSearch() {
@@ -1304,14 +1451,23 @@ function sipandaApp() {
       if (!ctx) return;
       const existing = Chart.getChart(ctx);
       if (existing) existing.destroy();
+      
+      const golStats = {};
+      this.pegawaiList.forEach(p => {
+        golStats[p.golongan] = (golStats[p.golongan] || 0) + 1;
+      });
+      
+      const labels = Object.keys(golStats);
+      const data = Object.values(golStats);
+      
       new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Gol III/a', 'Gol III/b', 'Gol III/c', 'Gol IV/a', 'Sedang Cuti'],
+          labels: labels.slice(0, 10),
           datasets: [{
-            label: 'Statistik Pegawai',
-            data: [35, 27, 15, 10, this.stats.pegawaiCuti],
-            backgroundColor: ['#0B2341', '#123B63', '#C9A227', '#2E7D32', '#C62828'],
+            label: 'Jumlah Pegawai',
+            data: data.slice(0, 10),
+            backgroundColor: ['#0B2341', '#123B63', '#C9A227', '#2E7D32', '#C62828', '#E65100', '#6A1B9A', '#00838F', '#4E342E', '#1A237E'],
             borderRadius: 8
           }]
         },
@@ -1323,12 +1479,18 @@ function sipandaApp() {
     initCalendar() {
       const el = document.getElementById('fullCalendarTarget');
       if (!el) return;
-      const events = this.cutiList.map(c => ({
-        title: c.nama + ' - ' + c.jenisCuti,
-        start: c.tanggalMulai,
-        end: c.tanggalSelesai,
-        color: c.jenisCuti === 'Cuti Sakit' ? '#C62828' : '#2E7D32'
-      }));
+      const events = this.cutiList.map(c => {
+        let color = '#2E7D32';
+        if (c.jenisCuti === 'Cuti Sakit') color = '#C62828';
+        else if (c.jenisCuti === 'Cuti Izin' || c.jenisCuti === 'Cuti Izin / Alasan Penting') color = '#123B63';
+        else if (c.jenisCuti === 'Cuti Besar' || c.jenisCuti === 'Cuti Melahirkan') color = '#E65100';
+        return {
+          title: c.nama + ' - ' + c.jenisCuti,
+          start: c.tanggalMulai,
+          end: c.tanggalSelesai,
+          color: color
+        };
+      });
       const calendar = new FullCalendar.Calendar(el, { initialView: 'dayGridMonth', events: events });
       calendar.render();
     }
