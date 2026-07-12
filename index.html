@@ -571,7 +571,8 @@ const firebaseConfig = {
 <!-- SKP -->
 <div x-show="selectedTab === 'skp'" class="space-y-4">
 <h3 class="font-bold text-[#0B2341] text-xs">Sasaran Kinerja Pegawai (SKP)</h3>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-3">
 <div><label class="text-xs font-bold">Nilai SKP</label>
 <input type="number" x-model="selectedPegawai.dokumen.skpKgb.nilai" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg">
 </div>
@@ -585,6 +586,21 @@ const firebaseConfig = {
 </div>
 <div><label class="text-xs font-bold">Tahun</label>
 <input type="number" x-model="selectedPegawai.dokumen.skpKgb.tahun" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg">
+</div>
+</div>
+
+<!-- UPLOAD DOKUMEN SKP (FITUR BARU) -->
+<div class="border-2 border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center text-slate-400 bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative">
+<input type="file" accept="application/pdf" @change="handleDocUpload($event, 'skpDokumen')" class="absolute inset-0 opacity-0 cursor-pointer">
+<i data-lucide="upload-cloud" class="w-8 h-8 text-[#C9A227] mb-2"></i>
+<p class="text-[11px] font-bold text-center">Upload Dokumen SKP PDF</p>
+<span class="text-[9px] text-slate-500">Maks. 5MB (Hanya PDF)</span>
+<template x-if="selectedPegawai.dokumen.skpDokumen && selectedPegawai.dokumen.skpDokumen.namaFile">
+<div class="mt-2 text-center">
+<p class="text-xs text-emerald-600 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skpDokumen.namaFile"></p>
+<button type="button" @click.stop="triggerPdfPreview(selectedPegawai.dokumen.skpDokumen)" class="text-[10px] text-[#0B2341] underline mt-1">Lihat Dokumen</button>
+</div>
+</template>
 </div>
 </div>
 </div>
@@ -1173,7 +1189,8 @@ function sipandaApp() {
           skPangkat: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
           skJabatan: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
           skKgb: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
-          skpKgb: { nilai: '85', predikat: 'Baik', tahun: '2025' }
+          skpKgb: { nilai: '85', predikat: 'Baik', tahun: '2025' },
+          skpDokumen: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' }
         }
       };
       this.pegawaiList.unshift(newPegawai);
@@ -1361,7 +1378,8 @@ function sipandaApp() {
             skPangkat: { nomor: "W12.PAS-01.KP.03." + i, tanggal: "2024-09-15", namaFile: "SK_Pangkat_" + randomName.replace(/\s/g, '') + "_2026.pdf", fileUrl: '' },
             skJabatan: { nomor: "W12.PAS-02.KP.04." + i, tanggal: "2021-03-05", namaFile: "SK_Jabatan_" + randomName.replace(/\s/g, '') + "_2026.pdf", fileUrl: '' },
             skKgb: { nomor: "W12.PAS-03.KP.05." + i, tanggal: "2024-10-01", namaFile: "SK_KGB_" + randomName.replace(/\s/g, '') + "_2026.pdf", fileUrl: '' },
-            skpKgb: { nilai: 85 + (i % 15), predikat: (85 + (i % 15)) >= 90 ? "Sangat Baik" : "Baik", tahun: "2025" }
+            skpKgb: { nilai: 85 + (i % 15), predikat: (85 + (i % 15)) >= 90 ? "Sangat Baik" : "Baik", tahun: "2025" },
+            skpDokumen: { nomor: "", tanggal: "", namaFile: '', fileUrl: '' }
           }
         });
       }
