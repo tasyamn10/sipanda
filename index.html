@@ -445,7 +445,7 @@ const firebaseConfig = {
 <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200"><p class="text-[10px] font-bold text-slate-400 uppercase">Countdown Naik Pangkat</p><p class="text-2xl font-extrabold mt-1" :class="getCountdownClass(selectedPegawai.pangkatCountdownDays)" x-text="selectedPegawai.pangkatCountdownDays + ' Hari Lagi'"></p><span class="text-[10px] text-slate-500 mt-1 block">TMT: <span class="font-bold" x-text="selectedPegawai.tglPangkatBerikutnya"></span></span></div>
 <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200"><p class="text-[10px] font-bold text-slate-400 uppercase">Countdown KGB</p><p class="text-2xl font-extrabold mt-1" :class="getCountdownClass(selectedPegawai.kgbCountdownDays)" x-text="selectedPegawai.kgbCountdownDays + ' Hari Lagi'"></p><span class="text-[10px] text-slate-500 mt-1 block">TMT: <span class="font-bold" x-text="selectedPegawai.tglKgbBerikutnya"></span></span></div>
 <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200"><p class="text-[10px] font-bold text-slate-400 uppercase">Masa Berlaku Berkas</p><p class="text-2xl font-extrabold text-emerald-600 mt-1">Aktif & Sah</p><span class="text-[10px] text-slate-500 mt-1 block">Dokumen Tervalidasi</span></div>
-<div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200"><p class="text-[10px] font-bold text-slate-400 uppercase">Usia Menuju Pensiun</p><p class="text-2xl font-extrabold text-[#0B2341] mt-1" x-text="calculatePensiunDays(selectedPegawai.tglLahir) + ' Hari Lagi'"></p><span class="text-[10px] text-slate-500 mt-1 block">Batas: 58 Tahun</span></div>
+<div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200"><p class="text-[10px] font-bold text-slate-400 uppercase">Usia Menuju Pensiun</p><p class="text-2xl font-extrabold text-[#0B2341] mt-1" x-text="selectedPegawai.pensiunCountdown + ' Hari Lagi'"></p><span class="text-[10px] text-slate-500 mt-1 block">Batas: 58 Tahun</span></div>
 </div>
 <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
 <div class="flex overflow-x-auto space-x-1 border-b border-slate-150 pb-2">
@@ -461,7 +461,6 @@ const firebaseConfig = {
 <div x-show="selectedTab === 'identitas'" class="space-y-4">
 <h3 class="font-bold text-[#0B2341] text-xs">Informasi Data Pribadi Pegawai</h3>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-700">
-<!-- TAMBAHAN: Edit Nama Pegawai & NIP -->
 <div class="md:col-span-1">
 <span class="block text-slate-400">Nama Lengkap:</span>
 <input type="text" x-model="selectedPegawai.nama" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg font-bold text-[#0B2341]" placeholder="Nama Lengkap Pegawai">
@@ -473,9 +472,8 @@ const firebaseConfig = {
 <button @click="openModalEditNip(selectedPegawai)" type="button" class="bg-[#0B2341] text-white px-3 py-1 rounded-lg font-bold text-[11px] whitespace-nowrap hover:bg-[#123B63]">Ubah NIP</button>
 </div>
 </div>
-<!-- END TAMBAHAN -->
 <div><span class="block text-slate-400">Tanggal Lahir:</span>
-<input type="date" x-model="selectedPegawai.tglLahir" @change="savePegawaiEdit(); updatePensiun();" class="w-full px-2 py-1 border rounded-lg">
+<input type="date" x-model="selectedPegawai.tglLahir" @change="savePegawaiEdit(); updatePensiunCountdown()" class="w-full px-2 py-1 border rounded-lg">
 </div>
 <div><span class="block text-slate-400">Jenis Kelamin:</span>
 <select x-model="selectedPegawai.gender" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg">
@@ -504,7 +502,7 @@ const firebaseConfig = {
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <div class="space-y-2">
 <label class="text-xs font-bold">Golongan Saat Ini</label>
-<select x-model="selectedPegawai.golongan" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg bg-white">
+<select x-model="selectedPegawai.golongan" @change="savePegawaiEdit(); updatePangkatCountdown()" class="w-full px-3 py-2 border rounded-lg bg-white">
 <option value="II/a">II/a (Pengatur Muda)</option>
 <option value="II/b">II/b (Pengatur Muda Tk. I)</option>
 <option value="II/c">II/c (Pengatur)</option>
@@ -613,7 +611,6 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- TAMBAHAN: Upload File SKP -->
 <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center text-slate-400 bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative mt-2 max-w-sm">
 <input type="file" accept="application/pdf" @change="handleDocUpload($event, 'skp')" class="absolute inset-0 opacity-0 cursor-pointer">
 <i data-lucide="upload-cloud" class="w-8 h-8 text-[#C9A227] mb-2"></i>
@@ -689,7 +686,7 @@ const firebaseConfig = {
 <tbody>
 <template x-for="(pegawai, index) in pegawaiList" :key="index">
 <tr class="hover:bg-slate-50/50 transition"><td class="p-4 font-bold text-slate-800" x-text="pegawai.nama"></td>
-<td class="p-4"><select x-model="pegawai.golongan" @change="savePegawaiEdit()" class="w-full px-1 py-0.5 border rounded text-xs bg-white">
+<td class="p-4"><select x-model="pegawai.golongan" @change="savePegawaiEdit(); updatePangkatCountdownForPegawai(pegawai)" class="w-full px-1 py-0.5 border rounded text-xs bg-white">
 <option value="II/a">II/a</option><option value="II/b">II/b</option><option value="II/c">II/c</option><option value="II/d">II/d</option>
 <option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="III/d">III/d</option>
 <option value="IV/a">IV/a</option><option value="IV/b">IV/b</option><option value="IV/c">IV/c</option><option value="IV/d">IV/d</option><option value="IV/e">IV/e</option>
@@ -780,7 +777,7 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- MODAL EDIT NIP (TAMBAHAN FITUR BARU) -->
+<!-- MODAL EDIT NIP -->
 <div x-show="showModalEditNip" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" style="display: none;">
 <div class="bg-white rounded-3xl w-full max-w-md flex flex-col shadow-2xl border border-yellow-500/10">
 <div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between items-center rounded-t-3xl"><h3 class="font-bold text-xs tracking-wide uppercase">✏️ Ubah NIP Pegawai</h3><button @click="showModalEditNip = false" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
@@ -868,12 +865,12 @@ function sipandaApp() {
     previewDoc: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
     showModalAddPegawai: false,
     showModalAddCuti: false,
-    showModalEditNip: false, // State modal Edit NIP
+    showModalEditNip: false,
     loginForm: { username: '', password: '' },
     newTodoText: '',
     newPegawaiForm: { nip: '', nama: '', golongan: 'III/a', jabatan: '', noHp: '', email: '' },
     newCutiForm: { nip: '', jenisCuti: 'Cuti Tahunan', tanggalMulai: '', tanggalSelesai: '', keterangan: '' },
-    nipEditForm: { oldNip: '', newNip: '', nama: '' }, // State form Edit NIP
+    nipEditForm: { oldNip: '', newNip: '', nama: '' },
     pegawaiList: [],
     cutiList: [],
     prioritasList: [],
@@ -966,7 +963,14 @@ function sipandaApp() {
             return this.syncDatabase();
           }
           let listPegawai = [];
-          pegawaiSnap.forEach(doc => listPegawai.push(doc.data()));
+          pegawaiSnap.forEach(doc => {
+            let data = doc.data();
+            // Hitung ulang countdown
+            data.pangkatCountdownDays = this.calculateDaysDiff(data.tglPangkatBerikutnya);
+            data.kgbCountdownDays = this.calculateDaysDiff(data.tglKgbBerikutnya);
+            data.pensiunCountdown = this.calculatePensiunDays(data.tglLahir);
+            listPegawai.push(data);
+          });
           this.pegawaiList = listPegawai;
           console.log("✅ " + listPegawai.length + " pegawai loaded");
 
@@ -985,10 +989,11 @@ function sipandaApp() {
         }
       }
       
-      // Hitung ulang countdown agar akurat saat inisialisasi awal
+      // Hitung ulang countdown agar akurat
       this.pegawaiList.forEach(p => {
-        this.updatePangkatCountdownForPegawai(p);
-        this.updateKgbCountdownForPegawai(p);
+        p.pangkatCountdownDays = this.calculateDaysDiff(p.tglPangkatBerikutnya);
+        p.kgbCountdownDays = this.calculateDaysDiff(p.tglKgbBerikutnya);
+        p.pensiunCountdown = this.calculatePensiunDays(p.tglLahir);
       });
       
       this.selectedPegawai = this.pegawaiList[0] || null;
@@ -999,6 +1004,9 @@ function sipandaApp() {
     async autoSetupDatabaseFirebase() {
       const dummy = this.generateDummyPegawaiDataRaw();
       for (let p of dummy) {
+        p.pangkatCountdownDays = this.calculateDaysDiff(p.tglPangkatBerikutnya);
+        p.kgbCountdownDays = this.calculateDaysDiff(p.tglKgbBerikutnya);
+        p.pensiunCountdown = this.calculatePensiunDays(p.tglLahir);
         await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').doc(p.nip).set(p);
       }
       const dummyCuti = { cutiId: 'c1', nip: dummy[0].nip, nama: dummy[0].nama, jenisCuti: 'Cuti Tahunan', tanggalMulai: '2026-07-15', tanggalSelesai: '2026-07-20', status: 'Disetujui', keterangan: 'Izin liburan' };
@@ -1021,7 +1029,7 @@ function sipandaApp() {
       this.recalculateSystemStats();
     },
 
-    // ============ UPLOAD FOTO PROFIL (PERBAIKAN) ============
+    // ============ UPLOAD FOTO PROFIL ============
     uploadFoto(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1044,11 +1052,13 @@ function sipandaApp() {
         
         this.addAuditLog("Upload Foto Profil", "Memperbarui foto profil pegawai: " + this.selectedPegawai.nama);
         alert("Foto profil berhasil diperbarui!");
+        // Refresh icons
+        setTimeout(() => lucide.createIcons(), 100);
       };
       reader.readAsDataURL(file);
     },
 
-    // ============ UPLOAD DOKUMEN PDF (PERBAIKAN) ============
+    // ============ UPLOAD DOKUMEN PDF ============
     handleDocUpload(event, type) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1068,6 +1078,8 @@ function sipandaApp() {
         // Update detail berkas ke selectedPegawai
         this.selectedPegawai.dokumen[type].namaFile = file.name;
         this.selectedPegawai.dokumen[type].fileUrl = base64Pdf;
+        this.selectedPegawai.dokumen[type].tanggal = new Date().toISOString().split('T')[0];
+        this.selectedPegawai.dokumen[type].nomor = this.selectedPegawai.dokumen[type].nomor || "SK-" + Date.now();
         
         // Kalkulasi ulang kelengkapan progress berkas %
         let totalAda = 0;
@@ -1087,11 +1099,13 @@ function sipandaApp() {
         await this.persistPegawai(this.selectedPegawai);
         this.addAuditLog("Upload Dokumen", "Mengunggah file " + type + " untuk " + this.selectedPegawai.nama);
         alert("Dokumen " + type + " berhasil diunggah!");
+        // Refresh icons
+        setTimeout(() => lucide.createIcons(), 100);
       };
       reader.readAsDataURL(file);
     },
 
-    // ============ PREVIEW DOKUMEN (PERBAIKAN) ============
+    // ============ PREVIEW DOKUMEN ============
     triggerPdfPreview(docObj) {
       if (!docObj || !docObj.fileUrl) {
         alert("File dokumen kosong atau belum diunggah.");
@@ -1106,7 +1120,7 @@ function sipandaApp() {
       this.showPdfViewer = true;
     },
 
-    // ============ HITUNG COUNTDOWN HARIAN (PERBAIKAN TEPAT) ============
+    // ============ HITUNG COUNTDOWN HARIAN ============
     calculateDaysDiff(targetDateStr) {
       if (!targetDateStr) return 999;
       const target = new Date(targetDateStr);
@@ -1124,6 +1138,10 @@ function sipandaApp() {
     updatePangkatCountdown() {
       if (this.selectedPegawai) {
         this.selectedPegawai.pangkatCountdownDays = this.calculateDaysDiff(this.selectedPegawai.tglPangkatBerikutnya);
+        const idx = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
+        if (idx !== -1) {
+          this.pegawaiList[idx].pangkatCountdownDays = this.selectedPegawai.pangkatCountdownDays;
+        }
         this.persistPegawai(this.selectedPegawai);
       }
     },
@@ -1131,6 +1149,21 @@ function sipandaApp() {
     updateKgbCountdown() {
       if (this.selectedPegawai) {
         this.selectedPegawai.kgbCountdownDays = this.calculateDaysDiff(this.selectedPegawai.tglKgbBerikutnya);
+        const idx = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
+        if (idx !== -1) {
+          this.pegawaiList[idx].kgbCountdownDays = this.selectedPegawai.kgbCountdownDays;
+        }
+        this.persistPegawai(this.selectedPegawai);
+      }
+    },
+
+    updatePensiunCountdown() {
+      if (this.selectedPegawai) {
+        this.selectedPegawai.pensiunCountdown = this.calculatePensiunDays(this.selectedPegawai.tglLahir);
+        const idx = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
+        if (idx !== -1) {
+          this.pegawaiList[idx].pensiunCountdown = this.selectedPegawai.pensiunCountdown;
+        }
         this.persistPegawai(this.selectedPegawai);
       }
     },
@@ -1167,6 +1200,7 @@ function sipandaApp() {
       this.pegawaiList.forEach(p => {
         this.updatePangkatCountdownForPegawai(p);
         this.updateKgbCountdownForPegawai(p);
+        p.pensiunCountdown = this.calculatePensiunDays(p.tglLahir);
         
         if (p.pangkatCountdownDays <= 180) pSegera++;
         if (p.kgbCountdownDays <= 180) kSegera++;
@@ -1175,7 +1209,7 @@ function sipandaApp() {
         if (!p.dokumen?.skJabatan?.namaFile) skjKosong++;
         if ((p.progressBerkas || 0) < 100) blmLengkap++;
         
-        if (this.calculatePensiunDays(p.tglLahir) < 730) pensiunSegera++;
+        if (p.pensiunCountdown < 730) pensiunSegera++;
       });
 
       this.stats.pangkatSegera = pSegera;
@@ -1224,12 +1258,14 @@ function sipandaApp() {
         this.selectedPegawai = p;
         this.activeMenu = 'profil';
         this.selectedTab = 'identitas';
+        setTimeout(() => lucide.createIcons(), 100);
       }
     },
 
     showEditPegawai(pegawai) {
       this.selectedPegawai = pegawai;
       this.activeMenu = 'profil';
+      setTimeout(() => lucide.createIcons(), 100);
     },
 
     async savePegawaiEdit() {
@@ -1266,6 +1302,7 @@ function sipandaApp() {
         tglKgbBerikutnya: '2026-08-01',
         pangkatCountdownDays: 0,
         kgbCountdownDays: 0,
+        pensiunCountdown: 0,
         progressBerkas: 0,
         foto: '',
         dokumen: {
@@ -1279,6 +1316,7 @@ function sipandaApp() {
 
       this.updatePangkatCountdownForPegawai(newPegawai);
       this.updateKgbCountdownForPegawai(newPegawai);
+      newPegawai.pensiunCountdown = this.calculatePensiunDays(newPegawai.tglLahir);
       
       this.pegawaiList.push(newPegawai);
       await this.persistPegawai(newPegawai);
@@ -1286,6 +1324,7 @@ function sipandaApp() {
       this.showModalAddPegawai = false;
       this.newPegawaiForm = { nip: '', nama: '', golongan: 'III/a', jabatan: '', noHp: '', email: '' };
       alert("Pegawai baru sukses disimpan!");
+      this.recalculateSystemStats();
     },
 
     async hapusPegawai(nip) {
@@ -1353,7 +1392,15 @@ function sipandaApp() {
     },
 
     async saveNewCuti() {
-      if (!this.newCutiForm.nip) return;
+      if (!this.newCutiForm.nip) {
+        alert("Silakan pilih pegawai terlebih dahulu!");
+        return;
+      }
+      if (!this.newCutiForm.tanggalMulai || !this.newCutiForm.tanggalSelesai) {
+        alert("Silakan isi tanggal mulai dan selesai cuti!");
+        return;
+      }
+      
       const peg = this.pegawaiList.find(x => x.nip === this.newCutiForm.nip);
       const newC = {
         cutiId: 'c_' + Date.now(),
@@ -1363,7 +1410,7 @@ function sipandaApp() {
         tanggalMulai: this.newCutiForm.tanggalMulai,
         tanggalSelesai: this.newCutiForm.tanggalSelesai,
         status: 'Disetujui',
-        keterangan: this.newCutiForm.keterangan
+        keterangan: this.newCutiForm.keterangan || '-'
       };
 
       this.cutiList.push(newC);
@@ -1374,6 +1421,7 @@ function sipandaApp() {
       }
       
       this.showModalAddCuti = false;
+      this.newCutiForm = { nip: '', jenisCuti: 'Cuti Tahunan', tanggalMulai: '', tanggalSelesai: '', keterangan: '' };
       this.recalculateSystemStats();
       this.initCalendar();
       alert("Data cuti berhasil dimasukkan!");
@@ -1393,6 +1441,7 @@ function sipandaApp() {
 
     // ============ UTILS COLOR ============
     getCountdownClass(days) {
+      if (days <= 0) return 'text-red-600 animate-pulse font-extrabold';
       if (days <= 30) return 'text-red-600 animate-pulse font-extrabold';
       if (days <= 90) return 'text-orange-500 font-bold';
       if (days <= 180) return 'text-yellow-600 font-semibold';
@@ -1400,6 +1449,7 @@ function sipandaApp() {
     },
 
     getUrgensiColorClass(days) {
+      if (days <= 0) return 'bg-red-600';
       if (days <= 30) return 'bg-red-600';
       if (days <= 90) return 'bg-orange-500';
       if (days <= 180) return 'bg-yellow-400';
@@ -1408,6 +1458,14 @@ function sipandaApp() {
 
     // ============ DUMMY DATA POOL ============
     generateDummyPegawaiDataRaw() {
+      const today = new Date();
+      const futurePangkat = new Date(today);
+      futurePangkat.setDate(today.getDate() + 45);
+      const futureKgb = new Date(today);
+      futureKgb.setDate(today.getDate() + 75);
+      const futurePensiun = new Date(today);
+      futurePensiun.setDate(today.getDate() + 365);
+      
       return [
         {
           nip: "198804122010121001",
@@ -1421,11 +1479,12 @@ function sipandaApp() {
           tmtCpns: "2010-12-01",
           tmtPns: "2012-01-01",
           tglPangkatTerakhir: "2022-04-01",
-          tglPangkatBerikutnya: "2026-04-01",
+          tglPangkatBerikutnya: futurePangkat.toISOString().split('T')[0],
           tglKgbTerakhir: "2024-06-15",
-          tglKgbBerikutnya: "2026-06-15",
+          tglKgbBerikutnya: futureKgb.toISOString().split('T')[0],
           pangkatCountdownDays: 0,
           kgbCountdownDays: 0,
+          pensiunCountdown: 0,
           progressBerkas: 50,
           foto: "",
           dokumen: {
@@ -1448,11 +1507,12 @@ function sipandaApp() {
           tmtCpns: "2017-03-01",
           tmtPns: "2018-04-01",
           tglPangkatTerakhir: "2021-10-01",
-          tglPangkatBerikutnya: "2025-10-01",
+          tglPangkatBerikutnya: futurePangkat.toISOString().split('T')[0],
           tglKgbTerakhir: "2023-11-01",
-          tglKgbBerikutnya: "2025-11-01",
+          tglKgbBerikutnya: futureKgb.toISOString().split('T')[0],
           pangkatCountdownDays: 0,
           kgbCountdownDays: 0,
+          pensiunCountdown: 0,
           progressBerkas: 25,
           foto: "",
           dokumen: {
