@@ -75,6 +75,53 @@ border: 1px solid rgba(255, 255, 255, 0.2);
 .app-sidebar { display: none !important; }
 .app-bottombar { display: flex !important; }
 }
+
+/* PDF Viewer Modal - Fullscreen */
+.pdf-viewer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.pdf-viewer-container {
+    background: white;
+    border-radius: 24px;
+    width: 95%;
+    max-width: 900px;
+    height: 90vh;
+    max-height: 800px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+}
+.pdf-viewer-header {
+    background: #0B2341;
+    color: white;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+.pdf-viewer-body {
+    flex: 1;
+    background: #f1f1f1;
+    padding: 16px;
+    overflow: auto;
+}
+.pdf-viewer-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 12px;
+    background: white;
+}
 </style>
 
 <script>
@@ -530,7 +577,7 @@ const firebaseConfig = {
 <template x-if="selectedPegawai.dokumen && selectedPegawai.dokumen.skPangkat && selectedPegawai.dokumen.skPangkat.namaFile">
 <div class="text-center mt-2">
 <p class="text-xs text-emerald-600 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skPangkat.namaFile"></p>
-<button type="button" @click.stop="triggerPdfPreview(selectedPegawai.dokumen.skPangkat)" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
+<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skPangkat)" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
 </div>
 </template>
 </div>
@@ -557,7 +604,7 @@ const firebaseConfig = {
 <template x-if="selectedPegawai.dokumen && selectedPegawai.dokumen.skJabatan && selectedPegawai.dokumen.skJabatan.namaFile">
 <div class="text-center mt-2">
 <p class="text-xs text-emerald-600 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skJabatan.namaFile"></p>
-<button type="button" @click.stop="triggerPdfPreview(selectedPegawai.dokumen.skJabatan)" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
+<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skJabatan)" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
 </div>
 </template>
 </div>
@@ -584,7 +631,7 @@ const firebaseConfig = {
 <template x-if="selectedPegawai.dokumen && selectedPegawai.dokumen.skKgb && selectedPegawai.dokumen.skKgb.namaFile">
 <div class="text-center mt-2">
 <p class="text-xs text-emerald-600 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skKgb.namaFile"></p>
-<button type="button" @click.stop="triggerPdfPreview(selectedPegawai.dokumen.skKgb)" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
+<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skKgb)" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
 </div>
 </template>
 </div>
@@ -619,7 +666,7 @@ const firebaseConfig = {
 <template x-if="selectedPegawai.dokumen && selectedPegawai.dokumen.skp && selectedPegawai.dokumen.skp.namaFile">
 <div class="text-center mt-2">
 <p class="text-xs text-emerald-600 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skp.namaFile"></p>
-<button type="button" @click.stop="triggerPdfPreview(selectedPegawai.dokumen.skp)" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
+<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skp)" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
 </div>
 </template>
 </div>
@@ -795,37 +842,70 @@ const firebaseConfig = {
 <div class="bg-white rounded-3xl w-full max-w-md flex flex-col shadow-2xl border border-yellow-500/10">
 <div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between items-center rounded-t-3xl"><h3 class="font-bold text-xs tracking-wide uppercase">✏️ Input Pengajuan Cuti Pegawai</h3><button @click="showModalAddCuti = false" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
 <form @submit.prevent="saveNewCuti" class="p-6 space-y-4 text-xs">
-<div><label class="block font-bold text-slate-700 mb-1">Pilih Pegawai <span class="text-red-500">*</span></label><select x-model="newCutiForm.nip" required class="w-full px-3 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-[#C9A227]"><option value="">-- Pilih Pegawai --</option><template x-for="(p, index) in pegawaiList" :key="index"><option :value="p.nip" x-text="p.nama + ' (' + p.nip + ')'"></option></template></select></div>
-<div><label class="block font-bold text-slate-700 mb-1">Jenis Cuti <span class="text-red-500">*</span></label><select x-model="newCutiForm.jenisCuti" class="w-full px-3 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-[#C9A227]">
+<div><label class="block font-bold text-slate-700 mb-1">Pilih Pegawai <span class="text-red-500">*</span></label>
+<select x-model="newCutiForm.nip" required class="w-full px-3 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-[#C9A227]">
+<option value="">-- Pilih Pegawai --</option>
+<template x-for="(p, index) in pegawaiList" :key="index">
+<option :value="p.nip" x-text="p.nama + ' (' + p.nip + ')'"></option>
+</template>
+</select>
+</div>
+<div><label class="block font-bold text-slate-700 mb-1">Jenis Cuti <span class="text-red-500">*</span></label>
+<select x-model="newCutiForm.jenisCuti" class="w-full px-3 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-[#C9A227]">
 <option value="Cuti Tahunan">Cuti Tahunan</option>
 <option value="Cuti Sakit">Cuti Sakit</option>
 <option value="Cuti Izin">Cuti Izin / Alasan Penting</option>
 <option value="Cuti Besar">Cuti Besar</option>
 <option value="Cuti Melahirkan">Cuti Melahirkan</option>
-</select></div>
+</select>
+</div>
 <div><label class="block font-bold text-slate-700 mb-1">Keterangan / Izin <span class="text-red-500">*</span></label>
 <input type="text" x-model="newCutiForm.keterangan" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#C9A227]" placeholder="Contoh: Izin keperluan keluarga, sakit, dll...">
 </div>
-<div class="grid grid-cols-2 gap-4"><div><label class="block font-bold text-slate-700 mb-1">Mulai Cuti <span class="text-red-500">*</span></label><input type="date" x-model="newCutiForm.tanggalMulai" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#C9A227]"></div><div><label class="block font-bold text-slate-700 mb-1">Selesai Cuti <span class="text-red-500">*</span></label><input type="date" x-model="newCutiForm.tanggalSelesai" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#C9A227]"></div></div>
-<div class="flex justify-end gap-2 pt-4 border-t"><button type="button" @click="showModalAddCuti = false" class="bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg font-bold text-xs transition">Batal</button><button type="submit" class="bg-[#2E7D32] hover:bg-[#1B5E20] text-white px-4 py-2 rounded-lg font-bold text-xs transition flex items-center space-x-2"><i data-lucide="check" class="w-4 h-4"></i><span>Setujui & Daftarkan Cuti</span></button></div>
+<div class="grid grid-cols-2 gap-4">
+<div><label class="block font-bold text-slate-700 mb-1">Mulai Cuti <span class="text-red-500">*</span></label>
+<input type="date" x-model="newCutiForm.tanggalMulai" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#C9A227]">
+</div>
+<div><label class="block font-bold text-slate-700 mb-1">Selesai Cuti <span class="text-red-500">*</span></label>
+<input type="date" x-model="newCutiForm.tanggalSelesai" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#C9A227]">
+</div>
+</div>
+<div class="flex justify-end gap-2 pt-4 border-t">
+<button type="button" @click="showModalAddCuti = false" class="bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg font-bold text-xs transition">Batal</button>
+<button type="submit" class="bg-[#2E7D32] hover:bg-[#1B5E20] text-white px-4 py-2 rounded-lg font-bold text-xs transition flex items-center space-x-2">
+<i data-lucide="check" class="w-4 h-4"></i>
+<span>Setujui & Daftarkan Cuti</span>
+</button>
+</div>
 </form>
 </div>
 </div>
 
-<!-- MODAL PREVIEW PDF -->
-<div x-show="showPdfViewer" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" style="display: none;">
-<div class="bg-white rounded-3xl w-full max-w-3xl h-[650px] flex flex-col shadow-2xl border border-yellow-500/10">
-<div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between items-center rounded-t-3xl"><h3 class="font-bold text-xs tracking-wide uppercase" x-text="'PREVIEW DOKUMEN: ' + previewDoc.namaFile"></h3><button @click="showPdfViewer = false" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-<div class="flex-1 bg-slate-100 p-2 flex items-center justify-center">
-<template x-if="previewDoc.fileUrl && previewDoc.fileUrl.startsWith('data:application/pdf')"><iframe :src="previewDoc.fileUrl" class="w-full h-full rounded-2xl" frameborder="0"></iframe></template>
-<template x-if="!previewDoc.fileUrl || !previewDoc.fileUrl.startsWith('data:application/pdf')">
-<div class="bg-white rounded-2xl w-full h-full p-8 flex flex-col justify-between shadow border border-slate-300">
-<div><div class="flex justify-between items-start border-b border-slate-200 pb-4 mb-4"><div><h4 class="font-bold text-[#0B2341] text-sm">SURAT KEPUTUSAN KEPALA LAPAS KELAS IIA BANYUASIN</h4><p class="text-[10px] text-slate-500 mt-1" x-text="'Nomor SK: ' + previewDoc.nomor"></p><p class="text-[10px] text-slate-500" x-text="'Diterbitkan: ' + previewDoc.tanggal"></p></div><span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase">SAMPEL SISTEM</span></div><p class="text-xs text-slate-600 leading-relaxed mb-4">Menimbang: Bahwa demi kelancaran administrasi kepegawaian di lingkungan Kementerian Imigrasi & Pemasyarakatan pada Lapas Banyuasin, dipandang perlu menyatakan pengesahan berkas resmi yang terekam pada SIPANDA.</p><p class="text-xs text-slate-600 leading-relaxed font-semibold">Menetapkan: Keabsahan dokumen ini terdaftar di database cloud dengan aman.</p></div>
-<div class="flex justify-between items-center border-t pt-4"><span class="text-[9px] text-slate-400">File Base64 disimulasikan sebagai template visual pdf.</span><button @click="showPdfViewer = false" class="bg-[#123B63] text-white font-bold text-xs px-4 py-2 rounded-xl">Tutup Preview</button></div>
-</div>
-</template>
-</div>
-</div>
+<!-- PDF VIEWER MODAL - DIPERBAIKI -->
+<div x-show="showPdfViewer" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[99999] flex items-center justify-center p-4" style="display: none;" @click.away="closePdfViewer()">
+    <div class="bg-white rounded-3xl w-full max-w-4xl h-[90vh] max-h-[800px] flex flex-col shadow-2xl border border-yellow-500/20 overflow-hidden">
+        <div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between items-center flex-shrink-0">
+            <div>
+                <h3 class="font-bold text-sm tracking-wide" x-text="'📄 ' + previewDoc.namaFile"></h3>
+                <p class="text-[10px] text-slate-400 mt-0.5" x-text="'Nomor: ' + previewDoc.nomor + ' | Tanggal: ' + previewDoc.tanggal"></p>
+            </div>
+            <button @click="closePdfViewer()" class="text-slate-400 hover:text-white transition p-2 hover:bg-white/10 rounded-lg">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+        <div class="flex-1 bg-slate-100 p-4 overflow-auto">
+            <template x-if="previewDoc.fileUrl && previewDoc.fileUrl.startsWith('data:application/pdf')">
+                <iframe :src="previewDoc.fileUrl" class="w-full h-full rounded-xl border-0" style="min-height: 500px;"></iframe>
+            </template>
+            <template x-if="!previewDoc.fileUrl || !previewDoc.fileUrl.startsWith('data:application/pdf')">
+                <div class="bg-white rounded-xl p-8 text-center flex flex-col items-center justify-center h-full border-2 border-dashed border-slate-300">
+                    <i data-lucide="file-text" class="w-16 h-16 text-slate-300 mb-4"></i>
+                    <h4 class="text-lg font-bold text-slate-600">Dokumen Belum Tersedia</h4>
+                    <p class="text-sm text-slate-400 mt-2">Silakan upload dokumen PDF terlebih dahulu.</p>
+                </div>
+            </template>
+        </div>
+    </div>
 </div>
 
 </div>
@@ -965,7 +1045,6 @@ function sipandaApp() {
           let listPegawai = [];
           pegawaiSnap.forEach(doc => {
             let data = doc.data();
-            // Hitung ulang countdown
             data.pangkatCountdownDays = this.calculateDaysDiff(data.tglPangkatBerikutnya);
             data.kgbCountdownDays = this.calculateDaysDiff(data.tglKgbBerikutnya);
             data.pensiunCountdown = this.calculatePensiunDays(data.tglLahir);
@@ -989,7 +1068,6 @@ function sipandaApp() {
         }
       }
       
-      // Hitung ulang countdown agar akurat
       this.pegawaiList.forEach(p => {
         p.pangkatCountdownDays = this.calculateDaysDiff(p.tglPangkatBerikutnya);
         p.kgbCountdownDays = this.calculateDaysDiff(p.tglKgbBerikutnya);
@@ -1034,25 +1112,26 @@ function sipandaApp() {
       const file = event.target.files[0];
       if (!file) return;
       
+      if (!file.type.startsWith('image/')) {
+        alert('Harap upload file gambar!');
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onload = async (e) => {
         const base64Img = e.target.result;
         
-        // Update di target selectedPegawai & session jika kebetulan sama
         this.selectedPegawai.foto = base64Img;
         
-        // Sinkronisasi ke daftar master list
         const idx = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
         if (idx !== -1) {
           this.pegawaiList[idx].foto = base64Img;
         }
         
-        // Simpan ke DB
         await this.persistPegawai(this.selectedPegawai);
         
         this.addAuditLog("Upload Foto Profil", "Memperbarui foto profil pegawai: " + this.selectedPegawai.nama);
-        alert("Foto profil berhasil diperbarui!");
-        // Refresh icons
+        alert("✅ Foto profil berhasil diperbarui!");
         setTimeout(() => lucide.createIcons(), 100);
       };
       reader.readAsDataURL(file);
@@ -1061,9 +1140,16 @@ function sipandaApp() {
     // ============ UPLOAD DOKUMEN PDF ============
     handleDocUpload(event, type) {
       const file = event.target.files[0];
-      if (!file) return;
+      if (!file) {
+        alert("Silakan pilih file terlebih dahulu!");
+        return;
+      }
       if (file.type !== "application/pdf") {
-        alert("Mohon unggah file dengan format PDF saja.");
+        alert("⚠️ Mohon unggah file dengan format PDF saja!");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert("⚠️ Ukuran file maksimal 5MB!");
         return;
       }
       
@@ -1071,17 +1157,14 @@ function sipandaApp() {
       reader.onload = async (e) => {
         const base64Pdf = e.target.result;
         
-        // Pastikan struktur objek dokumen aman
         if (!this.selectedPegawai.dokumen) this.selectedPegawai.dokumen = {};
         if (!this.selectedPegawai.dokumen[type]) this.selectedPegawai.dokumen[type] = {};
         
-        // Update detail berkas ke selectedPegawai
         this.selectedPegawai.dokumen[type].namaFile = file.name;
         this.selectedPegawai.dokumen[type].fileUrl = base64Pdf;
         this.selectedPegawai.dokumen[type].tanggal = new Date().toISOString().split('T')[0];
         this.selectedPegawai.dokumen[type].nomor = this.selectedPegawai.dokumen[type].nomor || "SK-" + Date.now();
         
-        // Kalkulasi ulang kelengkapan progress berkas %
         let totalAda = 0;
         const keys = ['skPangkat', 'skJabatan', 'skKgb', 'skp'];
         keys.forEach(k => {
@@ -1089,7 +1172,6 @@ function sipandaApp() {
         });
         this.selectedPegawai.progressBerkas = Math.round((totalAda / keys.length) * 100);
         
-        // Sinkronisasi ke data master
         const idx = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
         if (idx !== -1) {
           this.pegawaiList[idx].dokumen = JSON.parse(JSON.stringify(this.selectedPegawai.dokumen));
@@ -1098,19 +1180,25 @@ function sipandaApp() {
         
         await this.persistPegawai(this.selectedPegawai);
         this.addAuditLog("Upload Dokumen", "Mengunggah file " + type + " untuk " + this.selectedPegawai.nama);
-        alert("Dokumen " + type + " berhasil diunggah!");
-        // Refresh icons
+        alert("✅ Dokumen " + type + " berhasil diunggah!");
         setTimeout(() => lucide.createIcons(), 100);
       };
       reader.readAsDataURL(file);
     },
 
-    // ============ PREVIEW DOKUMEN ============
-    triggerPdfPreview(docObj) {
+    // ============ OPEN PDF VIEWER ============
+    openPdfViewer(docObj) {
       if (!docObj || !docObj.fileUrl) {
-        alert("File dokumen kosong atau belum diunggah.");
+        alert("⚠️ Dokumen belum diupload atau file kosong!");
         return;
       }
+      
+      // Cek apakah fileUrl valid (base64 PDF)
+      if (!docObj.fileUrl.startsWith('data:application/pdf')) {
+        alert("⚠️ Format dokumen tidak valid! Harap upload ulang file PDF.");
+        return;
+      }
+      
       this.previewDoc = {
         nomor: docObj.nomor || "Belum diisi",
         tanggal: docObj.tanggal || "Belum diisi",
@@ -1118,18 +1206,22 @@ function sipandaApp() {
         fileUrl: docObj.fileUrl
       };
       this.showPdfViewer = true;
+      setTimeout(() => lucide.createIcons(), 100);
     },
 
-    // ============ HITUNG COUNTDOWN HARIAN ============
+    // ============ CLOSE PDF VIEWER ============
+    closePdfViewer() {
+      this.showPdfViewer = false;
+      this.previewDoc = { nomor: '', tanggal: '', namaFile: '', fileUrl: '' };
+    },
+
+    // ============ HITUNG COUNTDOWN ============
     calculateDaysDiff(targetDateStr) {
       if (!targetDateStr) return 999;
       const target = new Date(targetDateStr);
       const today = new Date();
-      
-      // Set waktu ke 00:00:00 agar kalkulasi murni berdasarkan tanggal kalender
       target.setHours(0,0,0,0);
       today.setHours(0,0,0,0);
-      
       const timeDiff = target.getTime() - today.getTime();
       const days = Math.ceil(timeDiff / (1000 * 3600 * 24));
       return isNaN(days) ? 999 : days;
@@ -1184,17 +1276,15 @@ function sipandaApp() {
       return diff < 0 ? 0 : diff;
     },
 
-    // ============ CRUD / STATS HANDLING ============
+    // ============ CRUD / STATS ============
     recalculateSystemStats() {
       this.stats.totalPegawai = this.pegawaiList.length;
       
-      // Filter Cuti Hari ini
       const todayStr = new Date().toISOString().split('T')[0];
       const cutiHariIni = this.cutiList.filter(c => todayStr >= c.tanggalMulai && todayStr <= c.tanggalSelesai);
       this.stats.pegawaiCuti = cutiHariIni.length;
       this.stats.pegawaiCutiName = cutiHariIni.map(c => c.nama).join(', ') || 'Semua hadir';
 
-      // Hitung Urgensi & Berkas Kosong
       let pSegera = 0, kSegera = 0, skpKosong = 0, skjKosong = 0, blmLengkap = 0, pensiunSegera = 0;
       
       this.pegawaiList.forEach(p => {
@@ -1219,7 +1309,6 @@ function sipandaApp() {
       this.stats.dokumenBelumLengkap = blmLengkap;
       this.stats.pensiunSegera = pensiunSegera;
 
-      // Buat daftar prioritas di dashboard
       this.prioritasList = [];
       this.pegawaiList.forEach(p => {
         if (p.pangkatCountdownDays <= 90) {
@@ -1281,7 +1370,7 @@ function sipandaApp() {
     async saveNewPegawai() {
       const exist = this.pegawaiList.some(p => p.nip === this.newPegawaiForm.nip);
       if (exist) {
-        alert("Pegawai dengan NIP tersebut sudah terdaftar!");
+        alert("⚠️ Pegawai dengan NIP tersebut sudah terdaftar!");
         return;
       }
       
@@ -1323,7 +1412,7 @@ function sipandaApp() {
       
       this.showModalAddPegawai = false;
       this.newPegawaiForm = { nip: '', nama: '', golongan: 'III/a', jabatan: '', noHp: '', email: '' };
-      alert("Pegawai baru sukses disimpan!");
+      alert("✅ Pegawai baru sukses disimpan!");
       this.recalculateSystemStats();
     },
 
@@ -1341,7 +1430,7 @@ function sipandaApp() {
       
       this.recalculateSystemStats();
       if (this.selectedPegawai?.nip === nip) this.selectedPegawai = this.pegawaiList[0] || null;
-      alert("Pegawai terhapus.");
+      alert("✅ Pegawai terhapus.");
     },
 
     openModalEditNip(pegawai) {
@@ -1352,10 +1441,13 @@ function sipandaApp() {
     async saveNipChange() {
       const oldN = this.nipEditForm.oldNip;
       const newN = this.nipEditForm.newNip.trim();
-      if (!newN) return;
+      if (!newN) {
+        alert("⚠️ Silakan isi NIP baru!");
+        return;
+      }
       
       if (this.pegawaiList.some(p => p.nip === newN)) {
-        alert("NIP baru sudah digunakan pegawai lain!");
+        alert("⚠️ NIP baru sudah digunakan pegawai lain!");
         return;
       }
 
@@ -1387,17 +1479,21 @@ function sipandaApp() {
         
         this.showModalEditNip = false;
         this.recalculateSystemStats();
-        alert("NIP sukses diubah menjadi " + newN);
+        alert("✅ NIP sukses diubah menjadi " + newN);
       }
     },
 
     async saveNewCuti() {
       if (!this.newCutiForm.nip) {
-        alert("Silakan pilih pegawai terlebih dahulu!");
+        alert("⚠️ Silakan pilih pegawai terlebih dahulu!");
         return;
       }
       if (!this.newCutiForm.tanggalMulai || !this.newCutiForm.tanggalSelesai) {
-        alert("Silakan isi tanggal mulai dan selesai cuti!");
+        alert("⚠️ Silakan isi tanggal mulai dan selesai cuti!");
+        return;
+      }
+      if (this.newCutiForm.tanggalMulai > this.newCutiForm.tanggalSelesai) {
+        alert("⚠️ Tanggal mulai tidak boleh lebih besar dari tanggal selesai!");
         return;
       }
       
@@ -1424,7 +1520,7 @@ function sipandaApp() {
       this.newCutiForm = { nip: '', jenisCuti: 'Cuti Tahunan', tanggalMulai: '', tanggalSelesai: '', keterangan: '' };
       this.recalculateSystemStats();
       this.initCalendar();
-      alert("Data cuti berhasil dimasukkan!");
+      alert("✅ Data cuti berhasil dimasukkan!");
     },
 
     async hapusCuti(cutiId) {
@@ -1456,15 +1552,13 @@ function sipandaApp() {
       return 'bg-emerald-500';
     },
 
-    // ============ DUMMY DATA POOL ============
+    // ============ DUMMY DATA ============
     generateDummyPegawaiDataRaw() {
       const today = new Date();
       const futurePangkat = new Date(today);
       futurePangkat.setDate(today.getDate() + 45);
       const futureKgb = new Date(today);
       futureKgb.setDate(today.getDate() + 75);
-      const futurePensiun = new Date(today);
-      futurePensiun.setDate(today.getDate() + 365);
       
       return [
         {
@@ -1526,12 +1620,11 @@ function sipandaApp() {
       ];
     },
 
-    // ============ INTERACTIVE UI COMPONENTS ============
+    // ============ UI COMPONENTS ============
     initChart() {
       const ctx = document.getElementById('dashboardMainChart');
       if (!ctx) return;
       
-      // Hitung sebaran data riil
       let g2 = 0, g3 = 0, g4 = 0;
       this.pegawaiList.forEach(p => {
         if(p.golongan.startsWith('II/')) g2++;
@@ -1570,6 +1663,7 @@ function sipandaApp() {
         if (c.jenisCuti === 'Cuti Tahunan') color = '#2E7D32';
         else if (c.jenisCuti === 'Cuti Sakit') color = '#C62828';
         else if (c.jenisCuti === 'Cuti Besar') color = '#E65100';
+        else if (c.jenisCuti === 'Cuti Melahirkan') color = '#E65100';
 
         return { title: c.nama + ' (' + c.jenisCuti + ')', start: c.tanggalMulai, end: new Date(new Date(c.tanggalSelesai).getTime() + 86400000).toISOString().split('T')[0], backgroundColor: color, borderColor: color };
       });
@@ -1580,7 +1674,8 @@ function sipandaApp() {
         initialView: 'dayGridMonth',
         locale: 'id',
         headerToolbar: { left: 'prev,next', center: 'title', right: 'dayGridMonth,listMonth' },
-        events: eventList
+        events: eventList,
+        height: 'auto'
       });
       window.sipandaCalInstance.render();
     },
@@ -1614,13 +1709,21 @@ function sipandaApp() {
       this.auditLogs.unshift({
         aksi: aksi.toUpperCase(),
         detail: detail,
-        timestamp: "Baru saja"
+        timestamp: new Date().toLocaleString('id-ID')
       });
     },
 
     handleLogin() {
-      this.isLoggedIn = true;
-      setTimeout(() => { this.initChart(); this.initCalendar(); }, 400);
+      if (this.loginForm.username && this.loginForm.password) {
+        this.isLoggedIn = true;
+        setTimeout(() => { 
+          lucide.createIcons();
+          this.initChart(); 
+          this.initCalendar(); 
+        }, 400);
+      } else {
+        alert("⚠️ Silakan isi email dan password!");
+      }
     },
 
     handleLogout() {
@@ -1634,15 +1737,17 @@ function sipandaApp() {
       this.pegawaiSearch = this.searchQuery;
     },
 
-    exportDataToExcel() { alert("Mengunduh spreadsheet excel data master pegawai..."); },
-    exportDataToPDF() { alert("Mencetak berkas PDF daftar pegawai aktif..."); },
-    triggerReportExport(t) { alert("Menyiapkan dokumen ekspor laporan untuk: " + t); },
+    exportDataToExcel() { alert("📊 Mengunduh spreadsheet excel data master pegawai..."); },
+    exportDataToPDF() { alert("📄 Mencetak berkas PDF daftar pegawai aktif..."); },
+    triggerReportExport(t) { alert("📄 Menyiapkan dokumen ekspor laporan untuk: " + t); },
+    
     exportDatabaseBackup() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ pegawai: this.pegawaiList, cuti: this.cutiList }));
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ pegawai: this.pegawaiList, cuti: this.cutiList, todo: this.todoList }));
       const dl = document.createElement('a');
       dl.setAttribute("href", dataStr);
       dl.setAttribute("download", "SIPANDA_BACKUP_" + Date.now() + ".json");
       dl.click();
+      alert("✅ Backup database berhasil diunduh!");
     }
   };
 }
