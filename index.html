@@ -458,6 +458,12 @@ const firebaseConfig = {
 <div x-show="selectedTab === 'identitas'" class="space-y-4">
 <h3 class="font-bold text-[#0B2341] text-xs">Informasi Data Pribadi Pegawai</h3>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-700">
+<!-- TAMBAHAN: Edit Nama Pegawai -->
+<div class="md:col-span-2">
+<span class="block text-slate-400">Nama Lengkap:</span>
+<input type="text" x-model="selectedPegawai.nama" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg font-bold text-[#0B2341]" placeholder="Nama Lengkap Pegawai">
+</div>
+<!-- END TAMBAHAN -->
 <div><span class="block text-slate-400">Tanggal Lahir:</span>
 <input type="date" x-model="selectedPegawai.tglLahir" @change="savePegawaiEdit(); updatePensiun();" class="w-full px-2 py-1 border rounded-lg">
 </div>
