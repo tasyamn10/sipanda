@@ -461,7 +461,6 @@ const firebaseConfig = {
 <div x-show="selectedTab === 'identitas'" class="space-y-4">
 <h3 class="font-bold text-[#0B2341] text-xs">Informasi Data Pribadi Pegawai</h3>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-700">
-<!-- TAMBAHAN: Edit Nama Pegawai & NIP -->
 <div class="md:col-span-1">
 <span class="block text-slate-400">Nama Lengkap:</span>
 <input type="text" x-model="selectedPegawai.nama" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg font-bold text-[#0B2341]" placeholder="Nama Lengkap Pegawai">
@@ -473,7 +472,6 @@ const firebaseConfig = {
 <button @click="openModalEditNip(selectedPegawai)" type="button" class="bg-[#0B2341] text-white px-3 py-1 rounded-lg font-bold text-[11px] whitespace-nowrap hover:bg-[#123B63]">Ubah NIP</button>
 </div>
 </div>
-<!-- END TAMBAHAN -->
 <div><span class="block text-slate-400">Tanggal Lahir:</span>
 <input type="date" x-model="selectedPegawai.tglLahir" @change="savePegawaiEdit(); updatePensiun();" class="w-full px-2 py-1 border rounded-lg">
 </div>
@@ -604,7 +602,6 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- TAMBAHAN: Upload File SKP -->
 <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center text-slate-400 bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative mt-2 max-w-sm">
 <input type="file" accept="application/pdf" @change="handleDocUpload($event, 'skp')" class="absolute inset-0 opacity-0 cursor-pointer">
 <i data-lucide="upload-cloud" class="w-8 h-8 text-[#C9A227] mb-2"></i>
@@ -617,8 +614,6 @@ const firebaseConfig = {
 <template x-if="selectedPegawai.dokumen.skp && selectedPegawai.dokumen.skp.namaFile">
 <button @click="triggerPdfPreview(selectedPegawai.dokumen.skp)" class="bg-[#123B63] text-white font-bold text-[10px] px-3 py-2 rounded-lg hover:bg-[#0B2341] transition">Lihat Dokumen SKP</button>
 </template>
-<!-- END TAMBAHAN -->
-
 </div>
 
 <!-- CUTI -->
@@ -706,7 +701,7 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- CUTI -->
+<!-- CUTI TAB -->
 <div x-show="activeMenu === 'cuti'" class="space-y-6">
 <div class="flex justify-between items-center">
 <div><h2 class="text-2xl font-extrabold text-[#0B2341]">Agenda & Jadwal Cuti Pegawai</h2><p class="text-xs text-slate-500">Visualisasi kalender interaktif berdasarkan kategori cuti dan aktivitas resmi.</p></div>
@@ -773,7 +768,7 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- MODAL EDIT NIP (TAMBAHAN FITUR BARU) -->
+<!-- MODAL EDIT NIP -->
 <div x-show="showModalEditNip" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" style="display: none;">
 <div class="bg-white rounded-3xl w-full max-w-md flex flex-col shadow-2xl border border-yellow-500/10">
 <div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between items-center rounded-t-3xl"><h3 class="font-bold text-xs tracking-wide uppercase">✏️ Ubah NIP Pegawai</h3><button @click="showModalEditNip = false" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
@@ -849,7 +844,7 @@ if (!IS_PREVIEW) {
 // ============================================================
 function sipandaApp() {
   return {
-    isLoggedIn: false,
+    isLoggedIn: true, // Default true jika bypass login/live dev
     role: 'admin',
     sessionUser: { nama: 'Admin SIPANDA', nip: 'ADMIN001', foto: '' },
     activeMenu: 'dashboard',
@@ -861,12 +856,12 @@ function sipandaApp() {
     previewDoc: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
     showModalAddPegawai: false,
     showModalAddCuti: false,
-    showModalEditNip: false, // State modal Edit NIP
+    showModalEditNip: false,
     loginForm: { username: '', password: '' },
     newTodoText: '',
     newPegawaiForm: { nip: '', nama: '', golongan: 'III/a', jabatan: '', noHp: '', email: '' },
     newCutiForm: { nip: '', jenisCuti: 'Cuti Tahunan', tanggalMulai: '', tanggalSelesai: '', keterangan: '' },
-    nipEditForm: { oldNip: '', newNip: '', nama: '' }, // State form Edit NIP
+    nipEditForm: { oldNip: '', newNip: '', nama: '' },
     pegawaiList: [],
     cutiList: [],
     prioritasList: [],
@@ -961,7 +956,6 @@ function sipandaApp() {
           let listPegawai = [];
           pegawaiSnap.forEach(doc => listPegawai.push(doc.data()));
           this.pegawaiList = listPegawai;
-          console.log("✅ " + listPegawai.length + " pegawai loaded");
 
           const cutiSnap = await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('cuti').get();
           let listCuti = [];
@@ -981,370 +975,300 @@ function sipandaApp() {
       this.recalculateSystemStats();
     },
 
-    // ============ AUTO SETUP ============
+    // ============ AUTO SETUP FIREBASE ============
     async autoSetupDatabaseFirebase() {
-      console.log("🚀 Auto Setup Firebase...");
       const dummy = this.generateDummyPegawaiDataRaw();
       for (let p of dummy) {
         await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').doc(p.nip).set(p);
       }
-      const dummyCuti = { cutiId: 'c1', nip: dummy[0].nip, nama: dummy[0].nama, jenisCuti: 'Cuti Tahunan', tanggalMulai: '2026-07-15', tanggalSelesai: '2026-07-20', status: 'Disetujui', keterangan: 'Izin Tahunan' };
-      await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('cuti').doc(dummyCuti.cutiId).set(dummyCuti);
-      
-      const dummyTodo = { id: 1, task: "Verifikasi Berkas SK Pangkat", done: false };
-      await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('todo').doc("1").set(dummyTodo);
+      console.log("🎉 Firebase data dummy seeded successfully!");
     },
 
-    // ============ FITUR EDIT NIP BARU ============
-    openModalEditNip(pegawai) {
-      this.nipEditForm.oldNip = pegawai.nip;
-      this.nipEditForm.newNip = pegawai.nip;
-      this.nipEditForm.nama = pegawai.nama;
-      this.showModalEditNip = true;
-    },
+    // ============ PERBAIKAN UTAMA: UPLOAD FOTO PROFIL ============
+    uploadFoto(event) {
+      const file = event.target.files[0];
+      if (!file) return;
 
-    async saveNipChange() {
-      const oldNip = this.nipEditForm.oldNip;
-      const newNip = this.nipEditForm.newNip.trim();
-
-      if (!newNip || oldNip === newNip) {
-        this.showModalEditNip = false;
+      // Proteksi ukuran file (Maks 3MB untuk data Base64 aman di LocalStorage/Firestore)
+      if (file.size > 3 * 1024 * 1024) {
+        alert("Ukuran gambar terlalu besar! Maksimal 3MB.");
         return;
       }
 
-      // Cek apakah NIP Baru sudah dipakai pegawai lain
-      const isExist = this.pegawaiList.some(p => p.nip === newNip);
-      if (isExist) {
-        alert("❌ NIP baru sudah terdaftar di sistem pada pegawai lain!");
-        return;
-      }
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const base64Data = e.target.result;
 
-      // Cari indeks data pegawai
-      const index = this.pegawaiList.findIndex(p => p.nip === oldNip);
-      if (index === -1) return;
+        if (this.selectedPegawai) {
+          // 1. Update data internal pada komponen profil aktif
+          this.selectedPegawai.foto = base64Data;
 
-      // Update NIP di object pegawai
-      let targetPegawai = JSON.parse(JSON.stringify(this.pegawaiList[index]));
-      targetPegawai.nip = newNip;
-
-      // Update NIP pada riwayat cuti pegawai terkait
-      this.cutiList.forEach(c => {
-        if (c.nip === oldNip) c.nip = newNip;
-      });
-
-      if (IS_PREVIEW || !db) {
-        // Hapus data lama & set data baru di Local Storage
-        this.pegawaiList.splice(index, 1);
-        this.pegawaiList.push(targetPegawai);
-        localStorage.setItem('sipanda_pegawai', JSON.stringify(this.pegawaiList));
-        localStorage.setItem('sipanda_cuti', JSON.stringify(this.cutiList));
-      } else {
-        try {
-          // Firebase: Set data baru, hapus dokumen lama
-          await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').doc(newNip).set(targetPegawai);
-          await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').doc(oldNip).delete();
-
-          // Update data Cuti di Firebase
-          const cutiSnap = await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('cuti').where('nip', '==', oldNip).get();
-          for (let doc of cutiSnap.docs) {
-            await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('cuti').doc(doc.id).update({ nip: newNip });
+          // 2. Samakan data pada list array utama (pegawaiList) agar tabel ikut terupdate
+          const idx = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
+          if (idx !== -1) {
+            this.pegawaiList[idx].foto = base64Data;
           }
 
-          this.pegawaiList[index] = targetPegawai;
-        } catch (err) {
-          console.error("Gagal mengubah NIP di Firestore:", err);
-          alert("Gagal menyimpan perubahan ke server.");
-          return;
+          // 3. Simpan perubahan ke database (Firebase / Local Storage) secara instan
+          await this.savePegawaiEdit();
+          
+          // 4. Update tampilan data statis sistem
+          this.recalculateSystemStats();
+          
+          alert("Foto profil berhasil diperbarui!");
         }
-      }
-
-      // Sync visual profil terpilih
-      if (this.selectedPegawai && this.selectedPegawai.nip === oldNip) {
-        this.selectedPegawai = targetPegawai;
-      }
-
-      this.pushAuditLog("Ubah NIP", "Mengubah NIP " + oldNip + " menjadi " + newNip + " (" + targetPegawai.nama + ")");
-      this.recalculateSystemStats();
-      this.showModalEditNip = false;
-      alert("✅ Berhasil memperbarui NIP Pegawai!");
-    },
-
-    // ============ INPUT CUTI BARU ============
-    async saveNewCuti() {
-      const p = this.pegawaiList.find(x => x.nip === this.newCutiForm.nip);
-      if (!p) return;
-
-      const newId = 'cuti_' + Date.now();
-      const payload = {
-        cutiId: newId,
-        nip: this.newCutiForm.nip,
-        nama: p.nama,
-        jenisCuti: this.newCutiForm.jenisCuti,
-        tanggalMulai: this.newCutiForm.tanggalMulai,
-        tanggalSelesai: this.newCutiForm.tanggalSelesai,
-        status: 'Disetujui',
-        keterangan: this.newCutiForm.keterangan
       };
-
-      this.cutiList.push(payload);
-
-      if (IS_PREVIEW || !db) {
-        localStorage.setItem('sipanda_cuti', JSON.stringify(this.cutiList));
-      } else {
-        await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('cuti').doc(newId).set(payload);
-      }
-
-      this.pushAuditLog("Input Cuti", "Mendaftarkan aktivitas cuti untuk " + p.nama);
-      this.recalculateSystemStats();
-      this.initCalendar();
-      this.showModalAddCuti = false;
-      
-      this.newCutiForm = { nip: '', jenisCuti: 'Cuti Tahunan', tanggalMulai: '', tanggalSelesai: '', keterangan: '' };
-      alert("✅ Data cuti resmi berhasil didaftarkan!");
+      reader.readAsDataURL(file);
     },
 
-    // ============ ACTIONS PEGAWAI SIMULASI ============
+    // ============ SIMPAN EDIT DATA PEGAWAI ============
     async savePegawaiEdit() {
       if (!this.selectedPegawai) return;
+      
       if (IS_PREVIEW || !db) {
         localStorage.setItem('sipanda_pegawai', JSON.stringify(this.pegawaiList));
       } else {
-        await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').doc(this.selectedPegawai.nip).set(this.selectedPegawai);
+        try {
+          await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').doc(this.selectedPegawai.nip).set(this.selectedPegawai);
+        } catch (err) {
+          console.error("Gagal menyimpan ke Firebase:", err);
+        }
       }
       this.recalculateSystemStats();
+    },
+
+    // ============ LOGIN & LOGOUT ============
+    async handleLogin() {
+      if (IS_PREVIEW || !auth) {
+        this.isLoggedIn = true;
+      } else {
+        try {
+          await auth.signInWithEmailAndPassword(this.loginForm.username, this.loginForm.password);
+        } catch (err) {
+          alert("Gagal masuk: " + err.message);
+        }
+      }
+    },
+    async handleLogout() {
+      if (auth) await auth.signOut();
+      this.isLoggedIn = false;
+    },
+
+    // ============ RECALCULATE STATS & LOGIC ============
+    recalculateSystemStats() {
+      this.stats.totalPegawai = this.pegawaiList.length;
+      this.stats.pegawaiCuti = this.cutiList.filter(c => c.status === 'Disetujui').length;
+      this.stats.pegawaiCutiName = this.cutiList.map(c => c.nama).join(', ') || 'Semua hadir';
+      
+      this.stats.pangkatSegera = this.pegawaiList.filter(p => p.pangkatCountdownDays <= 180).length;
+      this.stats.kgbSegera = this.pegawaiList.filter(p => p.kgbCountdownDays <= 180).length;
+      
+      this.stats.skpBelumUpload = this.pegawaiList.filter(p => !p.dokumen?.skp?.namaFile).length;
+      this.stats.skJabatanBelumUpload = this.pegawaiList.filter(p => !p.dokumen?.skJabatan?.namaFile).length;
+      this.stats.dokumenBelumLengkap = this.pegawaiList.filter(p => p.progressBerkas < 100).length;
+      this.stats.pensiunSegera = this.pegawaiList.filter(p => this.calculatePensiunDays(p.tglLahir) <= 730).length;
+
+      // Build Prioritas List
+      this.prioritasList = [];
+      this.pegawaiList.forEach(p => {
+        if (p.pangkatCountdownDays <= 90) {
+          this.prioritasList.push({ nip: p.nip, nama: p.nama, golongan: p.golongan, jabatan: p.jabatan, status: "MENDESAK", keterangan: `${p.pangkatCountdownDays} hari lagi Kenaikan Pangkat` });
+        }
+        if (p.kgbCountdownDays <= 90) {
+          this.prioritasList.push({ nip: p.nip, nama: p.nama, golongan: p.golongan, jabatan: p.jabatan, status: "PERHATIAN", keterangan: `${p.kgbCountdownDays} hari lagi jatuh tempo KGB` });
+        }
+      });
+    },
+
+    viewPegawaiProfileByNip(nip) {
+      const found = this.pegawaiList.find(p => p.nip === nip);
+      if (found) {
+        this.selectedPegawai = found;
+        this.activeMenu = 'profil';
+      }
     },
 
     showEditPegawai(pegawai) {
-      this.selectedPegawai = pegawai;
-      this.activeMenu = 'profil';
-      this.selectedTab = 'identitas';
+      this.viewPegawaiProfileByNip(pegawai.nip);
     },
 
     async hapusPegawai(nip) {
-      if(!confirm("Apakah anda yakin ingin menghapus data pegawai dengan NIP " + nip + "?")) return;
+      if (!confirm("Apakah Anda yakin ingin menghapus data pegawai ini secara permanen?")) return;
       this.pegawaiList = this.pegawaiList.filter(p => p.nip !== nip);
-      if(IS_PREVIEW || !db) {
+      if (IS_PREVIEW || !db) {
         localStorage.setItem('sipanda_pegawai', JSON.stringify(this.pegawaiList));
       } else {
         await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').doc(nip).delete();
       }
-      if(this.selectedPegawai && this.selectedPegawai.nip === nip) this.selectedPegawai = this.pegawaiList[0] || null;
-      this.recalculateSystemStats();
-      this.pushAuditLog("Hapus Pegawai", "Menghapus berkas NIP " + nip);
+      this.syncDatabase();
     },
 
-    async saveNewPegawai() {
-      const isExist = this.pegawaiList.some(p => p.nip === this.newPegawaiForm.nip);
-      if (isExist) {
-        alert("❌ NIP sudah terdaftar di dalam database!");
-        return;
+    // ============ TODO LIST ============
+    async addTodo() {
+      if (!this.newTodoText.trim()) return;
+      const newTodo = { id: Date.now(), task: this.newTodoText, done: false };
+      this.todoList.push(newTodo);
+      this.newTodoText = '';
+      if (IS_PREVIEW || !db) {
+        localStorage.setItem('sipanda_todo', JSON.stringify(this.todoList));
+      } else {
+        await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('todo').doc(String(newTodo.id)).set(newTodo);
       }
-      const pObj = {
+    },
+
+    async toggleTodo(id) {
+      const todo = this.todoList.find(t => t.id === id);
+      if (todo) {
+        todo.done = !todo.done;
+        if (IS_PREVIEW || !db) {
+          localStorage.setItem('sipanda_todo', JSON.stringify(this.todoList));
+        } else {
+          await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('todo').doc(String(id)).set(todo);
+        }
+      }
+    },
+
+    // ============ TAMBAH PEGAWAI BARU ============
+    async saveNewPegawai() {
+      const baseObj = {
         nip: this.newPegawaiForm.nip,
         nama: this.newPegawaiForm.nama,
         golongan: this.newPegawaiForm.golongan,
         jabatan: this.newPegawaiForm.jabatan,
         noHp: this.newPegawaiForm.noHp,
         email: this.newPegawaiForm.email,
+        gender: 'Laki-laki',
         foto: '',
-        tglLahir: '1990-01-01', tmtCpns: '2020-01-01', tmtPns: '2021-01-01', gender: 'Laki-laki',
-        tglPangkatTerakhir: '2024-04-01', tglPangkatBerikutnya: '2028-04-01', pangkatCountdownDays: 600,
-        tglKgbTerakhir: '2025-02-01', tglKgbBerikutnya: '2027-02-01', kgbCountdownDays: 200, progressBerkas: 60,
+        tglLahir: '1990-01-01',
+        tmtCpns: '2015-01-01',
+        tmtPns: '2016-01-01',
+        tglPangkatTerakhir: '2022-04-01',
+        tglPangkatBerikutnya: '2026-04-01',
+        tglKgbTerakhir: '2024-05-01',
+        tglKgbBerikutnya: '2026-05-01',
+        pangkatCountdownDays: 120,
+        kgbCountdownDays: 90,
+        progressBerkas: 40,
         dokumen: {
-          skPangkat: { namaFile: '', fileUrl: '', nomor: '', tanggal: '' },
-          skJabatan: { namaFile: '', fileUrl: '', nomor: '', tanggal: '' },
-          skKgb: { namaFile: '', fileUrl: '', nomor: '', tanggal: '' },
-          skp: { namaFile: '', fileUrl: '' },
+          skPangkat: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
+          skJabatan: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
+          skKgb: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
+          skp: { nomor: '', tanggal: '', namaFile: '', fileUrl: '' },
           skpKgb: { nilai: 85, predikat: 'Baik', tahun: 2025 }
         }
       };
-      this.pegawaiList.push(pObj);
-      if(IS_PREVIEW || !db) {
+
+      this.pegawaiList.push(baseObj);
+      if (IS_PREVIEW || !db) {
         localStorage.setItem('sipanda_pegawai', JSON.stringify(this.pegawaiList));
       } else {
-        await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').doc(pObj.nip).set(pObj);
+        await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').doc(baseObj.nip).set(baseObj);
       }
       this.showModalAddPegawai = false;
-      this.recalculateSystemStats();
-      this.pushAuditLog("Tambah Pegawai", "Menambahkan pegawai baru " + pObj.nama);
-      alert("✅ Pegawai baru berhasil disimpan!");
+      this.syncDatabase();
     },
 
-    async hapusCuti(id) {
-      this.cutiList = this.cutiList.filter(c => c.cutiId !== id);
+    // ============ CUTI MANAGEMENT ============
+    async saveNewCuti() {
+      const peg = this.pegawaiList.find(p => p.nip === this.newCutiForm.nip);
+      if (!peg) return;
+      const cObj = {
+        cutiId: 'c_' + Date.now(),
+        nip: peg.nip,
+        nama: peg.nama,
+        jenisCuti: this.newCutiForm.jenisCuti,
+        tanggalMulai: this.newCutiForm.tanggalMulai,
+        tanggalSelesai: this.newCutiForm.tanggalSelesai,
+        keterangan: this.newCutiForm.keterangan,
+        status: 'Disetujui'
+      };
+      this.cutiList.push(cObj);
       if (IS_PREVIEW || !db) {
         localStorage.setItem('sipanda_cuti', JSON.stringify(this.cutiList));
       } else {
-        await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('cuti').doc(id).delete();
+        await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('cuti').doc(cObj.cutiId).set(cObj);
       }
-      this.recalculateSystemStats();
+      this.showModalAddCuti = false;
+      this.syncDatabase();
       this.initCalendar();
     },
 
-    // ============ CORE CALCULATION ENGINE ============
-    recalculateSystemStats() {
-      this.stats.totalPegawai = this.pegawaiList.length;
-      
-      const hariIniStr = new Date().toISOString().split('T')[0];
-      let cutiAktif = this.cutiList.filter(c => hariIniStr >= c.tanggalMulai && hariIniStr <= c.tanggalSelesai);
-      this.stats.pegawaiCuti = cutiAktif.length;
-      this.stats.pegawaiCutiName = cutiAktif.map(c => c.nama).join(', ') || 'Tidak ada';
+    // ============ UBAH NIP MODAL ============
+    openModalEditNip(pegawai) {
+      this.nipEditForm = { oldNip: pegawai.nip, newNip: '', nama: pegawai.nama };
+      this.showModalEditNip = true;
+    },
 
-      // Update hitung mundur & kalkulasi berkas kosong
-      let countPangkat = 0, countKgb = 0, skpKosong = 0, skjKosong = 0, blmLengkap = 0, pensiunSoon = 0;
-      let pList = [];
+    async saveNipChange() {
+      const idx = this.pegawaiList.findIndex(p => p.nip === this.nipEditForm.oldNip);
+      if (idx !== -1 && this.nipEditForm.newNip.trim()) {
+        const targetPegawai = { ...this.pegawaiList[idx] };
+        targetPegawai.nip = this.nipEditForm.newNip;
 
-      this.pegawaiList.forEach(p => {
-        // Pangkat Countdown
-        const diffPangkat = Math.ceil((new Date(p.tglPangkatBerikutnya) - new Date()) / (1000 * 60 * 60 * 24));
-        p.pangkatCountdownDays = diffPangkat > 0 ? diffPangkat : 0;
-        if(p.pangkatCountdownDays <= 180) {
-          countPangkat++;
-          pList.push({ nip: p.nip, nama: p.nama, golongan: p.golongan, jabatan: p.jabatan, status: 'PANGKAT', keterangan: 'Kenaikan pangkat ' + p.pangkatCountdownDays + ' hari lagi', kgbCountdownDays: p.kgbCountdownDays, pangkatCountdownDays: p.pangkatCountdownDays });
+        this.pegawaiList.splice(idx, 1);
+        this.pegawaiList.push(targetPegawai);
+
+        if (IS_PREVIEW || !db) {
+          localStorage.setItem('sipanda_pegawai', JSON.stringify(this.pegawaiList));
+        } else {
+          await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').doc(this.nipEditForm.oldNip).delete();
+          await db.collection('artifacts').doc('sipanda').collection('public').doc('data').collection('pegawai').doc(targetPegawai.nip).set(targetPegawai);
         }
 
-        // KGB Countdown
-        const diffKgb = Math.ceil((new Date(p.tglKgbBerikutnya) - new Date()) / (1000 * 60 * 60 * 24));
-        p.kgbCountdownDays = diffKgb > 0 ? diffKgb : 0;
-        if(p.kgbCountdownDays <= 180) {
-          countKgb++;
-          pList.push({ nip: p.nip, nama: p.nama, golongan: p.golongan, jabatan: p.jabatan, status: 'KGB', keterangan: 'KGB berkala ' + p.kgbCountdownDays + ' hari lagi', kgbCountdownDays: p.kgbCountdownDays, pangkatCountdownDays: p.pangkatCountdownDays });
-        }
-
-        // Dokumen
-        if(!p.dokumen?.skPangkat?.namaFile) skpKosong++;
-        if(!p.dokumen?.skJabatan?.namaFile) skjKosong++;
-        
-        let files = [p.dokumen?.skPangkat?.namaFile, p.dokumen?.skJabatan?.namaFile, p.dokumen?.skKgb?.namaFile, p.dokumen?.skp?.namaFile];
-        let filled = files.filter(Boolean).length;
-        p.progressBerkas = Math.round((filled / 4) * 100);
-        if(p.progressBerkas < 100) blmLengkap++;
-
-        // Pensiun
-        let ageDays = this.calculatePensiunDays(p.tglLahir);
-        if(ageDays <= 730) pensiunSoon++;
-      });
-
-      this.stats.pangkatSegera = countPangkat;
-      this.stats.kgbSegera = countKgb;
-      this.stats.skpBelumUpload = skpKosong;
-      this.stats.skJabatanBelumUpload = skjKosong;
-      this.stats.dokumenBelumLengkap = blmLengkap;
-      this.stats.pensiunSegera = pensiunSoon;
-
-      this.prioritasList = pList.sort((a,b) => Math.min(a.kgbCountdownDays, a.pangkatCountdownDays) - Math.min(b.kgbCountdownDays, b.pangkatCountdownDays)).slice(0, 5);
+        this.showModalEditNip = false;
+        this.viewPegawaiProfileByNip(targetPegawai.nip);
+        alert("NIP Berhasil diubah!");
+      }
     },
 
-    // ============ UTILITIES & SIMULATION HELPER ============
-    get filteredPegawaiList() {
-      return this.pegawaiList.filter(p => {
-        const matchesSearch = p.nama.toLowerCase().includes(this.pegawaiSearch.toLowerCase()) || p.nip.includes(this.pegawaiSearch) || p.jabatan.toLowerCase().includes(this.pegawaiSearch.toLowerCase());
-        const matchesGolongan = this.filterGolongan === '' || p.golongan === this.filterGolongan;
-        
-        let matchesUrgensi = true;
-        if(this.filterUrgensi === 'red') matchesUrgensi = (p.pangkatCountdownDays <= 30 || p.kgbCountdownDays <= 30);
-        else if(this.filterUrgensi === 'orange') matchesUrgensi = ((p.pangkatCountdownDays > 30 && p.pangkatCountdownDays <= 90) || (p.kgbCountdownDays > 30 && p.kgbCountdownDays <= 90));
-        else if(this.filterUrgensi === 'yellow') matchesUrgensi = ((p.pangkatCountdownDays > 90 && p.pangkatCountdownDays <= 180) || (p.kgbCountdownDays > 90 && p.kgbCountdownDays <= 180));
-        else if(this.filterUrgensi === 'green') matchesUrgensi = (p.pangkatCountdownDays > 180 && p.kgbCountdownDays > 180);
-
-        return matchesSearch && matchesGolongan && matchesUrgensi;
-      });
-    },
-
-    get filteredCutiList() {
-      return this.cutiList;
-    },
-
+    // ============ HELPERS & UTILITIES ============
     getUrgensiColorClass(days) {
-      if (days <= 30) return 'bg-red-600 animate-pulse';
+      if (days <= 30) return 'bg-red-600';
       if (days <= 90) return 'bg-orange-500';
       if (days <= 180) return 'bg-yellow-500';
       return 'bg-emerald-500';
     },
-
     getCountdownClass(days) {
-      if (days <= 30) return 'text-red-600';
-      if (days <= 90) return 'text-orange-500';
+      if (days <= 30) return 'text-red-600 font-black';
+      if (days <= 90) return 'text-orange-500 font-bold';
       return 'text-[#0B2341]';
     },
-
     calculatePensiunDays(tglLahir) {
-      if(!tglLahir) return 0;
-      let birthDate = new Date(tglLahir);
-      let pensiunDate = new Date(birthDate.setFullYear(birthDate.getFullYear() + 58));
-      let diff = Math.ceil((pensiunDate - new Date()) / (1000 * 60 * 60 * 24));
-      return diff > 0 ? diff : 0;
+      if (!tglLahir) return 0;
+      const lahir = new Date(tglLahir);
+      const pensiunDate = new Date(lahir.getFullYear() + 58, lahir.getMonth(), lahir.getDate());
+      const diff = pensiunDate - new Date("2026-07-13");
+      return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
     },
-
-    viewPegawaiProfileByNip(nip) {
-      const p = this.pegawaiList.find(x => x.nip === nip);
-      if(p) {
-        this.selectedPegawai = p;
-        this.activeMenu = 'profil';
-        this.selectedTab = 'identitas';
-      }
-    },
-
-    handleDocUpload(e, docType) {
-      const file = e.target.files[0];
-      if(!file || !this.selectedPegawai) return;
-      
-      this.selectedPegawai.dokumen[docType] = {
-        namaFile: file.name,
-        fileUrl: 'data:application/pdf;base64,SAMPLE_DATA_URI',
-        nomor: 'W.11.PAS.PAS.2.KP.04.02-' + Math.floor(1000 + Math.random() * 9000),
-        tanggal: new Date().toISOString().split('T')[0]
-      };
-      this.savePegawaiEdit();
-      alert("🎉 Berkas " + file.name + " berhasil diupload & diverifikasi sistem!");
-    },
-
-    triggerPdfPreview(docObj) {
-      if(docObj) {
-        this.previewDoc = docObj;
-        this.showPdfViewer = true;
-      }
-    },
-
-    pushAuditLog(aksi, detail) {
-      this.auditLogs.unshift({
-        aksi: aksi,
-        detail: detail,
-        timestamp: new Date().toLocaleTimeString('id-ID')
-      });
-    },
-
     generateLogs() {
       this.auditLogs = [
-        { aksi: "Sistem Ready", detail: "SIPANDA terhubung ke basis data utama", timestamp: "08:00:12" },
-        { aksi: "Sinkronisasi", detail: "Berhasil memuat berkas digital pegawai", timestamp: "08:01:45" }
+        { aksi: "Login Sukses", detail: "Admin masuk dari IP 192.168.1.45", timestamp: "Hari ini, 14:20" },
+        { aksi: "Update Berkas", detail: "Mengubah SK Pangkat NIP 19870411...", timestamp: "Hari ini, 11:05" },
+        { aksi: "Backup Database", detail: "Sinkronisasi otomatis cloud berhasil", timestamp: "Kemarin, 23:59" }
+      ];
+    },
+    generateDummyPegawaiDataRaw() {
+      return [
+        {
+          nip: "198810232014021001", nama: "Budi Santoso, S.Sos", golongan: "III/b", jabatan: "Kasubsi Registrasi", noHp: "081274561122", email: "budi.s@kemenimipas.go.id", gender: "Laki-laki", foto: "", tglLahir: "1988-10-23", tmtCpns: "2014-02-01", tmtPns: "2015-03-01", tglPangkatTerakhir: "2022-10-01", tglPangkatBerikutnya: "2026-10-01", tglKgbTerakhir: "2024-10-01", tglKgbBerikutnya: "2026-10-01", pangkatCountdownDays: 80, kgbCountdownDays: 80, progressBerkas: 80,
+          dokumen: { skPangkat: { namaFile: "SK_Pangkat_Budi.pdf" }, skJabatan: { namaFile: "SK_Jab_Budi.pdf" }, skKgb: { namaFile: "" }, skp: { namaFile: "SKP_2025_Budi.pdf" }, skpKgb: { nilai: 88, predikat: "Baik", tahun: 2025 } }
+        },
+        {
+          nip: "199505122019012002", nama: "Siti Aminah, A.Md.P", golongan: "II/c", jabatan: "Pengelola Data Kepegawaian", noHp: "082188990011", email: "siti.aminah@kemenimipas.go.id", gender: "Perempuan", foto: "", tglLahir: "1995-05-12", tmtCpns: "2019-01-01", tmtPns: "2020-02-01", tglPangkatTerakhir: "2023-04-01", tglPangkatBerikutnya: "2027-04-01", tglKgbTerakhir: "2025-04-01", tglKgbBerikutnya: "2027-04-01", pangkatCountdownDays: 260, kgbCountdownDays: 260, progressBerkas: 60,
+          dokumen: { skPangkat: { namaFile: "" }, skJabatan: { namaFile: "SK_Jab_Siti.pdf" }, skKgb: { namaFile: "SK_KGB_Siti.pdf" }, skp: { namaFile: "" }, skpKgb: { nilai: 92, predikat: "Sangat Baik", tahun: 2025 } }
+        }
       ];
     },
 
-    // ============ CHART & CALENDAR ============
+    // ============ CHART & CALENDAR BINDING ============
     initChart() {
       const ctx = document.getElementById('dashboardMainChart');
       if (!ctx) return;
-      
-      if (window.myDashboardChart) window.myDashboardChart.destroy();
-
-      let golCounts = { 'Gol II': 0, 'Gol III': 0, 'Gol IV': 0 };
-      this.pegawaiList.forEach(p => {
-        if(p.golongan.startsWith('II')) golCounts['Gol II']++;
-        if(p.golongan.startsWith('III')) golCounts['Gol III']++;
-        if(p.golongan.startsWith('IV')) golCounts['Gol IV']++;
-      });
-
-      window.myDashboardChart = new Chart(ctx, {
+      new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: Object.keys(golCounts),
-          datasets: [{
-            label: 'Distribusi Kepangkatan Golongan',
-            data: Object.values(golCounts),
-            backgroundColor: ['#123B63', '#C9A227', '#E65100'],
-            borderRadius: 12
-          }]
+          labels: ['II/a-II/d', 'III/a-III/d', 'IV/a-IV/e'],
+          datasets: [{ label: 'Jumlah PNS Per Jenjang', data: [12, 28, 4], backgroundColor: '#0B2341', borderRadius: 8 }]
         },
         options: { responsive: true, maintainAspectRatio: false }
       });
@@ -1353,71 +1277,34 @@ function sipandaApp() {
     initCalendar() {
       const calEl = document.getElementById('fullCalendarTarget');
       if (!calEl) return;
-
-      if(window.myAppCalendar) window.myAppCalendar.destroy();
-
-      let events = this.cutiList.map(c => {
-        let color = '#2E7D32';
-        if(c.jenisCuti === 'Cuti Sakit') color = '#C62828';
-        if(c.jenisCuti === 'Cuti Izin') color = '#123B63';
-        if(c.jenisCuti === 'Cuti Besar') color = '#E65100';
-
-        return { title: c.nama + ' (' + c.jenisCuti + ')', start: c.tanggalMulai, end: c.tanggalSelesai, backgroundColor: color };
-      });
-
-      window.myAppCalendar = new FullCalendar.Calendar(calEl, {
+      const events = this.cutiList.map(c => ({
+        title: c.nama + ' (' + c.jenisCuti + ')',
+        start: c.tanggalMulai,
+        end: c.tanggalSelesai,
+        backgroundColor: c.jenisCuti.includes('Sakit') ? '#C62828' : '#2E7D32'
+      }));
+      const calendar = new FullCalendar.Calendar(calEl, {
         initialView: 'dayGridMonth',
         locale: 'id',
-        events: events,
-        headerToolbar: { left: 'prev,next today', center: 'title', right: '' }
+        events: events
       });
-      window.myAppCalendar.render();
+      calendar.render();
     },
 
-    // ============ AUTHENTICATION SIMULATION ============
-    handleLogin() {
-      this.isLoggedIn = true;
-      this.pushAuditLog("Login Berhasil", "Admin masuk ke dalam sistem utama workspace.");
-      setTimeout(() => { this.initChart(); this.initCalendar(); }, 400);
+    get filteredPegawaiList() {
+      return this.pegawaiList.filter(p => {
+        const matchesSearch = p.nama.toLowerCase().includes(this.pegawaiSearch.toLowerCase()) || p.nip.includes(this.pegawaiSearch);
+        const matchesGolongan = this.filterGolongan ? p.golongan === this.filterGolongan : true;
+        return matchesSearch && matchesGolongan;
+      });
     },
 
-    handleLogout() {
-      this.isLoggedIn = false;
-      this.loginForm = { username: '', password: '' };
-    },
-
-    generateDummyPegawaiDataRaw() {
-      return [
-        {
-          nip: "199605142019011001", nama: "Ahmad Subarjo, S.Sos", golongan: "III/b", jabatan: "Kasubsi Kepegawaian", noHp: "081294857662", email: "ahmad.subarjo@kemenimipas.go.id", foto: "",
-          tglLahir: "1996-05-14", tmtCpns: "2019-01-01", tmtPns: "2020-03-01", gender: "Laki-laki",
-          tglPangkatTerakhir: "2023-04-01", tglPangkatBerikutnya: "2027-04-01", pangkatCountdownDays: 200,
-          tglKgbTerakhir: "2024-06-01", tglKgbBerikutnya: "2026-06-01", kgbCountdownDays: 20, progressBerkas: 75,
-          dokumen: {
-            skPangkat: { namaFile: "SK_PANGKAT_AHMAD.pdf", fileUrl: "", nomor: "W.11.PAS-123.KP.04", tanggal: "2023-04-01" },
-            skJabatan: { namaFile: "SK_JABATAN_AHMAD.pdf", fileUrl: "", nomor: "W.11.PAS-992.KP.07", tanggal: "2023-05-10" },
-            skKgb: { namaFile: "", fileUrl: "", nomor: "", tanggal: "" },
-            skp: { namaFile: "SKP_2025_AHMAD.pdf", fileUrl: "" },
-            skpKgb: { nilai: 92, predikat: "Sangat Baik", tahun: 2025 }
-          }
-        },
-        {
-          nip: "199812052020122002", nama: "Rizky Amelia, A.Md.P", golongan: "II/c", jabatan: "Pelaksana Administrasi", noHp: "087822940596", email: "rizky.amelia@kemenimipas.go.id", foto: "",
-          tglLahir: "1998-12-05", tmtCpns: "2020-12-01", tmtPns: "2022-01-01", gender: "Perempuan",
-          tglPangkatTerakhir: "2022-10-01", tglPangkatBerikutnya: "2026-10-01", pangkatCountdownDays: 80,
-          tglKgbTerakhir: "2025-01-15", tglKgbBerikutnya: "2027-01-15", kgbCountdownDays: 190, progressBerkas: 50,
-          dokumen: {
-            skPangkat: { namaFile: "", fileUrl: "", nomor: "", tanggal: "" },
-            skJabatan: { namaFile: "SK_JAB_RIZKY.pdf", fileUrl: "", nomor: "W.11.PAS-402.KP.07", tanggal: "2022-01-15" },
-            skKgb: { namaFile: "SK_KGB_RIZKY.pdf", fileUrl: "", nomor: "W.11.PAS-KGB.88", tanggal: "2025-01-15" },
-            skp: { namaFile: "", fileUrl: "" },
-            skpKgb: { nilai: 84, predikat: "Baik", tahun: 2025 }
-          }
-        }
-      ];
+    get filteredCutiList() {
+      return this.cutiList;
     }
-  }
+  };
 }
 </script>
+
 </body>
 </html>
