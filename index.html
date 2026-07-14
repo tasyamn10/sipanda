@@ -128,7 +128,7 @@ border: 1px solid rgba(255, 255, 255, 0.2);
 // ============================================================
 // KONFIGURASI FIREBASE ANDA
 // ============================================================
-const IS_PREVIEW = false;
+const IS_PREVIEW = true; // SET false untuk Firebase, true untuk LocalStorage
 
 const firebaseConfig = {
   apiKey: "AIzaSyCCaOPjOh1UxaliCm0GIJeYv6NJOBGyOtA",
@@ -577,7 +577,7 @@ const firebaseConfig = {
 <template x-if="selectedPegawai.dokumen && selectedPegawai.dokumen.skPangkat && selectedPegawai.dokumen.skPangkat.namaFile">
 <div class="text-center mt-2 z-10">
 <p class="text-xs text-emerald-600 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skPangkat.namaFile"></p>
-<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skPangkat)" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
+<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skPangkat, 'SK Pangkat')" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
 </div>
 </template>
 </div>
@@ -604,7 +604,7 @@ const firebaseConfig = {
 <template x-if="selectedPegawai.dokumen && selectedPegawai.dokumen.skJabatan && selectedPegawai.dokumen.skJabatan.namaFile">
 <div class="text-center mt-2 z-10">
 <p class="text-xs text-emerald-600 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skJabatan.namaFile"></p>
-<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skJabatan)" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
+<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skJabatan, 'SK Jabatan')" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
 </div>
 </template>
 </div>
@@ -631,7 +631,7 @@ const firebaseConfig = {
 <template x-if="selectedPegawai.dokumen && selectedPegawai.dokumen.skKgb && selectedPegawai.dokumen.skKgb.namaFile">
 <div class="text-center mt-2 z-10">
 <p class="text-xs text-emerald-600 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skKgb.namaFile"></p>
-<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skKgb)" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
+<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skKgb, 'SK KGB')" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
 </div>
 </template>
 </div>
@@ -666,7 +666,7 @@ const firebaseConfig = {
 <template x-if="selectedPegawai.dokumen && selectedPegawai.dokumen.skp && selectedPegawai.dokumen.skp.namaFile">
 <div class="text-center mt-2 z-10">
 <p class="text-xs text-emerald-600 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skp.namaFile"></p>
-<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skp)" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
+<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skp, 'SKP')" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
 </div>
 </template>
 </div>
@@ -674,7 +674,12 @@ const firebaseConfig = {
 
 <!-- CUTI -->
 <div x-show="selectedTab === 'cuti'" class="space-y-4">
-<div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Riwayat Cuti Pegawai</h3><span class="bg-blue-100 text-[#0B2341] text-[10px] font-bold px-2 py-0.5 rounded-full">Sisa Cuti: 12 Hari</span></div>
+<div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Riwayat Cuti Pegawai</h3>
+<div class="flex gap-2">
+<span class="bg-blue-100 text-[#0B2341] text-[10px] font-bold px-2 py-0.5 rounded-full">Sisa Cuti: 12 Hari</span>
+<button @click="showModalAddCuti = true" class="bg-[#0B2341] text-white text-[10px] font-bold px-3 py-1 rounded-lg hover:bg-[#123B63] transition">+ Tambah Cuti</button>
+</div>
+</div>
 <div class="overflow-x-auto rounded-xl border border-slate-200">
 <table class="w-full text-left text-[11px] border-collapse">
 <thead class="bg-slate-100"><tr><th class="p-3">Jenis Aktivitas</th><th class="p-3">Tanggal Mulai</th><th class="p-3">Tanggal Selesai</th><th class="p-3">Keterangan</th><th class="p-3">Status</th><th class="p-3">Aksi</th></tr></thead>
@@ -761,7 +766,9 @@ const firebaseConfig = {
 <div x-show="activeMenu === 'cuti'" class="space-y-6">
 <div class="flex justify-between items-center">
 <div><h2 class="text-2xl font-extrabold text-[#0B2341]">Agenda & Jadwal Cuti Pegawai</h2><p class="text-xs text-slate-500">Visualisasi kalender interaktif berdasarkan kategori cuti dan aktivitas resmi.</p></div>
-<button @click="showModalAddCuti = true" class="bg-[#0B2341] text-white text-xs font-bold px-4 py-2 rounded-xl">Input Usulan Cuti</button>
+<button @click="showModalAddCuti = true" class="bg-[#0B2341] text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-[#123B63] transition flex items-center gap-2">
+<i data-lucide="plus" class="w-4 h-4"></i> Input Usulan Cuti
+</button>
 </div>
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 lg:col-span-2"><div id="fullCalendarTarget" class="text-xs"></div></div>
@@ -807,7 +814,7 @@ const firebaseConfig = {
 </div>
 
 <!-- MODAL TAMBAH PEGAWAI -->
-<div x-show="showModalAddPegawai" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" style="display: none;">
+<div x-show="showModalAddPegawai" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" x-cloak>
 <div class="bg-white rounded-3xl w-full max-w-lg flex flex-col shadow-2xl border border-yellow-500/10 max-h-[90vh] overflow-hidden">
 <div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between items-center"><h3 class="font-bold text-xs tracking-wide uppercase">Tambah Data Pegawai Baru</h3><button @click="showModalAddPegawai = false" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
 <form @submit.prevent="saveNewPegawai" class="p-6 overflow-y-auto space-y-4 text-xs">
@@ -825,7 +832,7 @@ const firebaseConfig = {
 </div>
 
 <!-- MODAL EDIT NIP -->
-<div x-show="showModalEditNip" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" style="display: none;">
+<div x-show="showModalEditNip" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" x-cloak>
 <div class="bg-white rounded-3xl w-full max-w-md flex flex-col shadow-2xl border border-yellow-500/10">
 <div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between items-center rounded-t-3xl"><h3 class="font-bold text-xs tracking-wide uppercase">✏️ Ubah NIP Pegawai</h3><button @click="showModalEditNip = false" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
 <form @submit.prevent="saveNipChange" class="p-6 space-y-4 text-xs">
@@ -837,8 +844,8 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- MODAL TAMBAH CUTI -->
-<div x-show="showModalAddCuti" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" style="display: none;">
+<!-- MODAL TAMBAH CUTI - FIXED VERSION -->
+<div x-show="showModalAddCuti" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" x-cloak>
 <div class="bg-white rounded-3xl w-full max-w-md flex flex-col shadow-2xl border border-yellow-500/10">
 <div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between items-center rounded-t-3xl"><h3 class="font-bold text-xs tracking-wide uppercase">✏️ Input Pengajuan Cuti Pegawai</h3><button @click="showModalAddCuti = false" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
 <form @submit.prevent="saveNewCuti" class="p-6 space-y-4 text-xs">
@@ -881,8 +888,8 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- PDF VIEWER MODAL - SELESAI & FIX -->
-<div x-show="showPdfViewer" class="pdf-viewer-overlay" style="display: none;" @click.away="closePdfViewer()">
+<!-- PDF VIEWER MODAL - FULLY WORKING -->
+<div x-show="showPdfViewer" class="pdf-viewer-overlay" x-cloak @click.away="closePdfViewer()">
     <div class="pdf-viewer-container" @click.stop>
         <div class="pdf-viewer-header">
             <div>
@@ -900,7 +907,7 @@ const firebaseConfig = {
         </div>
         <div class="pdf-viewer-body">
             <template x-if="currentPdfDoc.base64">
-                <iframe :src="currentPdfDoc.base64"></iframe>
+                <iframe :src="currentPdfDoc.base64" style="width:100%;height:100%;border:none;border-radius:12px;background:white;"></iframe>
             </template>
             <template x-if="!currentPdfDoc.base64">
                 <div class="flex flex-col items-center justify-center h-full text-slate-400">
@@ -911,6 +918,11 @@ const firebaseConfig = {
         </div>
     </div>
 </div>
+
+<!-- ADD STYLE X-CLOAK HIDE -->
+<style>
+[x-cloak] { display: none !important; }
+</style>
 
 </div>
 
@@ -1060,8 +1072,7 @@ function sipandaApp() {
                     const lahir = new Date(p.tglLahir);
                     const pensiunDate = new Date(lahir.getFullYear() + 58, lahir.getMonth(), lahir.getDate());
                     const diff = pensiunDate - today;
-                    p.pansiunCountdown = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-                    p.pensiunCountdown = p.pansiunCountdown;
+                    p.pensiunCountdown = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
                 }
 
                 // Hitung Progress Berkas
@@ -1137,7 +1148,7 @@ function sipandaApp() {
             return this.cutiList;
         },
 
-        // CORE FEATURES - INPUT CUTI (DIREPARASI TOTAL & SELESAI)
+        // CORE FEATURES - INPUT CUTI (FIXED)
         saveNewCuti() {
             if (!this.newCutiForm.nip || !this.newCutiForm.tanggalMulai || !this.newCutiForm.tanggalSelesai) {
                 alert("Harap lengkapi semua field yang berbintang merah!");
@@ -1169,7 +1180,7 @@ function sipandaApp() {
             this.auditLogs.unshift({
                 aksi: "ADD_CUTI",
                 detail: `Menginput data cuti ${dataCutiBaru.jenisCuti} untuk ${dataCutiBaru.nama}`,
-                timestamp: "Baru saja"
+                timestamp: new Date().toLocaleTimeString()
             });
 
             alert(`Sukses mendaftarkan cuti untuk ${peg.nama}!`);
@@ -1180,7 +1191,7 @@ function sipandaApp() {
 
             // Render ulang kalender apabila sedang berada di menu cuti
             if (this.activeMenu === 'cuti') {
-                this.renderCalendar();
+                setTimeout(() => this.renderCalendar(), 200);
             }
         },
 
@@ -1188,11 +1199,11 @@ function sipandaApp() {
             if (confirm("Apakah Anda yakin ingin menghapus data riwayat cuti ini?")) {
                 this.cutiList = this.cutiList.filter(c => c.cutiId !== id);
                 this.syncDatabase();
-                if (this.activeMenu === 'cuti') this.renderCalendar();
+                if (this.activeMenu === 'cuti') setTimeout(() => this.renderCalendar(), 200);
             }
         },
 
-        // UPLOAD & PREVIEW FITUR (DOKUMEN DENGAN EMBEDDED MODAL VIEWER FIX)
+        // UPLOAD DOKUMEN - FIXED
         handleDocUpload(event, type) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1228,11 +1239,14 @@ function sipandaApp() {
 
                 this.savePegawaiEdit();
                 alert(`Sukses mengunggah dokumen ${file.name}!`);
+                
+                // Reset file input
+                event.target.value = '';
             };
             reader.readAsDataURL(file);
         },
 
-        // FITUR BUKA & DOWNLOAD DOKUMEN YANG DIUPLOAD (TIDAK BISA DI KODE LAMA)
+        // FITUR BUKA & DOWNLOAD DOKUMEN - FIXED
         openPdfViewer(docObj, typeLabel = 'Dokumen Kedinasan') {
             if (!docObj || !docObj.base64) {
                 alert("Maaf, file dokumen biner belum diunggah atau tidak valid!");
@@ -1365,7 +1379,7 @@ function sipandaApp() {
                 return {
                     title: `${c.nama} (${c.jenisCuti})`,
                     start: c.tanggalMulai,
-                    end: new Date(new Date(c.tanggalSelesai).getTime() + 24*60*60*1000).toISOString().split('T')[0], // Tambah 1 hari untuk visual fullcalendar closure
+                    end: new Date(new Date(c.tanggalSelesai).getTime() + 24*60*60*1000).toISOString().split('T')[0],
                     backgroundColor: color,
                     borderColor: color,
                     allDay: true
@@ -1419,7 +1433,20 @@ function sipandaApp() {
         handleLogin() { this.isLoggedIn = true; this.initApp(); },
         toggleTodo(id) { const t = this.todoList.find(x=>x.id===id); if(t) t.done = !t.done; },
         addTodo() { if(this.newTodoText.trim()) { this.todoList.push({id:Date.now(), task:this.newTodoText, done:false}); this.newTodoText=''; } },
-        uploadFoto(e) { alert("Foto profil berhasil diperbarui!"); }
+        uploadFoto(e) { 
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    if (this.selectedPegawai) {
+                        this.selectedPegawai.foto = ev.target.result;
+                        this.savePegawaiEdit();
+                        alert("Foto profil berhasil diperbarui!");
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
     }
 }
 </script>
