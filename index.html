@@ -4,873 +4,199 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SIPANDA - Lapas Kelas IIA Banyuasin</title>
-
-<!-- Google Fonts & Tailwind CSS -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-
-<!-- Chart.js & FullCalendar -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-
-<!-- ALPINE JS -->
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
-
-<!-- Lucide Icons -->
 <script src="https://unpkg.com/lucide@latest"></script>
-
 <style>
-#navbar-iframe, .navbar, .header-outer, .sidebar-outer, .footer-outer,
-.quickedit, .profile-link, .widget-wrap, .Blog, .common-widget {
-display: none !important;
-visibility: hidden !important;
-height: 0 !important;
-opacity: 0 !important;
-}
-
-#sipanda-app-root {
-position: fixed !important;
-top: 0 !important;
-left: 0 !important;
-right: 0 !important;
-bottom: 0 !important;
-width: 100vw !important;
-height: 100vh !important;
-z-index: 999999999 !important;
-background-color: #F4F6F9 !important;
-overflow-y: auto !important;
-overflow-x: hidden !important;
-font-family: 'Inter', sans-serif;
-}
-
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: #C9A227; border-radius: 4px; }
-
-.glass {
-background: rgba(255, 255, 255, 0.85);
-backdrop-filter: blur(12px);
--webkit-backdrop-filter: blur(12px);
-border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-@keyframes pulse-danger {
-0%, 100% { background-color: #C62828; opacity: 1; }
-50% { background-color: #ff5252; opacity: 0.8; }
-}
-.animate-danger-blink { animation: pulse-danger 1.5s infinite; }
-
-@media (min-width: 1024px) {
-.app-sidebar { display: flex !important; }
-.app-bottombar { display: none !important; }
-}
-@media (max-width: 1023px) {
-.app-sidebar { display: none !important; }
-.app-bottombar { display: flex !important; }
-}
-
-.pdf-viewer-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(8px);
-    z-index: 999999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-.pdf-viewer-container {
-    background: white;
-    border-radius: 24px;
-    width: 95%;
-    max-width: 900px;
-    height: 90vh;
-    max-height: 800px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-}
-.pdf-viewer-header {
-    background: #0B2341;
-    color: white;
-    padding: 16px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-shrink: 0;
-}
-.pdf-viewer-body {
-    flex: 1;
-    background: #f1f1f1;
-    padding: 16px;
-    overflow: auto;
-}
-.pdf-viewer-body iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    border-radius: 12px;
-    background: white;
-}
-
-[x-cloak] { display: none !important; }
+#sipanda-app-root{position:fixed!important;inset:0;width:100vw!important;height:100vh!important;z-index:999999999!important;background:#F4F6F9!important;overflow-y:auto!important;font-family:Inter,sans-serif}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#f1f1f1}
+::-webkit-scrollbar-thumb{background:#C9A227;border-radius:4px}
+.glass{background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.2)}
+@keyframes pulse-danger{0%,100%{background:#C62828}50%{background:#ff5252}}
+.animate-danger-blink{animation:pulse-danger 1.5s infinite}
+@media(min-width:1024px){.app-sidebar{display:flex!important}.app-bottombar{display:none!important}}
+@media(max-width:1023px){.app-sidebar{display:none!important}.app-bottombar{display:flex!important}}
+.pdf-viewer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px}
+.pdf-viewer-container{background:#fff;border-radius:24px;width:95%;max-width:900px;height:90vh;max-height:800px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5)}
+.pdf-viewer-header{background:#0B2341;color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.pdf-viewer-body{flex:1;background:#f1f1f1;padding:16px;overflow:auto}
+.pdf-viewer-body iframe{width:100%;height:100%;border:none;border-radius:12px;background:#fff}
+[x-cloak]{display:none!important}
+#navbar-iframe,.navbar,.header-outer,.sidebar-outer,.footer-outer,.quickedit,.profile-link,.widget-wrap,.Blog,.common-widget{display:none!important;visibility:hidden!important;height:0!important;opacity:0!important}
 </style>
-
 </head>
 <body>
 
 <div id="sipanda-app-root" x-data="sipandaApp()" x-init="initApp()" class="text-slate-800 min-h-screen flex flex-col antialiased">
 
-<!-- LOGIN -->
-<div x-show="!isLoggedIn" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0B2341] p-4 bg-cover bg-center" style="background-image: linear-gradient(rgba(11, 35, 65, 0.95), rgba(18, 59, 99, 0.95)), url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=1200');">
+<!-- ====== LOGIN ====== -->
+<div x-show="!isLoggedIn" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0B2341] p-4" style="background-image:linear-gradient(rgba(11,35,65,0.95),rgba(18,59,99,0.95)),url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=1200')">
 <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 max-w-md w-full border border-yellow-500/20 text-center">
-<div class="flex justify-center mb-4">
-<div class="w-20 h-20 bg-[#C9A227] rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-<i data-lucide="shield" class="w-10 h-10 text-white"></i>
-</div>
-</div>
+<div class="flex justify-center mb-4"><div class="w-20 h-20 bg-[#C9A227] rounded-full flex items-center justify-center shadow-lg border-2 border-white"><i data-lucide="shield" class="w-10 h-10 text-white"></i></div></div>
 <h1 class="text-3xl font-extrabold text-[#0B2341] tracking-tight">SIPANDA</h1>
 <p class="text-xs font-semibold text-[#123B63] mt-1 uppercase tracking-wide">Sistem Informasi Pengelolaan Data & Arsip Pegawai</p>
 <p class="text-[11px] text-slate-500 mt-0.5">Lapas Kelas IIA Banyuasin</p>
 <form @submit.prevent="handleLogin" class="mt-8 text-left space-y-4">
-<div>
-<label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Email Admin</label>
-<div class="relative">
-<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-<i data-lucide="user" class="w-5 h-5"></i>
-</span>
-<input type="email" x-model="loginForm.username" required class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#C9A227] text-sm" placeholder="admin@lapas.go.id">
-</div>
-</div>
-<div>
-<label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Password</label>
-<div class="relative">
-<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-<i data-lucide="lock" class="w-5 h-5"></i>
-</span>
-<input type="password" x-model="loginForm.password" required class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#C9A227] text-sm" placeholder="Password Admin">
-</div>
-</div>
-<div class="pt-2">
-<button type="submit" class="w-full bg-[#0B2341] hover:bg-[#123B63] text-white py-3 rounded-lg font-bold text-sm transition duration-300 transform hover:scale-[1.02] flex items-center justify-center space-x-2 shadow-lg shadow-blue-900/20">
-<i data-lucide="log-in" class="w-5 h-5"></i>
-<span>Masuk ke Sistem</span>
-</button>
-</div>
+<div><label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Email Admin</label><div class="relative"><span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i data-lucide="user" class="w-5 h-5"></i></span><input type="email" x-model="loginForm.username" required class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#C9A227] text-sm" placeholder="admin@lapas.go.id"></div></div>
+<div><label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Password</label><div class="relative"><span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i data-lucide="lock" class="w-5 h-5"></i></span><input type="password" x-model="loginForm.password" required class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#C9A227] text-sm" placeholder="Password Admin"></div></div>
+<div class="pt-2"><button type="submit" class="w-full bg-[#0B2341] hover:bg-[#123B63] text-white py-3 rounded-lg font-bold text-sm transition duration-300 transform hover:scale-[1.02] flex items-center justify-center space-x-2 shadow-lg shadow-blue-900/20"><i data-lucide="log-in" class="w-5 h-5"></i><span>Masuk ke Sistem</span></button></div>
 </form>
 <div class="mt-6 text-[11px] text-slate-400">Hak Cipta © 2026 Kemenimipas RI. All Rights Reserved.</div>
 </div>
 </div>
 
-<!-- MAIN -->
+<!-- ====== MAIN APP ====== -->
 <div x-show="isLoggedIn" class="flex-1 flex flex-col lg:flex-row min-h-screen">
 
-<!-- SIDEBAR -->
+<!-- ====== SIDEBAR ====== -->
 <aside class="app-sidebar fixed inset-y-0 left-0 z-40 w-64 bg-[#0B2341] text-white flex-col border-r border-slate-800 shadow-2xl">
-<div class="p-6 border-b border-slate-800 flex items-center space-x-3">
-<div class="w-10 h-10 bg-[#C9A227] rounded-full flex items-center justify-center shadow-md">
-<i data-lucide="shield" class="w-6 h-6 text-white"></i>
-</div>
-<div>
-<h2 class="text-lg font-extrabold tracking-tight text-white">SIPANDA</h2>
-<span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Lapas Banyuasin</span>
-</div>
-</div>
+<div class="p-6 border-b border-slate-800 flex items-center space-x-3"><div class="w-10 h-10 bg-[#C9A227] rounded-full flex items-center justify-center shadow-md"><i data-lucide="shield" class="w-6 h-6 text-white"></i></div><div><h2 class="text-lg font-extrabold tracking-tight text-white">SIPANDA</h2><span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Lapas Banyuasin</span></div></div>
 <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-<button @click="activeMenu = 'dashboard'" :class="activeMenu === 'dashboard' ? 'bg-[#C9A227] text-[#0B2341] font-bold' : 'hover:bg-white/5 text-slate-300'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition">
-<i data-lucide="layout-dashboard" class="w-5 h-5"></i><span>Dashboard</span>
-</button>
-<button @click="activeMenu = 'pegawai'" :class="activeMenu === 'pegawai' ? 'bg-[#C9A227] text-[#0B2341] font-bold' : 'hover:bg-white/5 text-slate-300'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition">
-<i data-lucide="users" class="w-5 h-5"></i><span>Data Pegawai</span>
-</button>
-<button @click="activeMenu = 'kgb'" :class="activeMenu === 'kgb' ? 'bg-[#C9A227] text-[#0B2341] font-bold' : 'hover:bg-white/5 text-slate-300'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition">
-<i data-lucide="badge-percent" class="w-5 h-5"></i><span>Kenaikan Gaji Berkala</span>
-</button>
-<button @click="activeMenu = 'pangkat'" :class="activeMenu === 'pangkat' ? 'bg-[#C9A227] text-[#0B2341] font-bold' : 'hover:bg-white/5 text-slate-300'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition">
-<i data-lucide="award" class="w-5 h-5"></i><span>Kepangkatan</span>
-</button>
-<button @click="activeMenu = 'cuti'; setTimeout(() => { renderCalendar(); }, 200)" :class="activeMenu === 'cuti' ? 'bg-[#C9A227] text-[#0B2341] font-bold' : 'hover:bg-white/5 text-slate-300'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition">
-<i data-lucide="calendar" class="w-5 h-5"></i><span>Aktivitas & Cuti</span>
-</button>
-<button @click="activeMenu = 'laporan'" :class="activeMenu === 'laporan' ? 'bg-[#C9A227] text-[#0B2341] font-bold' : 'hover:bg-white/5 text-slate-300'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition">
-<i data-lucide="file-text" class="w-5 h-5"></i><span>Laporan Ekspor</span>
-</button>
-<button @click="activeMenu = 'admin'" :class="activeMenu === 'admin' ? 'bg-[#C9A227] text-[#0B2341] font-bold' : 'hover:bg-white/5 text-slate-300'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition">
-<i data-lucide="settings" class="w-5 h-5"></i><span>Fitur Admin Console</span>
-</button>
+<button @click="activeMenu='dashboard'" :class="activeMenu==='dashboard'?'bg-[#C9A227] text-[#0B2341] font-bold':'hover:bg-white/5 text-slate-300'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition"><i data-lucide="layout-dashboard" class="w-5 h-5"></i><span>Dashboard</span></button>
+<button @click="activeMenu='pegawai'" :class="activeMenu==='pegawai'?'bg-[#C9A227] text-[#0B2341] font-bold':'hover:bg-white/5 text-slate-300'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition"><i data-lucide="users" class="w-5 h-5"></i><span>Data Pegawai</span></button>
+<button @click="activeMenu='kgb'" :class="activeMenu==='kgb'?'bg-[#C9A227] text-[#0B2341] font-bold':'hover:bg-white/5 text-slate-300'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition"><i data-lucide="badge-percent" class="w-5 h-5"></i><span>KGB</span></button>
+<button @click="activeMenu='pangkat'" :class="activeMenu==='pangkat'?'bg-[#C9A227] text-[#0B2341] font-bold':'hover:bg-white/5 text-slate-300'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition"><i data-lucide="award" class="w-5 h-5"></i><span>Kepangkatan</span></button>
+<button @click="activeMenu='cuti';setTimeout(()=>{renderCalendar()},200)" :class="activeMenu==='cuti'?'bg-[#C9A227] text-[#0B2341] font-bold':'hover:bg-white/5 text-slate-300'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition"><i data-lucide="calendar" class="w-5 h-5"></i><span>Cuti</span></button>
+<button @click="activeMenu='laporan'" :class="activeMenu==='laporan'?'bg-[#C9A227] text-[#0B2341] font-bold':'hover:bg-white/5 text-slate-300'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition"><i data-lucide="file-text" class="w-5 h-5"></i><span>Laporan</span></button>
+<button @click="activeMenu='admin'" :class="activeMenu==='admin'?'bg-[#C9A227] text-[#0B2341] font-bold':'hover:bg-white/5 text-slate-300'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition"><i data-lucide="settings" class="w-5 h-5"></i><span>Admin</span></button>
 </nav>
-<div class="p-4 border-t border-slate-800 bg-slate-950/40">
-<div class="flex items-center space-x-3">
-<img :src="sessionUser.foto || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150'" class="w-10 h-10 rounded-full border border-[#C9A227] object-cover" alt="User avatar">
-<div class="flex-1 min-w-0">
-<p class="text-xs font-bold text-white truncate" x-text="sessionUser.nama"></p>
-<p class="text-[10px] text-slate-400 capitalize truncate">Admin</p>
-</div>
-<button @click="handleLogout" class="text-slate-400 hover:text-red-400 p-1">
-<i data-lucide="log-out" class="w-5 h-5"></i>
-</button>
-</div>
-</div>
+<div class="p-4 border-t border-slate-800 bg-slate-950/40"><div class="flex items-center space-x-3"><img :src="sessionUser.foto||'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150'" class="w-10 h-10 rounded-full border border-[#C9A227] object-cover"><div class="flex-1 min-w-0"><p class="text-xs font-bold text-white truncate" x-text="sessionUser.nama"></p><p class="text-[10px] text-slate-400 capitalize truncate">Admin</p></div><button @click="handleLogout" class="text-slate-400 hover:text-red-400 p-1"><i data-lucide="log-out" class="w-5 h-5"></i></button></div></div>
 </aside>
 
-<!-- MAIN CONTENT -->
+<!-- ====== MAIN CONTENT ====== -->
 <main class="flex-1 lg:pl-64 pb-20 lg:pb-0 flex flex-col min-h-screen">
 
-<!-- TOP NAVBAR -->
+<!-- ====== TOP NAV ====== -->
 <header class="glass sticky top-0 z-30 flex items-center justify-between px-6 py-4 shadow-sm border-b border-slate-200">
-<div class="flex items-center space-x-4">
-<span class="lg:hidden w-10 h-10 bg-[#0B2341] text-white rounded-full flex items-center justify-center">
-<i data-lucide="shield" class="w-5 h-5"></i>
-</span>
-<div>
-<h1 class="text-xl font-extrabold text-[#0B2341] tracking-tight">SIPANDA Dashboard</h1>
-<p class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Lembaga Pemasyarakatan Kelas IIA Banyuasin</p>
-</div>
-</div>
-<div class="flex items-center space-x-4">
-<div class="relative hidden md:block w-72">
-<input type="text" x-model="searchQuery" @keyup.enter="runSmartSearch()" class="w-full bg-slate-100 border-0 focus:ring-2 focus:ring-[#C9A227] rounded-xl px-4 py-2 pl-10 text-xs text-slate-700" placeholder="Ketik pencarian pintar...">
-<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-<i data-lucide="sparkles" class="w-4 h-4"></i>
-</span>
-</div>
-</div>
+<div class="flex items-center space-x-4"><span class="lg:hidden w-10 h-10 bg-[#0B2341] text-white rounded-full flex items-center justify-center"><i data-lucide="shield" class="w-5 h-5"></i></span><div><h1 class="text-xl font-extrabold text-[#0B2341] tracking-tight">SIPANDA</h1><p class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Lapas Kelas IIA Banyuasin</p></div></div>
+<div class="flex items-center space-x-4"><div class="relative hidden md:block w-72"><input type="text" x-model="searchQuery" @keyup.enter="runSmartSearch()" class="w-full bg-slate-100 border-0 focus:ring-2 focus:ring-[#C9A227] rounded-xl px-4 py-2 pl-10 text-xs text-slate-700" placeholder="🔍 Cari..."><span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i data-lucide="sparkles" class="w-4 h-4"></i></span></div></div>
 </header>
 
-<!-- BODY -->
+<!-- ====== BODY ====== -->
 <div class="flex-1 p-6 space-y-6 overflow-y-auto">
 
 <!-- DASHBOARD -->
-<div x-show="activeMenu === 'dashboard'" class="space-y-6">
+<div x-show="activeMenu==='dashboard'" class="space-y-6">
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-<div class="lg:col-span-2 bg-gradient-to-br from-[#0B2341] to-[#123B63] rounded-3xl p-6 text-white flex flex-col justify-between relative overflow-hidden shadow-xl shadow-blue-900/10">
-<div class="absolute -right-10 -bottom-10 opacity-10"><i data-lucide="shield" class="w-64 h-64"></i></div>
-<div>
-<span class="bg-[#C9A227] text-slate-950 font-bold text-[10px] tracking-widest uppercase px-3 py-1 rounded-full">DASHBOARD EKSEKUTIF</span>
-<h2 class="text-2xl font-extrabold mt-3 leading-tight">Sistem Pengelolaan Arsip & Data Pegawai (SIPANDA)</h2>
-<p class="text-xs text-slate-300 mt-2 max-w-lg leading-relaxed">Selamat datang di pusat data kepangkatan, kenaikan berkala, aktivitas cuti, dan kelengkapan dokumen ASN Lapas Kelas IIA Banyuasin.</p>
-</div>
-<div class="mt-6 flex flex-wrap gap-2 z-10">
-<button @click="showModalAddPegawai = true" class="bg-[#C9A227] hover:bg-[#b08e20] text-slate-900 font-bold text-xs px-4 py-2 rounded-xl transition shadow">Tambah Pegawai</button>
-<button @click="showModalAddCuti = true" class="bg-white/15 hover:bg-white/25 text-white font-semibold text-xs px-4 py-2 rounded-xl transition">Input Cuti</button>
-<button @click="activeMenu = 'laporan'" class="bg-white/15 hover:bg-white/25 text-white font-semibold text-xs px-4 py-2 rounded-xl transition">Cetak Laporan</button>
-</div>
-</div>
-<div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex flex-col justify-between">
-<div>
-<div class="flex justify-between items-center pb-3 border-b border-slate-100">
-<h3 class="font-bold text-slate-800 text-sm flex items-center"><i data-lucide="check-square" class="w-4 h-4 text-[#C9A227] mr-2"></i>To-Do Hari Ini</h3>
-<span class="bg-[#C9A227]/10 text-[#C9A227] text-[10px] font-bold px-2 py-0.5 rounded-full">INTERAKTIF</span>
-</div>
-<div class="mt-4 space-y-3">
-<template x-for="(task, index) in todoList" :key="index">
-<div class="flex items-start space-x-2 text-xs">
-<input type="checkbox" :checked="task.done" @change="toggleTodo(task.id)" class="mt-0.5 rounded border-slate-300 text-[#0B2341] focus:ring-[#C9A227]">
-<span :class="task.done ? 'line-through text-slate-400' : 'text-slate-700'" class="leading-snug" x-text="task.task"></span>
-</div>
-</template>
-</div>
-</div>
-<div class="flex justify-between items-center mt-4">
-<input type="text" x-model="newTodoText" @keyup.enter="addTodo()" placeholder="Tambah tugas baru..." class="text-xs bg-slate-50 border-slate-300 rounded-lg px-2 py-1 flex-1 mr-2 focus:ring-[#C9A227]">
-<button @click="addTodo()" class="text-xs font-bold text-[#0B2341] hover:underline">Tambah</button>
-</div>
+<div class="lg:col-span-2 bg-gradient-to-br from-[#0B2341] to-[#123B63] rounded-3xl p-6 text-white flex flex-col justify-between relative overflow-hidden shadow-xl"><div class="absolute -right-10 -bottom-10 opacity-10"><i data-lucide="shield" class="w-64 h-64"></i></div><div><span class="bg-[#C9A227] text-slate-950 font-bold text-[10px] tracking-widest uppercase px-3 py-1 rounded-full">DASHBOARD</span><h2 class="text-2xl font-extrabold mt-3">SIPANDA - Lapas Banyuasin</h2><p class="text-xs text-slate-300 mt-2 max-w-lg">Sistem Pengelolaan Arsip & Data Pegawai</p></div><div class="mt-6 flex flex-wrap gap-2"><button @click="showModalAddPegawai=true" class="bg-[#C9A227] hover:bg-[#b08e20] text-slate-900 font-bold text-xs px-4 py-2 rounded-xl">+ Pegawai</button><button @click="showModalAddCuti=true" class="bg-white/15 hover:bg-white/25 text-white font-semibold text-xs px-4 py-2 rounded-xl">+ Cuti</button></div></div>
+<div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+<div class="flex justify-between items-center pb-3 border-b border-slate-100"><h3 class="font-bold text-slate-800 text-sm flex items-center"><i data-lucide="check-square" class="w-4 h-4 text-[#C9A227] mr-2"></i>To-Do</h3></div>
+<div class="mt-4 space-y-3"><template x-for="(task,index) in todoList" :key="index"><div class="flex items-start space-x-2 text-xs"><input type="checkbox" :checked="task.done" @change="toggleTodo(task.id)" class="mt-0.5"><span :class="task.done?'line-through text-slate-400':'text-slate-700'" x-text="task.task"></span></div></template></div>
+<div class="flex mt-4"><input type="text" x-model="newTodoText" @keyup.enter="addTodo()" placeholder="Tambah..." class="text-xs bg-slate-50 border rounded-lg px-2 py-1 flex-1 mr-2"><button @click="addTodo()" class="text-xs font-bold text-[#0B2341]">+</button></div>
 </div>
 </div>
 
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-<div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-<div class="flex justify-between items-start">
-<div><p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Pegawai</p><p class="text-3xl font-extrabold text-[#0B2341] mt-2" x-text="stats.totalPegawai"></p></div>
-<span class="bg-blue-50 text-[#0B2341] p-2.5 rounded-xl"><i data-lucide="users" class="w-5 h-5"></i></span>
-</div>
-<p class="text-[10px] text-emerald-600 mt-2 font-semibold">100% Aktif & Terdata</p>
-</div>
-<div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-<div class="flex justify-between items-start">
-<div><p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Sedang Cuti</p><p class="text-3xl font-extrabold text-amber-600 mt-2" x-text="stats.pegawaiCuti"></p></div>
-<span class="bg-amber-50 text-amber-600 p-2.5 rounded-xl"><i data-lucide="calendar-off" class="w-5 h-5"></i></span>
-</div>
-<p class="text-[10px] text-slate-500 mt-2" x-text="'Sedang cuti: ' + stats.pegawaiCutiName"></p>
-</div>
-<div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-<div class="flex justify-between items-start">
-<div><p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Naik Pangkat (≤6m)</p><p class="text-3xl font-extrabold text-red-600 mt-2" x-text="stats.pangkatSegera"></p></div>
-<span class="bg-red-50 text-red-600 p-2.5 rounded-xl"><i data-lucide="award" class="w-5 h-5"></i></span>
-</div>
-<p class="text-[10px] text-red-500 mt-2 font-medium">Membutuhkan Berkas Fisik</p>
-</div>
-<div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-<div class="flex justify-between items-start">
-<div><p class="text-xs font-bold text-slate-500 uppercase tracking-wider">KGB Segera (≤6m)</p><p class="text-3xl font-extrabold text-yellow-600 mt-2" x-text="stats.kgbSegera"></p></div>
-<span class="bg-yellow-50 text-yellow-600 p-2.5 rounded-xl"><i data-lucide="clock" class="w-5 h-5"></i></span>
-</div>
-<p class="text-[10px] text-yellow-600 mt-2 font-medium">Proses Gaji Otomatis</p>
-</div>
-</div>
-
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-<div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center space-x-3">
-<span class="bg-red-100 text-red-600 p-2 rounded-lg"><i data-lucide="file-warning" class="w-4 h-4"></i></span>
-<div><p class="text-[10px] font-bold text-slate-500 uppercase">SK Pangkat Kosong</p><p class="text-lg font-bold text-[#0B2341]" x-text="stats.skpBelumUpload"></p></div>
-</div>
-<div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center space-x-3">
-<span class="bg-amber-100 text-amber-600 p-2 rounded-lg"><i data-lucide="file-question" class="w-4 h-4"></i></span>
-<div><p class="text-[10px] font-bold text-slate-500 uppercase">SK Jabatan Kosong</p><p class="text-lg font-bold text-[#0B2341]" x-text="stats.skJabatanBelumUpload"></p></div>
-</div>
-<div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center space-x-3">
-<span class="bg-orange-100 text-orange-600 p-2 rounded-lg"><i data-lucide="folder-lock" class="w-4 h-4"></i></span>
-<div><p class="text-[10px] font-bold text-slate-500 uppercase">Berkas Belum Lengkap</p><p class="text-lg font-bold text-[#0B2341]" x-text="stats.dokumenBelumLengkap"></p></div>
-</div>
-<div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center space-x-3">
-<span class="bg-purple-100 text-purple-600 p-2 rounded-lg"><i data-lucide="hourglass" class="w-4 h-4"></i></span>
-<div><p class="text-[10px] font-bold text-slate-500 uppercase">Pensiun &lt; 2 Thn</p><p class="text-lg font-bold text-[#0B2341]" x-text="stats.pensiunSegera"></p></div>
-</div>
+<div class="bg-white p-5 rounded-2xl shadow-sm border"><div class="flex justify-between"><div><p class="text-xs font-bold text-slate-500 uppercase">Total Pegawai</p><p class="text-3xl font-extrabold text-[#0B2341] mt-2" x-text="stats.totalPegawai"></p></div><span class="bg-blue-50 text-[#0B2341] p-2.5 rounded-xl"><i data-lucide="users" class="w-5 h-5"></i></span></div></div>
+<div class="bg-white p-5 rounded-2xl shadow-sm border"><div class="flex justify-between"><div><p class="text-xs font-bold text-slate-500 uppercase">Sedang Cuti</p><p class="text-3xl font-extrabold text-amber-600 mt-2" x-text="stats.pegawaiCuti"></p></div><span class="bg-amber-50 text-amber-600 p-2.5 rounded-xl"><i data-lucide="calendar-off" class="w-5 h-5"></i></span></div><p class="text-[10px] text-slate-500 mt-2" x-text="stats.pegawaiCutiName||'Tidak ada'"></p></div>
+<div class="bg-white p-5 rounded-2xl shadow-sm border"><div class="flex justify-between"><div><p class="text-xs font-bold text-slate-500 uppercase">Naik Pangkat</p><p class="text-3xl font-extrabold text-red-600 mt-2" x-text="stats.pangkatSegera"></p></div><span class="bg-red-50 text-red-600 p-2.5 rounded-xl"><i data-lucide="award" class="w-5 h-5"></i></span></div></div>
+<div class="bg-white p-5 rounded-2xl shadow-sm border"><div class="flex justify-between"><div><p class="text-xs font-bold text-slate-500 uppercase">KGB Segera</p><p class="text-3xl font-extrabold text-yellow-600 mt-2" x-text="stats.kgbSegera"></p></div><span class="bg-yellow-50 text-yellow-600 p-2.5 rounded-xl"><i data-lucide="clock" class="w-5 h-5"></i></span></div></div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-<div class="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-<div class="flex justify-between items-center pb-4 border-b border-slate-100 mb-4">
-<h3 class="font-bold text-[#0B2341] text-sm">Grafik Statistik Kepangkatan & KGB</h3>
-<span class="text-xs text-slate-400">Analisis Jabatan Lapas</span>
-</div>
-<div class="h-80 relative"><canvas id="dashboardMainChart"></canvas></div>
-</div>
-<div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
-<div class="pb-3 border-b border-slate-100">
-<h3 class="font-bold text-[#0B2341] text-sm flex items-center"><i data-lucide="clock" class="w-4 h-4 text-red-500 mr-2 animate-pulse"></i>Prioritas Tindakan Administrasi</h3>
-</div>
-<div class="space-y-3 overflow-y-auto max-h-[20rem]">
-<template x-for="(item, index) in prioritasList" :key="index">
-<div @click="viewPegawaiProfileByNip(item.nip)" class="p-3 bg-red-50/50 hover:bg-red-50 border border-red-100 rounded-xl cursor-pointer transition">
-<div class="flex justify-between items-start">
-<div><h4 class="font-bold text-xs text-slate-800" x-text="item.nama"></h4><p class="text-[10px] text-slate-500 mt-0.5" x-text="item.golongan + ' | ' + item.jabatan"></p></div>
-<span class="bg-red-600 text-white font-extrabold text-[9px] px-2 py-0.5 rounded-full animate-danger-blink" x-text="item.status"></span>
-</div>
-<div class="mt-2 text-[10px] text-[#0B2341] font-semibold flex items-center">
-<i data-lucide="calendar" class="w-3.5 h-3.5 mr-1 text-[#C9A227]"></i>
-<span x-text="item.keterangan"></span>
-</div>
-</div>
-</template>
-</div>
-</div>
+<div class="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border"><h3 class="font-bold text-[#0B2341] text-sm mb-4">Grafik Statistik</h3><div class="h-80"><canvas id="dashboardMainChart"></canvas></div></div>
+<div class="bg-white rounded-3xl p-6 shadow-sm border"><h3 class="font-bold text-[#0B2341] text-sm flex items-center mb-4"><i data-lucide="clock" class="w-4 h-4 text-red-500 mr-2 animate-pulse"></i>Prioritas</h3><div class="space-y-3 max-h-[20rem] overflow-y-auto"><template x-for="item in prioritasList" :key="item.nip"><div @click="viewPegawaiProfileByNip(item.nip)" class="p-3 bg-red-50/50 hover:bg-red-50 border border-red-100 rounded-xl cursor-pointer"><div class="flex justify-between"><div><h4 class="font-bold text-xs" x-text="item.nama"></h4><p class="text-[10px] text-slate-500" x-text="item.golongan+' | '+item.jabatan"></p></div><span class="bg-red-600 text-white text-[9px] px-2 py-0.5 rounded-full animate-danger-blink" x-text="item.status"></span></div><div class="mt-1 text-[10px] text-[#0B2341]" x-text="item.keterangan"></div></div></template></div></div>
 </div>
 </div>
 
 <!-- DATA PEGAWAI -->
-<div x-show="activeMenu === 'pegawai'" class="space-y-6">
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-<div><h2 class="text-2xl font-extrabold text-[#0B2341]">Data Pegawai Lapas</h2><p class="text-xs text-slate-500">Daftar kelayakan pangkat, mutasi berkala, serta digitalisasi dokumen internal pegawai.</p></div>
-<div class="flex flex-wrap gap-2">
-<button @click="showModalAddPegawai = true" class="bg-[#0B2341] hover:bg-[#123B63] text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center"><i data-lucide="plus" class="w-4 h-4 mr-1"></i> Tambah Pegawai</button>
-<button @click="exportDataToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Export Excel</button>
-<button @click="exportDataToPDF()" class="bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center"><i data-lucide="file" class="w-4 h-4 mr-1"></i> Export PDF</button>
-</div>
-</div>
-<div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-<div class="relative md:col-span-2">
-<input type="text" x-model="pegawaiSearch" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 pl-10 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#C9A227]" placeholder="Cari NIP, nama, golongan, atau jabatan...">
-<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i data-lucide="search" class="w-4 h-4"></i></span>
-</div>
-<select x-model="filterGolongan" class="bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#C9A227] bg-white">
-<option value="">Semua Golongan</option>
-<option value="II/a">II/a</option><option value="II/b">II/b</option><option value="II/c">II/c</option><option value="II/d">II/d</option>
-<option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="III/d">III/d</option>
-<option value="IV/a">IV/a</option><option value="IV/b">IV/b</option><option value="IV/c">IV/c</option><option value="IV/d">IV/d</option><option value="IV/e">IV/e</option>
-</select>
-<select x-model="filterUrgensi" class="bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#C9A227] bg-white">
-<option value="">Semua Status</option><option value="red">🔴 Mendesak (≤30 hari)</option><option value="orange">🟠 Perhatian (31-90 hari)</option><option value="yellow">🟡 Persiapan (91-180 hari)</option><option value="green">🟢 Aman (>180 hari)</option>
-</select>
-</div>
-<div class="overflow-x-auto rounded-xl border border-slate-100">
-<table class="w-full text-left text-xs border-collapse">
-<thead class="bg-slate-50 border-b border-slate-100 text-[#0B2341] font-bold">
-<tr><th class="p-4">Foto</th><th class="p-4">NIP & Nama</th><th class="p-4">Golongan / Jabatan</th><th class="p-4">Countdown Pangkat</th><th class="p-4">Countdown KGB</th><th class="p-4">Kelengkapan Berkas</th><th class="p-4 text-center">Aksi</th></tr>
-</thead>
-<tbody class="divide-y divide-slate-100 bg-white">
-<template x-for="(pegawai, index) in filteredPegawaiList" :key="index">
-<tr class="hover:bg-slate-50/50 transition">
-<td class="p-4"><img :src="pegawai.foto || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150'" class="w-10 h-10 rounded-full border border-slate-100 object-cover" alt="Foto"></td>
-<td class="p-4"><span class="block font-bold text-slate-800" x-text="pegawai.nama"></span><span class="block text-[10px] text-slate-500 font-mono mt-0.5" x-text="pegawai.nip"></span></td>
-<td class="p-4"><span class="block font-semibold text-slate-700" x-text="pegawai.golongan"></span><span class="block text-[10px] text-slate-500" x-text="pegawai.jabatan"></span></td>
-<td class="p-4"><div class="flex items-center space-x-1.5"><span :class="getUrgensiColorClass(pegawai.pangkatCountdownDays)" class="w-2.5 h-2.5 rounded-full inline-block"></span><span class="font-bold" x-text="pegawai.pangkatCountdownDays + ' Hari'"></span></div><span class="text-[9px] text-slate-400 block" x-text="'TMT: ' + pegawai.tglPangkatBerikutnya"></span></td>
-<td class="p-4"><div class="flex items-center space-x-1.5"><span :class="getUrgensiColorClass(pegawai.kgbCountdownDays)" class="w-2.5 h-2.5 rounded-full inline-block"></span><span class="font-bold" x-text="pegawai.kgbCountdownDays + ' Hari'"></span></div><span class="text-[9px] text-slate-400 block" x-text="'TMT: ' + pegawai.tglKgbBerikutnya"></span></td>
-<td class="p-4"><div class="flex items-center space-x-2"><div class="w-12 bg-slate-100 rounded-full h-1.5 overflow-hidden"><div class="bg-emerald-500 h-1.5 rounded-full" :style="'width: ' + pegawai.progressBerkas + '%'"></div></div><span class="font-bold text-[10px] text-slate-700" x-text="pegawai.progressBerkas + '%'"></span></div></td>
-<td class="p-4 text-center space-y-1">
-<button @click="viewPegawaiProfileByNip(pegawai.nip)" class="bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-sm w-full">Lihat Profil</button>
-<button @click="showEditPegawai(pegawai)" class="bg-[#C9A227] hover:bg-[#b08e20] text-slate-900 font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-sm w-full">Edit</button>
-<button @click="hapusPegawai(pegawai.nip)" class="bg-red-600 hover:bg-red-700 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-sm w-full">Hapus</button>
-</td>
-</tr>
-</template>
-</tbody>
-</table>
-</div>
+<div x-show="activeMenu==='pegawai'" class="space-y-6">
+<div class="flex flex-wrap justify-between items-center gap-4"><h2 class="text-2xl font-extrabold text-[#0B2341]">Data Pegawai</h2><div class="flex gap-2"><button @click="showModalAddPegawai=true" class="bg-[#0B2341] text-white font-bold text-xs px-4 py-2 rounded-xl">+ Pegawai</button><button @click="exportDataToExcel()" class="bg-emerald-600 text-white font-bold text-xs px-4 py-2 rounded-xl">Excel</button></div></div>
+<div class="bg-white rounded-3xl p-6 shadow-sm border">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4"><input type="text" x-model="pegawaiSearch" class="md:col-span-2 bg-slate-50 border rounded-xl px-4 py-2.5 text-xs" placeholder="Cari..."><select x-model="filterGolongan" class="bg-white border rounded-xl px-4 py-2.5 text-xs"><option value="">Semua Golongan</option><option value="II/a">II/a</option><option value="II/b">II/b</option><option value="II/c">II/c</option><option value="II/d">II/d</option><option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="III/d">III/d</option><option value="IV/a">IV/a</option><option value="IV/b">IV/b</option><option value="IV/c">IV/c</option><option value="IV/d">IV/d</option><option value="IV/e">IV/e</option></select><select x-model="filterUrgensi" class="bg-white border rounded-xl px-4 py-2.5 text-xs"><option value="">Semua</option><option value="red">🔴 Mendesak</option><option value="orange">🟠 Perhatian</option><option value="yellow">🟡 Persiapan</option><option value="green">🟢 Aman</option></select></div>
+<div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-50 font-bold"><tr><th class="p-3">Foto</th><th class="p-3">NIP & Nama</th><th class="p-3">Golongan</th><th class="p-3">Pangkat</th><th class="p-3">KGB</th><th class="p-3">Berkas</th><th class="p-3 text-center">Aksi</th></tr></thead><tbody><template x-for="p in filteredPegawaiList" :key="p.nip"><tr><td class="p-3"><img :src="p.foto||'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150'" class="w-8 h-8 rounded-full object-cover"></td><td class="p-3"><span class="font-bold" x-text="p.nama"></span><span class="block text-[10px] text-slate-500" x-text="p.nip"></span></td><td class="p-3" x-text="p.golongan"></td><td class="p-3"><span class="font-bold" :class="getCountdownClass(p.pangkatCountdownDays)" x-text="p.pangkatCountdownDays+'h'"></span></td><td class="p-3"><span class="font-bold" :class="getCountdownClass(p.kgbCountdownDays)" x-text="p.kgbCountdownDays+'h'"></span></td><td class="p-3"><div class="w-12 bg-slate-100 rounded-full h-1.5"><div class="bg-emerald-500 h-1.5 rounded-full" :style="'width:'+p.progressBerkas+'%'"></div></div></td><td class="p-3 text-center"><button @click="viewPegawaiProfileByNip(p.nip)" class="bg-[#123B63] text-white text-[10px] px-3 py-1 rounded-lg">Profil</button></td></tr></template></tbody></table></div>
 </div>
 </div>
 
 <!-- PROFIL PEGAWAI -->
-<div x-show="activeMenu === 'profil'" class="space-y-6" x-data="{ selectedTab: 'identitas' }">
-<button @click="activeMenu = 'pegawai'" class="text-xs text-[#0B2341] hover:underline flex items-center font-bold"><i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Kembali ke Daftar Pegawai</button>
+<div x-show="activeMenu==='profil'" class="space-y-6">
+<button @click="activeMenu='pegawai'" class="text-xs text-[#0B2341] hover:underline">← Kembali</button>
 <template x-if="selectedPegawai">
-<div class="space-y-6">
-<div class="bg-[#0B2341] text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
-<div class="absolute right-0 top-0 opacity-10"><i data-lucide="user-check" class="w-80 h-80"></i></div>
-<div class="relative flex flex-col md:flex-row items-center gap-6 z-10">
-<div class="relative">
-<img :src="selectedPegawai.foto || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=250'" class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-yellow-500 object-cover shadow-2xl" alt="Profil">
-<label class="absolute bottom-0 right-0 bg-[#C9A227] p-1.5 rounded-full cursor-pointer hover:bg-[#b08e20] transition shadow-lg">
-<i data-lucide="camera" class="w-4 h-4 text-slate-900"></i>
-<input type="file" accept="image/*" @change="uploadFoto($event)" class="hidden">
-</label>
-</div>
-<div class="flex-1 text-center md:text-left">
-<div class="flex flex-col md:flex-row md:items-center gap-2">
-<h2 class="text-2xl font-extrabold" x-text="selectedPegawai.nama"></h2>
-<span class="bg-emerald-600 text-white font-bold text-[10px] px-3 py-1 rounded-full border border-white/20 uppercase" x-text="'Kelengkapan: ' + selectedPegawai.progressBerkas + '%'"></span>
-</div>
-<div class="flex items-center justify-center md:justify-start gap-2 mt-1">
-<p class="text-xs text-slate-300 font-mono" x-text="'NIP. ' + selectedPegawai.nip"></p>
-<button @click="openModalEditNip(selectedPegawai)" class="text-[10px] bg-yellow-500 hover:bg-yellow-600 text-slate-950 px-2 py-0.5 rounded font-bold transition">Ubah NIP</button>
-</div>
-<p class="text-sm text-yellow-500 font-bold mt-2" x-text="selectedPegawai.golongan + ' - ' + selectedPegawai.jabatan"></p>
-<div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-slate-300 pt-4 border-t border-white/10">
-<div><span class="block text-[10px] text-slate-400 uppercase">TMT CPNS</span><span class="font-bold" x-text="selectedPegawai.tmtCpns"></span></div>
-<div><span class="block text-[10px] text-slate-400 uppercase">TMT PNS</span><span class="font-bold" x-text="selectedPegawai.tmtPns"></span></div>
-<div><span class="block text-[10px] text-slate-400 uppercase">Email</span><span class="font-bold text-white" x-text="selectedPegawai.email"></span></div>
-<div><span class="block text-[10px] text-slate-400 uppercase">Nomor WA</span><span class="font-bold text-white" x-text="selectedPegawai.noHp"></span></div>
-</div>
-</div>
-</div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-<div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200"><p class="text-[10px] font-bold text-slate-400 uppercase">Countdown Naik Pangkat</p><p class="text-2xl font-extrabold mt-1" :class="getCountdownClass(selectedPegawai.pangkatCountdownDays)" x-text="selectedPegawai.pangkatCountdownDays + ' Hari Lagi'"></p><span class="text-[10px] text-slate-500 mt-1 block">TMT: <span class="font-bold" x-text="selectedPegawai.tglPangkatBerikutnya"></span></span></div>
-<div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200"><p class="text-[10px] font-bold text-slate-400 uppercase">Countdown KGB</p><p class="text-2xl font-extrabold mt-1" :class="getCountdownClass(selectedPegawai.kgbCountdownDays)" x-text="selectedPegawai.kgbCountdownDays + ' Hari Lagi'"></p><span class="text-[10px] text-slate-500 mt-1 block">TMT: <span class="font-bold" x-text="selectedPegawai.tglKgbBerikutnya"></span></span></div>
-<div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200"><p class="text-[10px] font-bold text-slate-400 uppercase">Masa Berlaku Berkas</p><p class="text-2xl font-extrabold text-emerald-600 mt-1">Aktif & Sah</p><span class="text-[10px] text-slate-500 mt-1 block">Dokumen Tervalidasi</span></div>
-<div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200"><p class="text-[10px] font-bold text-slate-400 uppercase">Usia Menuju Pensiun</p><p class="text-2xl font-extrabold text-[#0B2341] mt-1" x-text="selectedPegawai.pensiunCountdown + ' Hari Lagi'"></p><span class="text-[10px] text-slate-500 mt-1 block">Batas: 58 Tahun</span></div>
-</div>
-<div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-<div class="flex overflow-x-auto space-x-1 border-b border-slate-150 pb-2">
-<button @click="selectedTab = 'identitas'" :class="selectedTab === 'identitas' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">Identitas Diri</button>
-<button @click="selectedTab = 'pangkat'" :class="selectedTab === 'pangkat' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">Kepangkatan</button>
-<button @click="selectedTab = 'jabatan'" :class="selectedTab === 'jabatan' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">SK Jabatan</button>
-<button @click="selectedTab = 'kgb'" :class="selectedTab === 'kgb' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">KGB & SK</button>
-<button @click="selectedTab = 'skp'" :class="selectedTab === 'skp' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">SKP Tahunan</button>
-<button @click="selectedTab = 'cuti'" :class="selectedTab === 'cuti' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">Riwayat Cuti</button>
-</div>
-<div class="mt-6">
+<div>
+<div class="bg-[#0B2341] text-white rounded-3xl p-6 relative overflow-hidden"><div class="absolute right-0 top-0 opacity-10"><i data-lucide="user-check" class="w-80 h-80"></i></div><div class="relative flex flex-col md:flex-row items-center gap-6"><div class="relative"><img :src="selectedPegawai.foto||'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=250'" class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-yellow-500 object-cover"><label class="absolute bottom-0 right-0 bg-[#C9A227] p-1.5 rounded-full cursor-pointer"><i data-lucide="camera" class="w-4 h-4 text-slate-900"></i><input type="file" accept="image/*" @change="uploadFoto($event)" class="hidden"></label></div><div><h2 class="text-2xl font-extrabold" x-text="selectedPegawai.nama"></h2><p class="text-sm text-yellow-500" x-text="selectedPegawai.golongan+' - '+selectedPegawai.jabatan"></p></div></div></div>
 
-<!-- IDENTITAS -->
-<div x-show="selectedTab === 'identitas'" class="space-y-4">
-<h3 class="font-bold text-[#0B2341] text-xs">Informasi Data Pribadi Pegawai</h3>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-700">
-<div class="md:col-span-1">
-<span class="block text-slate-400">Nama Lengkap:</span>
-<input type="text" x-model="selectedPegawai.nama" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg font-bold text-[#0B2341]" placeholder="Nama Lengkap">
-</div>
-<div class="md:col-span-1">
-<span class="block text-slate-400">NIP:</span>
-<div class="flex gap-2">
-<input type="text" x-model="selectedPegawai.nip" disabled class="w-full px-2 py-1 border rounded-lg bg-slate-100 font-mono text-slate-500">
-<button @click="openModalEditNip(selectedPegawai)" type="button" class="bg-[#0B2341] text-white px-3 py-1 rounded-lg font-bold text-[11px] whitespace-nowrap hover:bg-[#123B63]">Ubah NIP</button>
-</div>
-</div>
-<div><span class="block text-slate-400">Tanggal Lahir:</span>
-<input type="date" x-model="selectedPegawai.tglLahir" @change="savePegawaiEdit(); updatePensiunCountdown()" class="w-full px-2 py-1 border rounded-lg">
-</div>
-<div><span class="block text-slate-400">Jenis Kelamin:</span>
-<select x-model="selectedPegawai.gender" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg">
-<option value="Laki-laki">Laki-laki</option>
-<option value="Perempuan">Perempuan</option>
-</select>
-</div>
-<div><span class="block text-slate-400">TMT CPNS:</span>
-<input type="date" x-model="selectedPegawai.tmtCpns" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg">
-</div>
-<div><span class="block text-slate-400">TMT PNS:</span>
-<input type="date" x-model="selectedPegawai.tmtPns" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg">
-</div>
-<div><span class="block text-slate-400">Email:</span>
-<input type="email" x-model="selectedPegawai.email" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg">
-</div>
-<div><span class="block text-slate-400">Nomor HP/WA:</span>
-<input type="text" x-model="selectedPegawai.noHp" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg">
-</div>
-</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+<div class="bg-white p-5 rounded-2xl shadow-sm border"><p class="text-[10px] font-bold text-slate-400">Pangkat</p><p class="text-2xl font-extrabold" :class="getCountdownClass(selectedPegawai.pangkatCountdownDays)" x-text="selectedPegawai.pangkatCountdownDays+' Hari'"></p></div>
+<div class="bg-white p-5 rounded-2xl shadow-sm border"><p class="text-[10px] font-bold text-slate-400">KGB</p><p class="text-2xl font-extrabold" :class="getCountdownClass(selectedPegawai.kgbCountdownDays)" x-text="selectedPegawai.kgbCountdownDays+' Hari'"></p></div>
+<div class="bg-white p-5 rounded-2xl shadow-sm border"><p class="text-[10px] font-bold text-slate-400">Pensiun</p><p class="text-2xl font-extrabold text-[#0B2341]" x-text="selectedPegawai.pensiunCountdown+' Hari'"></p></div>
+<div class="bg-white p-5 rounded-2xl shadow-sm border"><p class="text-[10px] font-bold text-slate-400">Berkas</p><p class="text-2xl font-extrabold text-emerald-600" x-text="selectedPegawai.progressBerkas+'%'"></p></div>
 </div>
 
-<!-- PANGKAT -->
-<div x-show="selectedTab === 'pangkat'" class="space-y-4">
-<div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Edit Data Kepangkatan</h3></div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="space-y-2">
-<label class="text-xs font-bold">Golongan Saat Ini</label>
-<select x-model="selectedPegawai.golongan" @change="savePegawaiEdit(); updatePangkatCountdown()" class="w-full px-3 py-2 border rounded-lg bg-white">
-<option value="II/a">II/a</option><option value="II/b">II/b</option><option value="II/c">II/c</option><option value="II/d">II/d</option>
-<option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="III/d">III/d</option>
-<option value="IV/a">IV/a</option><option value="IV/b">IV/b</option><option value="IV/c">IV/c</option><option value="IV/d">IV/d</option><option value="IV/e">IV/e</option>
-</select>
-<label class="text-xs font-bold">TMT Pangkat Terakhir</label>
-<input type="date" x-model="selectedPegawai.tglPangkatTerakhir" @change="savePegawaiEdit(); updatePangkatCountdown()" class="w-full px-3 py-2 border rounded-lg">
-<label class="text-xs font-bold">TMT Pangkat Berikutnya</label>
-<input type="date" x-model="selectedPegawai.tglPangkatBerikutnya" @change="savePegawaiEdit(); updatePangkatCountdown()" class="w-full px-3 py-2 border rounded-lg">
-</div>
-<div class="border-2 border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center text-slate-400 bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative">
-<input type="file" accept="application/pdf" @change="handleDocUpload($event, 'skPangkat')" class="absolute inset-0 opacity-0 cursor-pointer">
-<i data-lucide="upload-cloud" class="w-8 h-8 text-[#C9A227] mb-2"></i>
-<p class="text-[11px] font-bold text-center">Upload SK Pangkat PDF</p>
-<span class="text-[9px] text-slate-500">Maks. 5MB (Hanya PDF)</span>
-<template x-if="selectedPegawai.dokumen && selectedPegawai.dokumen.skPangkat && selectedPegawai.dokumen.skPangkat.namaFile">
-<div class="text-center mt-2 z-10">
-<p class="text-xs text-emerald-600 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skPangkat.namaFile"></p>
-<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skPangkat, 'SK Pangkat')" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
-</div>
-</template>
-</div>
-</div>
-</div>
-
-<!-- JABATAN -->
-<div x-show="selectedTab === 'jabatan'" class="space-y-4">
-<div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Edit Data Jabatan</h3></div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="space-y-2">
-<label class="text-xs font-bold">Jabatan</label>
-<input type="text" x-model="selectedPegawai.jabatan" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg" placeholder="Nama Jabatan">
-<label class="text-xs font-bold">Nomor SK Jabatan</label>
-<input type="text" x-model="selectedPegawai.dokumen.skJabatan.nomor" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg" placeholder="Nomor SK">
-<label class="text-xs font-bold">Tanggal Terbit SK</label>
-<input type="date" x-model="selectedPegawai.dokumen.skJabatan.tanggal" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg">
-</div>
-<div class="border-2 border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center text-slate-400 bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative">
-<input type="file" accept="application/pdf" @change="handleDocUpload($event, 'skJabatan')" class="absolute inset-0 opacity-0 cursor-pointer">
-<i data-lucide="upload-cloud" class="w-8 h-8 text-[#C9A227] mb-2"></i>
-<p class="text-[11px] font-bold text-center">Upload SK Jabatan PDF</p>
-<span class="text-[9px] text-slate-500">Maks. 5MB (Hanya PDF)</span>
-<template x-if="selectedPegawai.dokumen && selectedPegawai.dokumen.skJabatan && selectedPegawai.dokumen.skJabatan.namaFile">
-<div class="text-center mt-2 z-10">
-<p class="text-xs text-emerald-600 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skJabatan.namaFile"></p>
-<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skJabatan, 'SK Jabatan')" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
-</div>
-</template>
-</div>
-</div>
-</div>
-
-<!-- KGB -->
-<div x-show="selectedTab === 'kgb'" class="space-y-4">
-<div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Edit Data KGB & Upload SK</h3></div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="space-y-2">
-<label class="text-xs font-bold">TMT KGB Terakhir</label>
-<input type="date" x-model="selectedPegawai.tglKgbTerakhir" @change="savePegawaiEdit(); updateKgbCountdown()" class="w-full px-3 py-2 border rounded-lg">
-<label class="text-xs font-bold">TMT KGB Berikutnya</label>
-<input type="date" x-model="selectedPegawai.tglKgbBerikutnya" @change="savePegawaiEdit(); updateKgbCountdown()" class="w-full px-3 py-2 border rounded-lg">
-<label class="text-xs font-bold">Nomor SK KGB</label>
-<input type="text" x-model="selectedPegawai.dokumen.skKgb.nomor" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg" placeholder="Nomor SK KGB">
-</div>
-<div class="border-2 border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center text-slate-400 bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative">
-<input type="file" accept="application/pdf" @change="handleDocUpload($event, 'skKgb')" class="absolute inset-0 opacity-0 cursor-pointer">
-<i data-lucide="upload-cloud" class="w-8 h-8 text-[#C9A227] mb-2"></i>
-<p class="text-[11px] font-bold text-center">Upload SK KGB PDF</p>
-<span class="text-[9px] text-slate-500">Maks. 5MB (Hanya PDF)</span>
-<template x-if="selectedPegawai.dokumen && selectedPegawai.dokumen.skKgb && selectedPegawai.dokumen.skKgb.namaFile">
-<div class="text-center mt-2 z-10">
-<p class="text-xs text-emerald-600 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skKgb.namaFile"></p>
-<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skKgb, 'SK KGB')" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
-</div>
-</template>
-</div>
-</div>
-</div>
-
-<!-- SKP -->
-<div x-show="selectedTab === 'skp'" class="space-y-4">
-<h3 class="font-bold text-[#0B2341] text-xs">Sasaran Kinerja Pegawai (SKP)</h3>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-<div><label class="text-xs font-bold">Nilai SKP</label>
-<input type="number" x-model="selectedPegawai.dokumen.skpKgb.nilai" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg">
-</div>
-<div><label class="text-xs font-bold">Predikat</label>
-<select x-model="selectedPegawai.dokumen.skpKgb.predikat" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg bg-white">
-<option value="Sangat Baik">Sangat Baik</option>
-<option value="Baik">Baik</option>
-<option value="Cukup">Cukup</option>
-<option value="Kurang">Kurang</option>
-</select>
-</div>
-<div><label class="text-xs font-bold">Tahun</label>
-<input type="number" x-model="selectedPegawai.dokumen.skpKgb.tahun" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg">
-</div>
-</div>
-<div class="border-2 border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center text-slate-400 bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative mt-2 max-w-sm">
-<input type="file" accept="application/pdf" @change="handleDocUpload($event, 'skp')" class="absolute inset-0 opacity-0 cursor-pointer">
-<i data-lucide="upload-cloud" class="w-8 h-8 text-[#C9A227] mb-2"></i>
-<p class="text-[11px] font-bold text-center">Upload Dokumen SKP PDF</p>
-<span class="text-[9px] text-slate-500">Maks. 5MB (Hanya PDF)</span>
-<template x-if="selectedPegawai.dokumen && selectedPegawai.dokumen.skp && selectedPegawai.dokumen.skp.namaFile">
-<div class="text-center mt-2 z-10">
-<p class="text-xs text-emerald-600 font-bold" x-text="'✅ ' + selectedPegawai.dokumen.skp.namaFile"></p>
-<button type="button" @click.stop="openPdfViewer(selectedPegawai.dokumen.skp, 'SKP')" class="mt-2 bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-[10px] px-3 py-1 rounded shadow transition">Lihat Dokumen</button>
-</div>
-</template>
-</div>
-</div>
-
-<!-- CUTI -->
-<div x-show="selectedTab === 'cuti'" class="space-y-4">
-<div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Riwayat Cuti Pegawai</h3>
-<div class="flex gap-2">
-<span class="bg-blue-100 text-[#0B2341] text-[10px] font-bold px-2 py-0.5 rounded-full">Sisa Cuti: 12 Hari</span>
-<button @click="showModalAddCuti = true" class="bg-[#0B2341] text-white text-[10px] font-bold px-3 py-1 rounded-lg hover:bg-[#123B63] transition">+ Tambah Cuti</button>
-</div>
-</div>
-<div class="overflow-x-auto rounded-xl border border-slate-200">
-<table class="w-full text-left text-[11px] border-collapse">
-<thead class="bg-slate-100"><tr><th class="p-3">Jenis Aktivitas</th><th class="p-3">Tanggal Mulai</th><th class="p-3">Tanggal Selesai</th><th class="p-3">Keterangan</th><th class="p-3">Status</th><th class="p-3">Aksi</th></tr></thead>
-<tbody>
-<template x-for="(cuti, index) in filteredCutiList.filter(c => c.nip === selectedPegawai.nip)" :key="index">
-<tr class="border-t border-slate-100"><td class="p-3 font-semibold" x-text="cuti.jenisCuti"></td><td class="p-3" x-text="cuti.tanggalMulai"></td><td class="p-3" x-text="cuti.tanggalSelesai"></td><td class="p-3 text-slate-500" x-text="cuti.keterangan || '-'"></td><td class="p-3"><span class="bg-green-100 text-green-800 text-[9px] px-2 py-0.5 rounded-full font-bold" x-text="cuti.status"></span></td><td class="p-3"><button @click="hapusCuti(cuti.cutiId)" class="text-red-600 hover:text-red-800 font-bold text-[10px]">Hapus</button></td></tr>
-</template>
-</tbody>
-</table>
-</div>
-</div>
-
-</div>
-</div>
-</div>
-</div>
+<div class="bg-white rounded-3xl p-6 shadow-sm border"><div class="flex overflow-x-auto gap-1 border-b pb-2"><button @click="selectedTab='identitas'" :class="selectedTab==='identitas'?'border-b-2 border-[#C9A227] font-bold':''" class="px-4 py-2 text-xs">Identitas</button><button @click="selectedTab='pangkat'" :class="selectedTab==='pangkat'?'border-b-2 border-[#C9A227] font-bold':''" class="px-4 py-2 text-xs">Pangkat</button><button @click="selectedTab='jabatan'" :class="selectedTab==='jabatan'?'border-b-2 border-[#C9A227] font-bold':''" class="px-4 py-2 text-xs">Jabatan</button><button @click="selectedTab='kgb'" :class="selectedTab==='kgb'?'border-b-2 border-[#C9A227] font-bold':''" class="px-4 py-2 text-xs">KGB</button><button @click="selectedTab='cuti'" :class="selectedTab==='cuti'?'border-b-2 border-[#C9A227] font-bold':''" class="px-4 py-2 text-xs">Cuti</button></div>
+<div class="mt-4">
+<div x-show="selectedTab==='identitas'" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs"><div><label class="text-slate-400">Nama</label><input type="text" x-model="selectedPegawai.nama" @change="savePegawaiEdit()" class="w-full border rounded-lg px-2 py-1"></div><div><label class="text-slate-400">Email</label><input type="email" x-model="selectedPegawai.email" @change="savePegawaiEdit()" class="w-full border rounded-lg px-2 py-1"></div><div><label class="text-slate-400">Tgl Lahir</label><input type="date" x-model="selectedPegawai.tglLahir" @change="savePegawaiEdit()" class="w-full border rounded-lg px-2 py-1"></div><div><label class="text-slate-400">No HP</label><input type="text" x-model="selectedPegawai.noHp" @change="savePegawaiEdit()" class="w-full border rounded-lg px-2 py-1"></div></div>
+<div x-show="selectedTab==='pangkat'" class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="text-xs font-bold">Golongan</label><select x-model="selectedPegawai.golongan" @change="savePegawaiEdit()" class="w-full border rounded-lg px-3 py-2 text-xs"><option value="II/a">II/a</option><option value="II/b">II/b</option><option value="II/c">II/c</option><option value="II/d">II/d</option><option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="III/d">III/d</option><option value="IV/a">IV/a</option><option value="IV/b">IV/b</option><option value="IV/c">IV/c</option><option value="IV/d">IV/d</option><option value="IV/e">IV/e</option></select></div><div><label class="text-xs font-bold">TMT Berikutnya</label><input type="date" x-model="selectedPegawai.tglPangkatBerikutnya" @change="savePegawaiEdit()" class="w-full border rounded-lg px-3 py-2"></div><div class="col-span-2 border-2 border-dashed rounded-xl p-4 text-center relative"><input type="file" accept="application/pdf" @change="handleDocUpload($event,'skPangkat')" class="absolute inset-0 opacity-0 cursor-pointer"><i data-lucide="upload-cloud" class="w-8 h-8 text-[#C9A227] mx-auto"></i><p class="text-[11px] font-bold">Upload SK Pangkat PDF</p><template x-if="selectedPegawai.dokumen?.skPangkat?.namaFile"><div><p class="text-xs text-emerald-600" x-text="'✅ '+selectedPegawai.dokumen.skPangkat.namaFile"></p><button @click.stop="openPdfViewer(selectedPegawai.dokumen.skPangkat,'SK Pangkat')" class="bg-[#123B63] text-white text-[10px] px-3 py-1 rounded">Lihat</button></div></template></div></div>
+<div x-show="selectedTab==='kgb'" class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="text-xs font-bold">TMT KGB Berikutnya</label><input type="date" x-model="selectedPegawai.tglKgbBerikutnya" @change="savePegawaiEdit()" class="w-full border rounded-lg px-3 py-2"></div><div><label class="text-xs font-bold">Nomor SK</label><input type="text" x-model="selectedPegawai.dokumen.skKgb.nomor" @change="savePegawaiEdit()" class="w-full border rounded-lg px-3 py-2"></div><div class="col-span-2 border-2 border-dashed rounded-xl p-4 text-center relative"><input type="file" accept="application/pdf" @change="handleDocUpload($event,'skKgb')" class="absolute inset-0 opacity-0 cursor-pointer"><i data-lucide="upload-cloud" class="w-8 h-8 text-[#C9A227] mx-auto"></i><p class="text-[11px] font-bold">Upload SK KGB PDF</p><template x-if="selectedPegawai.dokumen?.skKgb?.namaFile"><div><p class="text-xs text-emerald-600" x-text="'✅ '+selectedPegawai.dokumen.skKgb.namaFile"></p><button @click.stop="openPdfViewer(selectedPegawai.dokumen.skKgb,'SK KGB')" class="bg-[#123B63] text-white text-[10px] px-3 py-1 rounded">Lihat</button></div></template></div></div>
+<div x-show="selectedTab==='cuti'"><div class="flex justify-between"><h3 class="font-bold text-xs">Riwayat Cuti</h3><button @click="showModalAddCuti=true" class="bg-[#0B2341] text-white text-[10px] px-3 py-1 rounded">+ Tambah</button></div><div class="overflow-x-auto mt-2"><table class="w-full text-left text-[11px]"><thead class="bg-slate-100"><tr><th class="p-2">Jenis</th><th class="p-2">Mulai</th><th class="p-2">Selesai</th><th class="p-2">Status</th><th class="p-2">Aksi</th></tr></thead><tbody><template x-for="c in cutiList.filter(c=>c.nip===selectedPegawai.nip)" :key="c.cutiId"><tr><td class="p-2" x-text="c.jenisCuti"></td><td class="p-2" x-text="c.tanggalMulai"></td><td class="p-2" x-text="c.tanggalSelesai"></td><td class="p-2"><span class="bg-green-100 text-green-800 text-[9px] px-2 rounded-full" x-text="c.status"></span></td><td class="p-2"><button @click="hapusCuti(c.cutiId)" class="text-red-600 text-[10px]">Hapus</button></td></tr></template></tbody></table></div></div>
+</div></div></div>
 </template>
 </div>
 
 <!-- KGB MENU -->
-<div x-show="activeMenu === 'kgb'" class="space-y-6">
-<div><h2 class="text-2xl font-extrabold text-[#0B2341]">Daftar Kenaikan Gaji Berkala (KGB)</h2><p class="text-xs text-slate-500">Pemantauan otomatis data kenaikan upah berdasarkan masa kerja pegawai.</p></div>
-<div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-<div class="overflow-x-auto">
-<table class="w-full text-left text-xs border-collapse">
-<thead class="bg-slate-50 font-bold text-[#0B2341]"><tr><th class="p-4">Nama Pegawai</th><th class="p-4">Golongan / Jabatan</th><th class="p-4">Tanggal KGB Terakhir</th><th class="p-4">Tanggal KGB Berikutnya</th><th class="p-4">Hari Tersisa</th><th class="p-4">SK KGB</th><th class="p-4 text-center">Aksi</th></tr></thead>
-<tbody>
-<template x-for="(pegawai, index) in pegawaiList" :key="index">
-<tr class="hover:bg-slate-50/50 transition"><td class="p-4 font-bold text-slate-800" x-text="pegawai.nama"></td><td class="p-4" x-text="pegawai.golongan + ' - ' + pegawai.jabatan"></td>
-<td class="p-4"><input type="date" x-model="pegawai.tglKgbTerakhir" @change="savePegawaiEdit(); updateKgbCountdownForPegawai(pegawai)" class="w-full px-1 py-0.5 border rounded text-xs"></td>
-<td class="p-4"><input type="date" x-model="pegawai.tglKgbBerikutnya" @change="savePegawaiEdit(); updateKgbCountdownForPegawai(pegawai)" class="w-full px-1 py-0.5 border rounded text-xs"></td>
-<td class="p-4 font-extrabold" :class="getCountdownClass(pegawai.kgbCountdownDays)" x-text="pegawai.kgbCountdownDays + ' Hari'"></td>
-<td class="p-4">
-<template x-if="pegawai.dokumen && pegawai.dokumen.skKgb && pegawai.dokumen.skKgb.namaFile">
-<span class="text-emerald-600 text-[10px] font-bold">✅ Ada</span>
-</template>
-<template x-if="!pegawai.dokumen || !pegawai.dokumen.skKgb || !pegawai.dokumen.skKgb.namaFile">
-<span class="text-red-500 text-[10px] font-bold">❌ Belum</span>
-</template>
-</td>
-<td class="p-4 text-center"><button @click="viewPegawaiProfileByNip(pegawai.nip); setTimeout(() => { selectedTab = 'kgb'; }, 300)" class="bg-[#C9A227] text-slate-900 font-bold text-[10px] px-3 py-1.5 rounded-lg hover:bg-yellow-600 transition">Upload SK</button></td></tr>
-</template>
-</tbody>
-</table>
-</div>
-</div>
+<div x-show="activeMenu==='kgb'" class="space-y-6">
+<h2 class="text-2xl font-extrabold text-[#0B2341]">Daftar KGB</h2>
+<div class="bg-white rounded-3xl p-6 shadow-sm border"><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-50 font-bold"><tr><th class="p-3">Nama</th><th class="p-3">Golongan</th><th class="p-3">TMT KGB</th><th class="p-3">Hari</th><th class="p-3">SK</th></tr></thead><tbody><template x-for="p in pegawaiList" :key="p.nip"><tr><td class="p-3 font-bold" x-text="p.nama"></td><td class="p-3" x-text="p.golongan"></td><td class="p-3"><input type="date" x-model="p.tglKgbBerikutnya" @change="savePegawaiEdit()" class="border rounded px-1 py-0.5 text-xs"></td><td class="p-3 font-bold" :class="getCountdownClass(p.kgbCountdownDays)" x-text="p.kgbCountdownDays+'h'"></td><td class="p-3"><span x-text="p.dokumen?.skKgb?.namaFile?'✅':'❌'"></span></td></tr></template></tbody></table></div></div>
 </div>
 
 <!-- PANGKAT MENU -->
-<div x-show="activeMenu === 'pangkat'" class="space-y-6">
-<div><h2 class="text-2xl font-extrabold text-[#0B2341]">Kepangkatan Pegawai</h2><p class="text-xs text-slate-500">Memonitor sisa waktu kenaikan pangkat reguler pegawai.</p></div>
-<div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-<div class="overflow-x-auto">
-<table class="w-full text-left text-xs border-collapse">
-<thead class="bg-slate-50 font-bold text-[#0B2341]"><tr><th class="p-4">Nama Pegawai</th><th class="p-4">Golongan Saat Ini</th><th class="p-4">TMT Kenaikan Terakhir</th><th class="p-4">Tanggal Kenaikan Berikutnya</th><th class="p-4">Hari Tersisa</th><th class="p-4">SK Pangkat</th><th class="p-4">Kelengkapan Berkas</th></tr></thead>
-<tbody>
-<template x-for="(pegawai, index) in pegawaiList" :key="index">
-<tr class="hover:bg-slate-50/50 transition"><td class="p-4 font-bold text-slate-800" x-text="pegawai.nama"></td>
-<td class="p-4"><select x-model="pegawai.golongan" @change="savePegawaiEdit(); updatePangkatCountdownForPegawai(pegawai)" class="w-full px-1 py-0.5 border rounded text-xs bg-white">
-<option value="II/a">II/a</option><option value="II/b">II/b</option><option value="II/c">II/c</option><option value="II/d">II/d</option>
-<option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="III/d">III/d</option>
-<option value="IV/a">IV/a</option><option value="IV/b">IV/b</option><option value="IV/c">IV/c</option><option value="IV/d">IV/d</option><option value="IV/e">IV/e</option>
-</select></td>
-<td class="p-4"><input type="date" x-model="pegawai.tglPangkatTerakhir" @change="savePegawaiEdit(); updatePangkatCountdownForPegawai(pegawai)" class="w-full px-1 py-0.5 border rounded text-xs"></td>
-<td class="p-4"><input type="date" x-model="pegawai.tglPangkatBerikutnya" @change="savePegawaiEdit(); updatePangkatCountdownForPegawai(pegawai)" class="w-full px-1 py-0.5 border rounded text-xs"></td>
-<td class="p-4 font-extrabold" :class="getCountdownClass(pegawai.pangkatCountdownDays)" x-text="pegawai.pangkatCountdownDays + ' Hari'"></td>
-<td class="p-4">
-<template x-if="pegawai.dokumen && pegawai.dokumen.skPangkat && pegawai.dokumen.skPangkat.namaFile">
-<span class="text-emerald-600 text-[10px] font-bold">✅ Ada</span>
-</template>
-<template x-if="!pegawai.dokumen || !pegawai.dokumen.skPangkat || !pegawai.dokumen.skPangkat.namaFile">
-<span class="text-red-500 text-[10px] font-bold">❌ Belum</span>
-</template>
-</td>
-<td class="p-4"><div class="flex items-center space-x-2"><span class="text-slate-500 font-bold" x-text="pegawai.progressBerkas + '%'"></span><div class="w-16 bg-slate-100 rounded-full h-1.5 overflow-hidden"><div class="bg-[#C9A227] h-1.5 rounded-full" :style="'width: ' + pegawai.progressBerkas + '%'"></div></div></div></td></tr>
-</template>
-</tbody>
-</table>
-</div>
-</div>
+<div x-show="activeMenu==='pangkat'" class="space-y-6">
+<h2 class="text-2xl font-extrabold text-[#0B2341]">Kepangkatan</h2>
+<div class="bg-white rounded-3xl p-6 shadow-sm border"><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-50 font-bold"><tr><th class="p-3">Nama</th><th class="p-3">Golongan</th><th class="p-3">TMT</th><th class="p-3">Hari</th><th class="p-3">SK</th></tr></thead><tbody><template x-for="p in pegawaiList" :key="p.nip"><tr><td class="p-3 font-bold" x-text="p.nama"></td><td class="p-3"><select x-model="p.golongan" @change="savePegawaiEdit()" class="border rounded px-1 py-0.5 text-xs"><option value="II/a">II/a</option><option value="II/b">II/b</option><option value="II/c">II/c</option><option value="II/d">II/d</option><option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="III/d">III/d</option><option value="IV/a">IV/a</option><option value="IV/b">IV/b</option><option value="IV/c">IV/c</option><option value="IV/d">IV/d</option><option value="IV/e">IV/e</option></select></td><td class="p-3"><input type="date" x-model="p.tglPangkatBerikutnya" @change="savePegawaiEdit()" class="border rounded px-1 py-0.5 text-xs"></td><td class="p-3 font-bold" :class="getCountdownClass(p.pangkatCountdownDays)" x-text="p.pangkatCountdownDays+'h'"></td><td class="p-3"><span x-text="p.dokumen?.skPangkat?.namaFile?'✅':'❌'"></span></td></tr></template></tbody></table></div></div>
 </div>
 
 <!-- CUTI MENU -->
-<div x-show="activeMenu === 'cuti'" class="space-y-6">
-<div class="flex justify-between items-center">
-<div><h2 class="text-2xl font-extrabold text-[#0B2341]">Agenda & Jadwal Cuti Pegawai</h2><p class="text-xs text-slate-500">Visualisasi kalender interaktif berdasarkan kategori cuti dan aktivitas resmi.</p></div>
-<button @click="showModalAddCuti = true" class="bg-[#0B2341] text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-[#123B63] transition flex items-center gap-2">
-<i data-lucide="plus" class="w-4 h-4"></i> Input Usulan Cuti
-</button>
-</div>
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-<div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 lg:col-span-2"><div id="fullCalendarTarget" class="text-xs"></div></div>
-<div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
-<h3 class="font-bold text-[#0B2341] text-xs">Kategori Warna Aktivitas</h3>
-<div class="space-y-2 text-xs"><div class="flex items-center space-x-2"><span class="w-3.5 h-3.5 bg-[#2E7D32] rounded-full block"></span><span class="font-medium text-slate-700">Cuti Tahunan</span></div><div class="flex items-center space-x-2"><span class="w-3.5 h-3.5 bg-[#C62828] rounded-full block"></span><span class="font-medium text-slate-700">Cuti Sakit</span></div><div class="flex items-center space-x-2"><span class="w-3.5 h-3.5 bg-[#123B63] rounded-full block"></span><span class="font-medium text-slate-700">Cuti Izin / Penting</span></div><div class="flex items-center space-x-2"><span class="w-3.5 h-3.5 bg-[#E65100] rounded-full block"></span><span class="font-medium text-slate-700">Cuti Besar / Melahirkan</span></div></div>
-<div class="pt-4 border-t border-slate-100 space-y-3"><h4 class="font-bold text-slate-800 text-xs">Status Cuti Hari Ini</h4><div class="bg-slate-50 p-3 rounded-xl"><p class="font-bold text-[10px] text-slate-400">AKTIF HARI INI</p><p class="text-xs font-semibold mt-1 text-[#0B2341]" x-text="stats.pegawaiCutiName || 'Semua pegawai hadir di kantor'"></p></div></div>
-</div>
-</div>
+<div x-show="activeMenu==='cuti'" class="space-y-6">
+<div class="flex justify-between"><h2 class="text-2xl font-extrabold text-[#0B2341]">Jadwal Cuti</h2><button @click="showModalAddCuti=true" class="bg-[#0B2341] text-white text-xs font-bold px-4 py-2 rounded-xl">+ Input Cuti</button></div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border"><div id="fullCalendarTarget"></div></div><div class="bg-white rounded-3xl p-6 shadow-sm border"><h3 class="font-bold text-xs">Status Cuti Hari Ini</h3><div class="mt-4 p-3 bg-slate-50 rounded-xl"><p class="text-xs font-semibold text-[#0B2341]" x-text="stats.pegawaiCutiName||'Semua hadir'"></p></div></div></div>
 </div>
 
 <!-- LAPORAN -->
-<div x-show="activeMenu === 'laporan'" class="space-y-6">
-<div><h2 class="text-2xl font-extrabold text-[#0B2341]">Cetak Laporan Kepegawaian</h2><p class="text-xs text-slate-500">Unduh data komprehensif kepegawaian dalam format PDF/Excel secara instan.</p></div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 text-center"><span class="w-12 h-12 bg-blue-50 text-[#0B2341] rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="file-spreadsheet" class="w-6 h-6"></i></span><h3 class="font-bold text-[#0B2341] text-sm">Laporan Naik Pangkat</h3><p class="text-slate-400 text-[11px] mt-1">Mengunduh daftar pegawai naik pangkat ≤6 bulan.</p><button @click="triggerReportExport('Pangkat')" class="bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-xs w-full py-2 rounded-xl mt-4">Unduh PDF</button></div>
-<div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 text-center"><span class="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="hourglass" class="w-6 h-6"></i></span><h3 class="font-bold text-[#0B2341] text-sm">Laporan KGB Berkala</h3><p class="text-slate-400 text-[11px] mt-1">Mengunduh daftar jatuh tempo berkala ≤6 bulan.</p><button @click="triggerReportExport('KGB')" class="bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-xs w-full py-2 rounded-xl mt-4">Unduh PDF</button></div>
-<div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 text-center"><span class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="check-square" class="w-6 h-6"></i></span><h3 class="font-bold text-[#0B2341] text-sm">Rekapitulasi Pegawai</h3><p class="text-slate-400 text-[11px] mt-1">Unduh seluruh berkas pegawai Lapas.</p><button @click="triggerReportExport('Pegawai')" class="bg-[#123B63] hover:bg-[#0B2341] text-white font-bold text-xs w-full py-2 rounded-xl mt-4">Unduh PDF</button></div>
-</div>
+<div x-show="activeMenu==='laporan'" class="space-y-6">
+<h2 class="text-2xl font-extrabold text-[#0B2341]">Laporan</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div class="bg-white p-5 rounded-2xl shadow-sm border text-center"><h3 class="font-bold text-sm">Naik Pangkat</h3><button @click="triggerReportExport('Pangkat')" class="bg-[#123B63] text-white text-xs w-full py-2 rounded-xl mt-4">Unduh PDF</button></div><div class="bg-white p-5 rounded-2xl shadow-sm border text-center"><h3 class="font-bold text-sm">KGB</h3><button @click="triggerReportExport('KGB')" class="bg-[#123B63] text-white text-xs w-full py-2 rounded-xl mt-4">Unduh PDF</button></div><div class="bg-white p-5 rounded-2xl shadow-sm border text-center"><h3 class="font-bold text-sm">Semua Pegawai</h3><button @click="triggerReportExport('Pegawai')" class="bg-[#123B63] text-white text-xs w-full py-2 rounded-xl mt-4">Unduh PDF</button></div></div>
 </div>
 
 <!-- ADMIN -->
-<div x-show="activeMenu === 'admin'" class="space-y-6">
-<div><h2 class="text-2xl font-extrabold text-[#0B2341]">Setelan & Backup Database</h2><p class="text-xs text-slate-500">Panel khusus admin untuk mengunduh salinan cadangan instan basis data.</p></div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4"><h3 class="font-bold text-slate-800 text-sm">Cadangan Basis Data</h3><p class="text-xs text-slate-500 leading-relaxed">Ekspor seluruh berkas dokumen pegawai dan riwayat cuti terdata ke dalam satu file berkas JSON terenskripsi.</p><button @click="exportDatabaseBackup()" class="bg-[#0B2341] text-white font-bold text-xs px-4 py-2 rounded-xl">Ekspor JSON</button></div>
-<div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4"><h3 class="font-bold text-slate-800 text-sm">Audit Trail Log Sistem</h3><div class="space-y-3 overflow-y-auto max-h-[14rem]"><template x-for="(log, index) in auditLogs" :key="index"><div class="text-[11px] bg-slate-50 p-2.5 rounded-xl flex justify-between items-start"><div><p class="font-bold text-[#123B63]" x-text="log.aksi"></p><p class="text-slate-500" x-text="log.detail"></p></div><span class="text-[10px] text-slate-400" x-text="log.timestamp"></span></div></template></div></div>
-</div>
+<div x-show="activeMenu==='admin'" class="space-y-6">
+<h2 class="text-2xl font-extrabold text-[#0B2341]">Admin Console</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="bg-white rounded-3xl p-6 shadow-sm border"><h3 class="font-bold">Backup Database</h3><button @click="exportDatabaseBackup()" class="bg-[#0B2341] text-white font-bold text-xs px-4 py-2 rounded-xl mt-4">Ekspor JSON</button></div></div>
 </div>
 
-</div>
+</div><!-- end body -->
 
-<!-- MOBILE BOTTOM NAV -->
-<nav class="app-bottombar fixed bottom-0 left-0 right-0 z-40 bg-[#0B2341]/95 backdrop-blur-md border-t border-slate-800 py-3 px-4 flex justify-around items-center">
-<button @click="activeMenu = 'dashboard'" :class="activeMenu === 'dashboard' ? 'text-[#C9A227]' : 'text-slate-400'" class="flex flex-col items-center"><i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="text-[9px] mt-1">Beranda</span></button>
-<button @click="activeMenu = 'pegawai'" :class="activeMenu === 'pegawai' ? 'text-[#C9A227]' : 'text-slate-400'" class="flex flex-col items-center"><i data-lucide="users" class="w-5 h-5"></i><span class="text-[9px] mt-1">Pegawai</span></button>
-<button @click="activeMenu = 'kgb'" :class="activeMenu === 'kgb' ? 'text-[#C9A227]' : 'text-slate-400'" class="flex flex-col items-center"><i data-lucide="badge-percent" class="w-5 h-5"></i><span class="text-[9px] mt-1">KGB</span></button>
-<button @click="activeMenu = 'cuti'; setTimeout(() => { renderCalendar(); }, 200)" :class="activeMenu === 'cuti' ? 'text-[#C9A227]' : 'text-slate-400'" class="flex flex-col items-center"><i data-lucide="calendar" class="w-5 h-5"></i><span class="text-[9px] mt-1">Cuti</span></button>
-<button @click="handleLogout" class="text-red-400 flex flex-col items-center"><i data-lucide="log-out" class="w-5 h-5"></i><span class="text-[9px] mt-1">Keluar</span></button>
+<!-- ====== MOBILE BOTTOM NAV ====== -->
+<nav class="app-bottombar fixed bottom-0 left-0 right-0 z-40 bg-[#0B2341]/95 backdrop-blur-md border-t border-slate-800 py-3 px-4 flex justify-around">
+<button @click="activeMenu='dashboard'" :class="activeMenu==='dashboard'?'text-[#C9A227]':'text-slate-400'" class="flex flex-col items-center"><i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="text-[9px]">Home</span></button>
+<button @click="activeMenu='pegawai'" :class="activeMenu==='pegawai'?'text-[#C9A227]':'text-slate-400'" class="flex flex-col items-center"><i data-lucide="users" class="w-5 h-5"></i><span class="text-[9px]">Pegawai</span></button>
+<button @click="activeMenu='cuti';setTimeout(()=>{renderCalendar()},200)" :class="activeMenu==='cuti'?'text-[#C9A227]':'text-slate-400'" class="flex flex-col items-center"><i data-lucide="calendar" class="w-5 h-5"></i><span class="text-[9px]">Cuti</span></button>
+<button @click="handleLogout" class="text-red-400 flex flex-col items-center"><i data-lucide="log-out" class="w-5 h-5"></i><span class="text-[9px]">Keluar</span></button>
 </nav>
 
 </main>
+</div><!-- end main app -->
+
+<!-- ====== MODAL TAMBAH PEGAWAI ====== -->
+<div x-show="showModalAddPegawai" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" x-cloak @click.away="showModalAddPegawai=false">
+<div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-hidden"><div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between"><h3 class="font-bold text-xs">Tambah Pegawai</h3><button @click="showModalAddPegawai=false"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+<form @submit.prevent="saveNewPegawai" class="p-6 overflow-y-auto space-y-4 text-xs"><div><label class="font-bold">NIP *</label><input type="text" x-model="newPegawaiForm.nip" required class="w-full border rounded-lg px-3 py-2"></div><div><label class="font-bold">Nama *</label><input type="text" x-model="newPegawaiForm.nama" required class="w-full border rounded-lg px-3 py-2"></div><div class="grid grid-cols-2 gap-4"><div><label class="font-bold">Golongan</label><select x-model="newPegawaiForm.golongan" class="w-full border rounded-lg px-3 py-2"><option value="II/a">II/a</option><option value="II/b">II/b</option><option value="II/c">II/c</option><option value="II/d">II/d</option><option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="III/d">III/d</option><option value="IV/a">IV/a</option><option value="IV/b">IV/b</option><option value="IV/c">IV/c</option><option value="IV/d">IV/d</option><option value="IV/e">IV/e</option></select></div><div><label class="font-bold">Jabatan</label><input type="text" x-model="newPegawaiForm.jabatan" class="w-full border rounded-lg px-3 py-2"></div></div><div class="flex justify-end gap-2 pt-4 border-t"><button type="button" @click="showModalAddPegawai=false" class="bg-slate-100 px-4 py-2 rounded-lg font-bold">Batal</button><button type="submit" class="bg-[#0B2341] text-white px-4 py-2 rounded-lg font-bold">Simpan</button></div></form></div>
 </div>
 
-<!-- MODAL TAMBAH PEGAWAI -->
-<div x-show="showModalAddPegawai" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" x-cloak>
-<div class="bg-white rounded-3xl w-full max-w-lg flex flex-col shadow-2xl border border-yellow-500/10 max-h-[90vh] overflow-hidden">
-<div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between items-center"><h3 class="font-bold text-xs tracking-wide uppercase">Tambah Data Pegawai Baru</h3><button @click="showModalAddPegawai = false" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-<form @submit.prevent="saveNewPegawai" class="p-6 overflow-y-auto space-y-4 text-xs">
-<div><label class="block font-bold text-slate-700 mb-1">NIP Pegawai (Wajib Unik)</label><input type="text" x-model="newPegawaiForm.nip" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="Contoh: 199508122020011002"></div>
-<div><label class="block font-bold text-slate-700 mb-1">Nama Lengkap</label><input type="text" x-model="newPegawaiForm.nama" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="Nama Lengkap & Gelar"></div>
-<div class="grid grid-cols-2 gap-4"><div><label class="block font-bold text-slate-700 mb-1">Golongan</label><select x-model="newPegawaiForm.golongan" required class="w-full px-3 py-2 border rounded-lg bg-white">
-<option value="II/a">II/a</option><option value="II/b">II/b</option><option value="II/c">II/c</option><option value="II/d">II/d</option>
-<option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="III/d">III/d</option>
-<option value="IV/a">IV/a</option><option value="IV/b">IV/b</option><option value="IV/c">IV/c</option><option value="IV/d">IV/d</option><option value="IV/e">IV/e</option>
-</select></div><div><label class="block font-bold text-slate-700 mb-1">Jabatan</label><input type="text" x-model="newPegawaiForm.jabatan" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="Contoh: Penjaga Tahanan"></div></div>
-<div class="grid grid-cols-2 gap-4"><div><label class="block font-bold text-slate-700 mb-1">Nomor WhatsApp</label><input type="text" x-model="newPegawaiForm.noHp" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="081234567..."></div><div><label class="block font-bold text-slate-700 mb-1">Email</label><input type="email" x-model="newPegawaiForm.email" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="nama@kemenimipas.go.id"></div></div>
-<div class="flex justify-end gap-2 pt-4 border-t"><button type="button" @click="showModalAddPegawai = false" class="bg-slate-100 px-4 py-2 rounded-lg font-bold">Batal</button><button type="submit" class="bg-[#0B2341] text-white px-4 py-2 rounded-lg font-bold">Simpan Pegawai</button></div>
-</form>
-</div>
+<!-- ====== MODAL TAMBAH CUTI ====== -->
+<div x-show="showModalAddCuti" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" x-cloak @click.away="showModalAddCuti=false">
+<div class="bg-white rounded-3xl w-full max-w-md shadow-2xl"><div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between"><h3 class="font-bold text-xs">Input Cuti</h3><button @click="showModalAddCuti=false"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+<form @submit.prevent="saveNewCuti" class="p-6 space-y-4 text-xs"><div><label class="font-bold">Pilih Pegawai *</label><select x-model="newCutiForm.nip" required class="w-full border rounded-lg px-3 py-2"><option value="">-- Pilih --</option><template x-for="p in pegawaiList" :key="p.nip"><option :value="p.nip" x-text="p.nama+' ('+p.nip+')'"></option></template></select></div><div><label class="font-bold">Jenis Cuti *</label><select x-model="newCutiForm.jenisCuti" class="w-full border rounded-lg px-3 py-2"><option value="Cuti Tahunan">Cuti Tahunan</option><option value="Cuti Sakit">Cuti Sakit</option><option value="Cuti Izin">Cuti Izin</option><option value="Cuti Besar">Cuti Besar</option></select></div><div><label class="font-bold">Keterangan</label><input type="text" x-model="newCutiForm.keterangan" class="w-full border rounded-lg px-3 py-2"></div><div class="grid grid-cols-2 gap-4"><div><label class="font-bold">Mulai *</label><input type="date" x-model="newCutiForm.tanggalMulai" required class="w-full border rounded-lg px-3 py-2"></div><div><label class="font-bold">Selesai *</label><input type="date" x-model="newCutiForm.tanggalSelesai" required class="w-full border rounded-lg px-3 py-2"></div></div><div class="flex justify-end gap-2 pt-4 border-t"><button type="button" @click="showModalAddCuti=false" class="bg-slate-100 px-4 py-2 rounded-lg font-bold">Batal</button><button type="submit" class="bg-[#2E7D32] text-white px-4 py-2 rounded-lg font-bold">Simpan</button></div></form></div>
 </div>
 
-<!-- MODAL EDIT NIP -->
-<div x-show="showModalEditNip" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" x-cloak>
-<div class="bg-white rounded-3xl w-full max-w-md flex flex-col shadow-2xl border border-yellow-500/10">
-<div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between items-center rounded-t-3xl"><h3 class="font-bold text-xs tracking-wide uppercase">✏️ Ubah NIP Pegawai</h3><button @click="showModalEditNip = false" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-<form @submit.prevent="saveNipChange" class="p-6 space-y-4 text-xs">
-<div><label class="block font-bold text-slate-700 mb-1">Nama Pegawai</label><input type="text" :value="nipEditForm.nama" disabled class="w-full px-3 py-2 border rounded-lg bg-slate-100 text-slate-500 font-semibold"></div>
-<div><label class="block font-bold text-slate-700 mb-1">NIP Lama</label><input type="text" :value="nipEditForm.oldNip" disabled class="w-full px-3 py-2 border rounded-lg bg-slate-100 text-slate-500 font-mono"></div>
-<div><label class="block font-bold text-slate-700 mb-1">NIP Baru <span class="text-red-500">*</span></label><input type="text" x-model="nipEditForm.newNip" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#C9A227] font-mono" placeholder="Masukkan NIP Baru"></div>
-<div class="flex justify-end gap-2 pt-4 border-t"><button type="button" @click="showModalEditNip = false" class="bg-slate-100 px-4 py-2 rounded-lg font-bold text-xs">Batal</button><button type="submit" class="bg-[#0B2341] text-white px-4 py-2 rounded-lg font-bold text-xs">Simpan NIP Baru</button></div>
-</form>
-</div>
-</div>
+<!-- ====== PDF VIEWER ====== -->
+<div x-show="showPdfViewer" class="pdf-viewer-overlay" x-cloak @click.away="closePdfViewer()"><div class="pdf-viewer-container" @click.stop><div class="pdf-viewer-header"><div><h3 class="font-bold text-sm" x-text="currentPdfDoc.namaFile"></h3><p class="text-[10px] text-slate-300" x-text="currentPdfType"></p></div><div class="flex items-center gap-2"><a :href="currentPdfDoc.base64||'#'" :download="currentPdfDoc.namaFile||'dokumen.pdf'" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center"><i data-lucide="download" class="w-4 h-4 mr-1"></i> Download</a><button @click="closePdfViewer()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button></div></div><div class="pdf-viewer-body"><iframe :src="currentPdfDoc.base64" style="width:100%;height:100%;border:none;border-radius:12px;background:#fff;"></iframe></div></div></div>
 
-<!-- MODAL TAMBAH CUTI -->
-<div x-show="showModalAddCuti" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" x-cloak>
-<div class="bg-white rounded-3xl w-full max-w-md flex flex-col shadow-2xl border border-yellow-500/10">
-<div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between items-center rounded-t-3xl"><h3 class="font-bold text-xs tracking-wide uppercase">✏️ Input Pengajuan Cuti Pegawai</h3><button @click="showModalAddCuti = false" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-<form @submit.prevent="saveNewCuti" class="p-6 space-y-4 text-xs">
-<div><label class="block font-bold text-slate-700 mb-1">Pilih Pegawai <span class="text-red-500">*</span></label>
-<select x-model="newCutiForm.nip" required class="w-full px-3 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-[#C9A227]">
-<option value="">-- Pilih Pegawai --</option>
-<template x-for="(p, index) in pegawaiList" :key="index">
-<option :value="p.nip" x-text="p.nama + ' (' + p.nip + ')'"></option>
-</template>
-</select>
-</div>
-<div><label class="block font-bold text-slate-700 mb-1">Jenis Cuti <span class="text-red-500">*</span></label>
-<select x-model="newCutiForm.jenisCuti" class="w-full px-3 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-[#C9A227]">
-<option value="Cuti Tahunan">Cuti Tahunan</option>
-<option value="Cuti Sakit">Cuti Sakit</option>
-<option value="Cuti Izin">Cuti Izin / Alasan Penting</option>
-<option value="Cuti Besar">Cuti Besar</option>
-<option value="Cuti Melahirkan">Cuti Melahirkan</option>
-</select>
-</div>
-<div><label class="block font-bold text-slate-700 mb-1">Keterangan / Izin <span class="text-red-500">*</span></label>
-<input type="text" x-model="newCutiForm.keterangan" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#C9A227]" placeholder="Contoh: Izin keperluan keluarga, sakit, dll...">
-</div>
-<div class="grid grid-cols-2 gap-4">
-<div><label class="block font-bold text-slate-700 mb-1">Mulai Cuti <span class="text-red-500">*</span></label>
-<input type="date" x-model="newCutiForm.tanggalMulai" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#C9A227]">
-</div>
-<div><label class="block font-bold text-slate-700 mb-1">Selesai Cuti <span class="text-red-500">*</span></label>
-<input type="date" x-model="newCutiForm.tanggalSelesai" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#C9A227]">
-</div>
-</div>
-<div class="flex justify-end gap-2 pt-4 border-t">
-<button type="button" @click="showModalAddCuti = false" class="bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg font-bold text-xs transition">Batal</button>
-<button type="submit" class="bg-[#2E7D32] hover:bg-[#1B5E20] text-white px-4 py-2 rounded-lg font-bold text-xs transition flex items-center space-x-2">
-<i data-lucide="check" class="w-4 h-4"></i>
-<span>Setujui & Daftarkan Cuti</span>
-</button>
-</div>
-</form>
-</div>
-</div>
-
-<!-- PDF VIEWER MODAL -->
-<div x-show="showPdfViewer" class="pdf-viewer-overlay" x-cloak @click.away="closePdfViewer()">
-    <div class="pdf-viewer-container" @click.stop>
-        <div class="pdf-viewer-header">
-            <div>
-                <h3 class="font-bold text-sm tracking-wide" x-text="currentPdfDoc.namaFile || 'Viewer PDF'"></h3>
-                <p class="text-[10px] text-slate-300 mt-0.5" x-text="'Tipe Dokumen: ' + currentPdfType"></p>
-            </div>
-            <div class="flex items-center space-x-2">
-                <a :href="currentPdfDoc.base64 || '#'" :download="currentPdfDoc.namaFile || 'dokumen.pdf'" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center transition">
-                    <i data-lucide="download" class="w-4 h-4 mr-1"></i> Download
-                </a>
-                <button @click="closePdfViewer()" class="text-slate-400 hover:text-white p-1">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-        </div>
-        <div class="pdf-viewer-body">
-            <template x-if="currentPdfDoc.base64">
-                <iframe :src="currentPdfDoc.base64" style="width:100%;height:100%;border:none;border-radius:12px;background:white;"></iframe>
-            </template>
-            <template x-if="!currentPdfDoc.base64">
-                <div class="flex flex-col items-center justify-center h-full text-slate-400">
-                    <i data-lucide="file-text" class="w-12 h-12 mb-2"></i>
-                    <p class="text-sm font-semibold">Gagal memuat atau dokumen kosong.</p>
-                </div>
-            </template>
-        </div>
-    </div>
-</div>
-
-</div>
+</div><!-- end root -->
 
 <script>
 function sipandaApp() {
@@ -881,150 +207,46 @@ function sipandaApp() {
         pegawaiSearch: '',
         filterGolongan: '',
         filterUrgensi: '',
-        
         showModalAddPegawai: false,
-        showModalEditNip: false,
         showModalAddCuti: false,
         showPdfViewer: false,
-        
         currentPdfDoc: { namaFile: '', base64: '' },
         currentPdfType: '',
-
-        sessionUser: { nama: 'Tasya', foto: '' },
+        sessionUser: { nama: 'Admin', foto: '' },
         loginForm: { username: '', password: '' },
         newTodoText: '',
-        
         newPegawaiForm: { nip: '', nama: '', golongan: 'II/a', jabatan: '', noHp: '', email: '' },
-        nipEditForm: { oldNip: '', newNip: '', nama: '' },
         newCutiForm: { nip: '', jenisCuti: 'Cuti Tahunan', keterangan: '', tanggalMulai: '', tanggalSelesai: '' },
-        
-        todoList: [
-            { id: 1, task: "Verifikasi Berkas KGB gelombang Juni", done: false },
-            { id: 2, task: "Scan SK Kepangkatan golongan III/a", done: true }
-        ],
-        
-        auditLogs: [
-            { aksi: "LOGIN_SUCCESS", detail: "Admin masuk ke sistem utama", timestamp: "Hari ini, 08:30" }
-        ],
-        
+        todoList: [{ id: 1, task: "Verifikasi Berkas KGB", done: false }],
+        auditLogs: [{ aksi: "LOGIN", detail: "Admin masuk", timestamp: "Hari ini" }],
         prioritasList: [],
-        
-        stats: {
-            totalPegawai: 0,
-            pegawaiCuti: 0,
-            pegawaiCutiName: '',
-            pangkatSegera: 0,
-            kgbSegera: 0,
-            skpBelumUpload: 0,
-            skJabatanBelumUpload: 0,
-            dokumenBelumLengkap: 0,
-            pensiunSegera: 0
-        },
-
-        pegawaiList: [
-            {
-                nip: "199804152023012001",
-                nama: "Ananda Putra, A.Md.P.",
-                golongan: "II/c",
-                jabatan: "Penjaga Tahanan Terampil",
-                tglLahir: "1998-04-15",
-                gender: "Laki-laki",
-                tmtCpns: "2023-01-01",
-                tmtPns: "2024-02-01",
-                email: "ananda@kemenimipas.go.id",
-                noHp: "081273948211",
-                foto: "",
-                pangkatCountdownDays: 0,
-                kgbCountdownDays: 0,
-                pensiunCountdown: 0,
-                progressBerkas: 0,
-                tglPangkatTerakhir: "2024-02-01",
-                tglPangkatBerikutnya: "2026-10-01",
-                tglKgbTerakhir: "2024-06-01",
-                tglKgbBerikutnya: "2026-06-01",
-                dokumen: {
-                    skPangkat: { namaFile: "sk_pangkat_ananda.pdf", base64: "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iago8PAovVGl0bGUgKFNLIFBhbmdrYXQgQW5hbmRhKQovQXV0aG9yIChTSVBBTkRBKQo+PgplbmRvYmoKMiAwIG9iago8PAovVHlwZSAvUGFnZXMKL0tpZHMgWzMgMCBSXQovQ291bnQgMQo+PgplbmRvYmoKMyAwIG9iago8PAovVHlwZSAvUGFnZQovUGFyZW50IDIgMCBSCi9NZWRpYUJveCBbMCAwIDU5NSA4NDJdCi9SZXNvdXJjZXMgPDwKL0ZvbnQgPDwKL0YxIDQgMCBSCj4+Cj4+Ci9Db250ZW50cyA1IDAgUgo+PgplbmRvYmoKNCAwIG9iago8PAovVHlwZSAvRm9udAovU3VidHlwZSAvVHlwZTEKL0Jhc2VGb250IC9IZWx2ZXRpY2EKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL0xlbmd0aCA3Mgo+PgpzdHJlYW0KQlQKL0YxIDEyIFNmCjUwIDc1MCBUZAooU0sgS0VQQU5HS0FUQU4gQU5BTkRBIC0gTEFQQVMgQkFOWVVBU0lOKSBUagogRVQKZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMTYgMDAwMDAgbiAKMDAwMDAwMDA3NCAwMDAwMCBuIAowMDAwMDAwMTM1IDAwMDAwIG4gCjAwMDAwMDAyNTUgMDAwMDAgbiAKMDAwMDAwMDMxNCAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9TaXplIDYKL1Jvb3QgMiAwIFIKPj4Kc3RhcnR4cmVmCjQzNQolJUVPRg==" },
-                    skJabatan: { nomor: "W6.PAS.PAS.11-KP.04", tanggal: "2024-02-15", namaFile: "", base64: "" },
-                    skKgb: { nomor: "W6.PAS.PAS.11-KP.07", tanggal: "2024-06-01", namaFile: "", base64: "" },
-                    skp: { namaFile: "", base64: "" },
-                    skpKgb: { nilai: 88, predikat: "Baik", tahun: 2025 }
-                }
-            }
-        ],
-        
-        cutiList: [
-            { cutiId: "C-001", nip: "199804152023012001", nama: "Ananda Putra, A.Md.P.", jenisCuti: "Cuti Tahunan", tanggalMulai: "2026-07-20", tanggalSelesai: "2026-07-25", keterangan: "Cuti Tahunan Mudik", status: "Disetujui" }
-        ],
-
+        stats: { totalPegawai: 0, pegawaiCuti: 0, pegawaiCutiName: '', pangkatSegera: 0, kgbSegera: 0, skpBelumUpload: 0, skJabatanBelumUpload: 0, dokumenBelumLengkap: 0, pensiunSegera: 0 },
+        pegawaiList: [{ nip: "199804152023012001", nama: "Ananda Putra", golongan: "II/c", jabatan: "Penjaga Tahanan", tglLahir: "1998-04-15", email: "ananda@kemenimipas.go.id", noHp: "081273948211", foto: "", pangkatCountdownDays: 0, kgbCountdownDays: 0, pensiunCountdown: 0, progressBerkas: 0, tglPangkatTerakhir: "2024-02-01", tglPangkatBerikutnya: "2026-10-01", tglKgbTerakhir: "2024-06-01", tglKgbBerikutnya: "2026-06-01", dokumen: { skPangkat: { namaFile: "", base64: "" }, skJabatan: { nomor: "", tanggal: "", namaFile: "", base64: "" }, skKgb: { nomor: "", tanggal: "", namaFile: "", base64: "" }, skp: { namaFile: "", base64: "" }, skpKgb: { nilai: 88, predikat: "Baik", tahun: 2025 } } }],
+        cutiList: [{ cutiId: "C-001", nip: "199804152023012001", nama: "Ananda Putra", jenisCuti: "Cuti Tahunan", tanggalMulai: "2026-07-20", tanggalSelesai: "2026-07-25", keterangan: "Mudik", status: "Disetujui" }],
         calendarInstance: null,
         selectedPegawai: null,
+        selectedTab: 'identitas',
 
-        // ====== INIT ======
         initApp() {
-            // Load dari LocalStorage
-            if (localStorage.getItem("sipanda_pegawai")) {
-                this.pegawaiList = JSON.parse(localStorage.getItem("sipanda_pegawai"));
-            }
-            if (localStorage.getItem("sipanda_cuti")) {
-                this.cutiList = JSON.parse(localStorage.getItem("sipanda_cuti"));
-            }
-            
-            // Hitung ulang semua countdown
+            if (localStorage.getItem("sipanda_pegawai")) this.pegawaiList = JSON.parse(localStorage.getItem("sipanda_pegawai"));
+            if (localStorage.getItem("sipanda_cuti")) this.cutiList = JSON.parse(localStorage.getItem("sipanda_cuti"));
             this.recalculateAllCountdowns();
             this.hitungUrgensiDanMasaBerlaku();
             this.updateStats();
             this.initChart();
-            
-            // Auto-save setiap 10 detik
-            setInterval(() => { this.syncDatabase(); }, 10000);
-            
-            setTimeout(() => { 
-                lucide.createIcons(); 
-            }, 300);
+            setInterval(() => this.syncDatabase(), 10000);
+            setTimeout(() => lucide.createIcons(), 300);
         },
 
-        // ====== RECALCULATE ALL COUNTDOWNS (FIXED) ======
         recalculateAllCountdowns() {
-            const today = new Date();
-            // Reset waktu ke 00:00:00 untuk perhitungan yang akurat
-            today.setHours(0, 0, 0, 0);
-            
+            const today = new Date(); today.setHours(0,0,0,0);
             this.pegawaiList.forEach(p => {
-                // COUNTDOWN PANGKAT
-                if (p.tglPangkatBerikutnya) {
-                    const tmtDate = new Date(p.tglPangkatBerikutnya);
-                    tmtDate.setHours(0, 0, 0, 0);
-                    const diffTime = tmtDate.getTime() - today.getTime();
-                    p.pangkatCountdownDays = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-                } else {
-                    p.pangkatCountdownDays = 0;
-                }
-                
-                // COUNTDOWN KGB
-                if (p.tglKgbBerikutnya) {
-                    const tmtDate = new Date(p.tglKgbBerikutnya);
-                    tmtDate.setHours(0, 0, 0, 0);
-                    const diffTime = tmtDate.getTime() - today.getTime();
-                    p.kgbCountdownDays = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-                } else {
-                    p.kgbCountdownDays = 0;
-                }
-                
-                // COUNTDOWN PENSIUN (58 tahun)
-                if (p.tglLahir) {
-                    const lahir = new Date(p.tglLahir);
-                    lahir.setHours(0, 0, 0, 0);
-                    const pensiunDate = new Date(lahir.getFullYear() + 58, lahir.getMonth(), lahir.getDate());
-                    pensiunDate.setHours(0, 0, 0, 0);
-                    const diffTime = pensiunDate.getTime() - today.getTime();
-                    p.pensiunCountdown = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-                } else {
-                    p.pensiunCountdown = 0;
-                }
+                if (p.tglPangkatBerikutnya) { const tmt = new Date(p.tglPangkatBerikutnya); tmt.setHours(0,0,0,0); const diff = Math.floor((tmt - today) / (86400000)); p.pangkatCountdownDays = diff > 0 ? diff : 0; }
+                if (p.tglKgbBerikutnya) { const tmt = new Date(p.tglKgbBerikutnya); tmt.setHours(0,0,0,0); const diff = Math.floor((tmt - today) / (86400000)); p.kgbCountdownDays = diff > 0 ? diff : 0; }
+                if (p.tglLahir) { const lahir = new Date(p.tglLahir); lahir.setHours(0,0,0,0); const pensiun = new Date(lahir.getFullYear()+58, lahir.getMonth(), lahir.getDate()); pensiun.setHours(0,0,0,0); const diff = Math.floor((pensiun - today) / (86400000)); p.pensiunCountdown = diff > 0 ? diff : 0; }
             });
         },
 
-        // ====== SYNC DATABASE ======
         syncDatabase() {
             this.recalculateAllCountdowns();
             localStorage.setItem("sipanda_pegawai", JSON.stringify(this.pegawaiList));
@@ -1033,348 +255,160 @@ function sipandaApp() {
             this.updateStats();
         },
 
-        // ====== UPDATE STATS ======
         updateStats() {
             this.stats.totalPegawai = this.pegawaiList.length;
-            
-            const hariIniStr = new Date().toISOString().split('T')[0];
-            const activeCuti = this.cutiList.filter(c => c.tanggalMulai <= hariIniStr && c.tanggalSelesai >= hariIniStr);
-            this.stats.pegawaiCuti = activeCuti.length;
-            this.stats.pegawaiCutiName = activeCuti.map(c => c.nama).join(", ");
-
-            this.stats.pangkatSegera = this.pegawaiList.filter(p => p.pangkatCountdownDays <= 180).length;
-            this.stats.kgbSegera = this.pegawaiList.filter(p => p.kgbCountdownDays <= 180).length;
-
-            let skpKosong = 0, skjKosong = 0, belumLengkap = 0, pensiun = 0;
+            const hariIni = new Date().toISOString().split('T')[0];
+            const active = this.cutiList.filter(c => c.tanggalMulai <= hariIni && c.tanggalSelesai >= hariIni);
+            this.stats.pegawaiCuti = active.length;
+            this.stats.pegawaiCutiName = active.map(c => c.nama).join(", ");
+            this.stats.pangkatSegera = this.pegawaiList.filter(p => p.pangkatCountdownDays <= 180 && p.pangkatCountdownDays > 0).length;
+            this.stats.kgbSegera = this.pegawaiList.filter(p => p.kgbCountdownDays <= 180 && p.kgbCountdownDays > 0).length;
+            let skp=0, skj=0, bl=0, ps=0;
             this.pegawaiList.forEach(p => {
-                if (!p.dokumen?.skPangkat?.namaFile) skpKosong++;
-                if (!p.dokumen?.skJabatan?.namaFile) skjKosong++;
-                if (p.progressBerkas < 100) belumLengkap++;
-                if (p.pensiunCountdown && p.pensiunCountdown <= 730) pensiun++;
+                if (!p.dokumen?.skPangkat?.namaFile) skp++;
+                if (!p.dokumen?.skJabatan?.namaFile) skj++;
+                if (p.progressBerkas < 100) bl++;
+                if (p.pensiunCountdown > 0 && p.pensiunCountdown <= 730) ps++;
             });
-
-            this.stats.skpBelumUpload = skpKosong;
-            this.stats.skJabatanBelumUpload = skjKosong;
-            this.stats.dokumenBelumLengkap = belumLengkap;
-            this.stats.pensiunSegera = pensiun;
+            this.stats.skpBelumUpload = skp; this.stats.skJabatanBelumUpload = skj; this.stats.dokumenBelumLengkap = bl; this.stats.pensiunSegera = ps;
         },
 
-        // ====== HITUNG URGENSI ======
         hitungUrgensiDanMasaBerlaku() {
             this.recalculateAllCountdowns();
             this.prioritasList = [];
-
             this.pegawaiList.forEach(p => {
-                // Hitung progress berkas
-                let totalBerkas = 4;
-                let berkasAda = 0;
-                if (p.dokumen?.skPangkat?.namaFile) berkasAda++;
-                if (p.dokumen?.skJabatan?.namaFile) berkasAda++;
-                if (p.dokumen?.skKgb?.namaFile) berkasAda++;
-                if (p.dokumen?.skp?.namaFile) berkasAda++;
-                p.progressBerkas = Math.round((berkasAda / totalBerkas) * 100);
-
-                // Prioritas jika mendekati batas
-                if (p.pangkatCountdownDays <= 90 && p.pangkatCountdownDays > 0) {
-                    this.prioritasList.push({
-                        nip: p.nip, nama: p.nama, golongan: p.golongan, jabatan: p.jabatan,
-                        status: "KP_NEAR", keterangan: `${p.pangkatCountdownDays} hari lagi menuju TMT Kepangkatan`,
-                    });
-                }
-                if (p.kgbCountdownDays <= 45 && p.kgbCountdownDays > 0) {
-                    this.prioritasList.push({
-                        nip: p.nip, nama: p.nama, golongan: p.golongan, jabatan: p.jabatan,
-                        status: "KGB_NEAR", keterangan: `${p.kgbCountdownDays} hari lagi jatuh tempo KGB`,
-                    });
-                }
+                let total=4, ada=0;
+                if (p.dokumen?.skPangkat?.namaFile) ada++;
+                if (p.dokumen?.skJabatan?.namaFile) ada++;
+                if (p.dokumen?.skKgb?.namaFile) ada++;
+                if (p.dokumen?.skp?.namaFile) ada++;
+                p.progressBerkas = Math.round((ada/total)*100);
+                if (p.pangkatCountdownDays > 0 && p.pangkatCountdownDays <= 90) this.prioritasList.push({ nip: p.nip, nama: p.nama, golongan: p.golongan, jabatan: p.jabatan, status: "KP_NEAR", keterangan: p.pangkatCountdownDays+' hari lagi ke TMT Pangkat' });
+                if (p.kgbCountdownDays > 0 && p.kgbCountdownDays <= 45) this.prioritasList.push({ nip: p.nip, nama: p.nama, golongan: p.golongan, jabatan: p.jabatan, status: "KGB_NEAR", keterangan: p.kgbCountdownDays+' hari lagi ke TMT KGB' });
             });
         },
 
-        // ====== FILTERED PEGAWAI ======
         get filteredPegawaiList() {
             return this.pegawaiList.filter(p => {
-                const matchQuery = p.nama.toLowerCase().includes(this.pegawaiSearch.toLowerCase()) || 
-                                   p.nip.includes(this.pegawaiSearch) || 
-                                   p.jabatan.toLowerCase().includes(this.pegawaiSearch.toLowerCase());
-                const matchGolongan = this.filterGolongan === '' || p.golongan === this.filterGolongan;
-                
-                let matchUrgensi = true;
-                if (this.filterUrgensi === 'red') matchUrgensi = p.pangkatCountdownDays <= 30 || p.kgbCountdownDays <= 30;
-                else if (this.filterUrgensi === 'orange') matchUrgensi = (p.pangkatCountdownDays > 30 && p.pangkatCountdownDays <= 90);
-                else if (this.filterUrgensi === 'yellow') matchUrgensi = (p.pangkatCountdownDays > 90 && p.pangkatCountdownDays <= 180);
-                else if (this.filterUrgensi === 'green') matchUrgensi = p.pangkatCountdownDays > 180;
-
-                return matchQuery && matchGolongan && matchUrgensi;
+                const q = p.nama.toLowerCase().includes(this.pegawaiSearch.toLowerCase()) || p.nip.includes(this.pegawaiSearch) || p.jabatan.toLowerCase().includes(this.pegawaiSearch.toLowerCase());
+                const g = this.filterGolongan === '' || p.golongan === this.filterGolongan;
+                let u = true;
+                if (this.filterUrgensi === 'red') u = p.pangkatCountdownDays <= 30 || p.kgbCountdownDays <= 30;
+                else if (this.filterUrgensi === 'orange') u = (p.pangkatCountdownDays > 30 && p.pangkatCountdownDays <= 90);
+                else if (this.filterUrgensi === 'yellow') u = (p.pangkatCountdownDays > 90 && p.pangkatCountdownDays <= 180);
+                else if (this.filterUrgensi === 'green') u = p.pangkatCountdownDays > 180;
+                return q && g && u;
             });
         },
 
-        get filteredCutiList() {
-            return this.cutiList;
-        },
+        get filteredCutiList() { return this.cutiList; },
 
-        // ====== UPLOAD FOTO (FIXED - LANGSUNG TAMPIL) ======
         uploadFoto(event) {
             const file = event.target.files[0];
             if (!file) return;
-
-            if (file.size > 2 * 1024 * 1024) {
-                alert("Ukuran file terlalu besar! Maksimal 2MB.");
-                return;
-            }
-            if (!file.type.startsWith('image/')) {
-                alert("File harus berupa gambar!");
-                return;
-            }
-
+            if (file.size > 2*1024*1024) { alert("Max 2MB!"); return; }
+            if (!file.type.startsWith('image/')) { alert("Harus gambar!"); return; }
             const reader = new FileReader();
             reader.onload = (e) => {
-                const base64Data = e.target.result;
+                const data = e.target.result;
                 if (this.selectedPegawai) {
-                    // Update di selectedPegawai
-                    this.selectedPegawai.foto = base64Data;
-                    
-                    // Update di pegawaiList
-                    const index = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
-                    if (index !== -1) {
-                        this.pegawaiList[index].foto = base64Data;
-                    }
-                    
-                    // Simpan ke localStorage
+                    this.selectedPegawai.foto = data;
+                    const idx = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
+                    if (idx !== -1) this.pegawaiList[idx].foto = data;
                     this.syncDatabase();
-                    
-                    // Refresh icon
-                    setTimeout(() => { lucide.createIcons(); }, 100);
-                    
-                    alert("Foto profil berhasil diperbarui!");
+                    this.selectedPegawai = { ...this.selectedPegawai };
+                    alert("✅ Foto berhasil diupdate!");
+                    setTimeout(() => lucide.createIcons(), 200);
                 }
             };
             reader.readAsDataURL(file);
             event.target.value = '';
         },
 
-        // ====== UPLOAD DOKUMEN ======
         handleDocUpload(event, type) {
             const file = event.target.files[0];
             if (!file) return;
-
-            if (file.type !== "application/pdf") {
-                alert("Sistem SIPANDA menolak berkas! Harus berformat .PDF");
-                return;
-            }
-            if (file.size > 5 * 1024 * 1024) {
-                alert("Ukuran file terlalu besar! Maksimal adalah 5MB.");
-                return;
-            }
-
+            if (file.type !== "application/pdf") { alert("Harus PDF!"); return; }
+            if (file.size > 5*1024*1024) { alert("Max 5MB!"); return; }
             const reader = new FileReader();
             reader.onload = (e) => {
-                const base64Data = e.target.result;
-                
-                if (!this.selectedPegawai.dokumen) {
-                    this.selectedPegawai.dokumen = { skPangkat: {}, skJabatan: {}, skKgb: {}, skp: {}, skpKgb: {} };
-                }
-                
-                if (type === 'skPangkat') {
-                    this.selectedPegawai.dokumen.skPangkat = { namaFile: file.name, base64: base64Data };
-                } else if (type === 'skJabatan') {
-                    this.selectedPegawai.dokumen.skJabatan.namaFile = file.name;
-                    this.selectedPegawai.dokumen.skJabatan.base64 = base64Data;
-                } else if (type === 'skKgb') {
-                    this.selectedPegawai.dokumen.skKgb.namaFile = file.name;
-                    this.selectedPegawai.dokumen.skKgb.base64 = base64Data;
-                } else if (type === 'skp') {
-                    this.selectedPegawai.dokumen.skp = { namaFile: file.name, base64: base64Data };
-                }
-
-                // Update di pegawaiList juga
-                const index = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
-                if (index !== -1) {
-                    this.pegawaiList[index].dokumen = { ...this.selectedPegawai.dokumen };
-                }
-
+                const data = e.target.result;
+                if (!this.selectedPegawai.dokumen) this.selectedPegawai.dokumen = { skPangkat: {}, skJabatan: {}, skKgb: {}, skp: {}, skpKgb: {} };
+                if (type === 'skPangkat') this.selectedPegawai.dokumen.skPangkat = { namaFile: file.name, base64: data };
+                else if (type === 'skJabatan') this.selectedPegawai.dokumen.skJabatan = { ...this.selectedPegawai.dokumen.skJabatan, namaFile: file.name, base64: data };
+                else if (type === 'skKgb') this.selectedPegawai.dokumen.skKgb = { ...this.selectedPegawai.dokumen.skKgb, namaFile: file.name, base64: data };
+                else if (type === 'skp') this.selectedPegawai.dokumen.skp = { namaFile: file.name, base64: data };
+                const idx = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
+                if (idx !== -1) this.pegawaiList[idx].dokumen = { ...this.selectedPegawai.dokumen };
                 this.syncDatabase();
-                alert(`Sukses mengunggah dokumen ${file.name}!`);
+                alert("✅ Dokumen berhasil diupload!");
                 event.target.value = '';
             };
             reader.readAsDataURL(file);
         },
 
-        // ====== OPEN PDF VIEWER ======
-        openPdfViewer(docObj, typeLabel = 'Dokumen Kedinasan') {
-            if (!docObj || !docObj.base64) {
-                alert("Maaf, file dokumen belum diunggah atau tidak valid!");
-                return;
-            }
-            this.currentPdfDoc = docObj;
-            this.currentPdfType = typeLabel;
+        openPdfViewer(doc, type) {
+            if (!doc || !doc.base64) { alert("File belum diupload!"); return; }
+            this.currentPdfDoc = doc;
+            this.currentPdfType = type;
             this.showPdfViewer = true;
-            setTimeout(() => { lucide.createIcons(); }, 100);
+            setTimeout(() => lucide.createIcons(), 100);
         },
 
-        closePdfViewer() {
-            this.showPdfViewer = false;
-            this.currentPdfDoc = { namaFile: '', base64: '' };
-        },
+        closePdfViewer() { this.showPdfViewer = false; this.currentPdfDoc = { namaFile: '', base64: '' }; },
 
-        // ====== SAVE NEW CUTI ======
         saveNewCuti() {
-            if (!this.newCutiForm.nip || !this.newCutiForm.tanggalMulai || !this.newCutiForm.tanggalSelesai) {
-                alert("Harap lengkapi semua field yang berbintang merah!");
-                return;
-            }
-
+            if (!this.newCutiForm.nip || !this.newCutiForm.tanggalMulai || !this.newCutiForm.tanggalSelesai) { alert("Lengkapi semua!"); return; }
             const peg = this.pegawaiList.find(p => p.nip === this.newCutiForm.nip);
-            if (!peg) {
-                alert("Pegawai tidak ditemukan!");
-                return;
-            }
-
-            const randId = "C-" + Math.floor(1000 + Math.random() * 9000);
-            const dataCutiBaru = {
-                cutiId: randId,
-                nip: this.newCutiForm.nip,
-                nama: peg.nama,
-                jenisCuti: this.newCutiForm.jenisCuti,
-                tanggalMulai: this.newCutiForm.tanggalMulai,
-                tanggalSelesai: this.newCutiForm.tanggalSelesai,
-                keterangan: this.newCutiForm.keterangan || '-',
-                status: "Disetujui"
-            };
-
-            this.cutiList.push(dataCutiBaru);
+            if (!peg) { alert("Pegawai tidak ditemukan!"); return; }
+            const data = { cutiId: "C-"+Math.floor(1000+Math.random()*9000), nip: this.newCutiForm.nip, nama: peg.nama, jenisCuti: this.newCutiForm.jenisCuti, tanggalMulai: this.newCutiForm.tanggalMulai, tanggalSelesai: this.newCutiForm.tanggalSelesai, keterangan: this.newCutiForm.keterangan || '-', status: "Disetujui" };
+            this.cutiList.push(data);
             this.syncDatabase();
-            
-            this.auditLogs.unshift({
-                aksi: "ADD_CUTI",
-                detail: `Menginput data cuti ${dataCutiBaru.jenisCuti} untuk ${dataCutiBaru.nama}`,
-                timestamp: new Date().toLocaleTimeString()
-            });
-
-            alert(`Sukses mendaftarkan cuti untuk ${peg.nama}!`);
-            
+            alert("✅ Cuti berhasil didaftarkan!");
             this.newCutiForm = { nip: '', jenisCuti: 'Cuti Tahunan', keterangan: '', tanggalMulai: '', tanggalSelesai: '' };
             this.showModalAddCuti = false;
-
-            if (this.activeMenu === 'cuti') {
-                setTimeout(() => this.renderCalendar(), 200);
-            }
+            if (this.activeMenu === 'cuti') setTimeout(() => this.renderCalendar(), 200);
         },
 
         hapusCuti(id) {
-            if (confirm("Apakah Anda yakin ingin menghapus data riwayat cuti ini?")) {
-                this.cutiList = this.cutiList.filter(c => c.cutiId !== id);
-                this.syncDatabase();
-                if (this.activeMenu === 'cuti') setTimeout(() => this.renderCalendar(), 200);
-            }
+            if (confirm("Hapus cuti ini?")) { this.cutiList = this.cutiList.filter(c => c.cutiId !== id); this.syncDatabase(); if (this.activeMenu === 'cuti') setTimeout(() => this.renderCalendar(), 200); }
         },
 
-        // ====== PEGAWAI CRUD ======
         saveNewPegawai() {
-            const exists = this.pegawaiList.some(p => p.nip === this.newPegawaiForm.nip);
-            if (exists) {
-                alert("NIP sudah terdaftar di database SIPANDA!");
-                return;
-            }
-
-            const today = new Date().toISOString().split('T')[0];
-            const item = {
-                ...this.newPegawaiForm,
-                tglLahir: "1995-01-01", gender: "Laki-laki", tmtCpns: "2024-01-01", tmtPns: "2025-03-01",
-                pangkatCountdownDays: 730, kgbCountdownDays: 365, pensiunCountdown: 12000, progressBerkas: 0,
-                tglPangkatTerakhir: "2025-03-01", tglPangkatBerikutnya: "2029-03-01",
-                tglKgbTerakhir: "2025-03-01", tglKgbBerikutnya: "2027-03-01",
-                dokumen: {
-                    skPangkat: { namaFile: "", base64: "" },
-                    skJabatan: { nomor: "", tanggal: "", namaFile: "", base64: "" },
-                    skKgb: { nomor: "", tanggal: "", namaFile: "", base64: "" },
-                    skp: { namaFile: "", base64: "" },
-                    skpKgb: { nilai: 80, predikat: "Baik", tahun: 2026 }
-                }
-            };
-
+            if (this.pegawaiList.some(p => p.nip === this.newPegawaiForm.nip)) { alert("NIP sudah ada!"); return; }
+            const item = { ...this.newPegawaiForm, tglLahir: "1995-01-01", gender: "Laki-laki", tmtCpns: "2024-01-01", tmtPns: "2025-03-01", pangkatCountdownDays: 0, kgbCountdownDays: 0, pensiunCountdown: 0, progressBerkas: 0, tglPangkatTerakhir: "2025-03-01", tglPangkatBerikutnya: "2029-03-01", tglKgbTerakhir: "2025-03-01", tglKgbBerikutnya: "2027-03-01", dokumen: { skPangkat: { namaFile: "", base64: "" }, skJabatan: { nomor: "", tanggal: "", namaFile: "", base64: "" }, skKgb: { nomor: "", tanggal: "", namaFile: "", base64: "" }, skp: { namaFile: "", base64: "" }, skpKgb: { nilai: 80, predikat: "Baik", tahun: 2026 } } };
             this.pegawaiList.push(item);
-            this.recalculateAllCountdowns();
             this.syncDatabase();
-            
             this.showModalAddPegawai = false;
             this.newPegawaiForm = { nip: '', nama: '', golongan: 'II/a', jabatan: '', noHp: '', email: '' };
-            alert("Data pegawai baru berhasil ditambahkan!");
+            alert("✅ Pegawai berhasil ditambahkan!");
         },
 
         viewPegawaiProfileByNip(nip) {
             const target = this.pegawaiList.find(p => p.nip === nip);
-            if (target) {
-                this.selectedPegawai = target;
-                this.activeMenu = 'profil';
-            }
+            if (target) { this.selectedPegawai = target; this.activeMenu = 'profil'; }
         },
 
-        showEditPegawai(peg) {
-            this.viewPegawaiProfileByNip(peg.nip);
-        },
+        showEditPegawai(peg) { this.viewPegawaiProfileByNip(peg.nip); },
 
         savePegawaiEdit() {
             if (this.selectedPegawai) {
-                const index = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
-                if (index !== -1) {
-                    this.pegawaiList[index] = { ...this.selectedPegawai };
-                }
+                const idx = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
+                if (idx !== -1) this.pegawaiList[idx] = { ...this.selectedPegawai };
+                this.syncDatabase();
             }
-            this.recalculateAllCountdowns();
-            this.syncDatabase();
         },
 
         hapusPegawai(nip) {
-            if (confirm("Hapus permanen data pegawai ini beserta seluruh file arsipnya?")) {
-                this.pegawaiList = this.pegawaiList.filter(p => p.nip !== nip);
-                this.cutiList = this.cutiList.filter(c => c.nip !== nip);
-                this.syncDatabase();
-            }
+            if (confirm("Hapus pegawai ini?")) { this.pegawaiList = this.pegawaiList.filter(p => p.nip !== nip); this.cutiList = this.cutiList.filter(c => c.nip !== nip); this.syncDatabase(); }
         },
 
-        openModalEditNip(peg) {
-            this.nipEditForm = { oldNip: peg.nip, newNip: peg.nip, nama: peg.nama };
-            this.showModalEditNip = true;
-        },
+        updatePangkatCountdown() { this.syncDatabase(); },
+        updateKgbCountdown() { this.syncDatabase(); },
+        updatePensiunCountdown() { this.syncDatabase(); },
+        updatePangkatCountdownForPegawai(p) { this.syncDatabase(); },
+        updateKgbCountdownForPegawai(p) { this.syncDatabase(); },
 
-        saveNipChange() {
-            if (this.nipEditForm.oldNip === this.nipEditForm.newNip) {
-                this.showModalEditNip = false;
-                return;
-            }
-            const target = this.pegawaiList.find(p => p.nip === this.nipEditForm.oldNip);
-            if (target) {
-                target.nip = this.nipEditForm.newNip;
-                this.cutiList.forEach(c => { if(c.nip === this.nipEditForm.oldNip) c.nip = this.nipEditForm.newNip; });
-                this.syncDatabase();
-                this.showModalEditNip = false;
-                alert("NIP Berhasil diubah!");
-            }
-        },
-
-        // ====== COUNTDOWN UPDATE FUNCTIONS ======
-        updatePangkatCountdown() { 
-            this.recalculateAllCountdowns();
-            this.syncDatabase(); 
-        },
-        updateKgbCountdown() { 
-            this.recalculateAllCountdowns();
-            this.syncDatabase(); 
-        },
-        updatePensiunCountdown() { 
-            this.recalculateAllCountdowns();
-            this.syncDatabase(); 
-        },
-        updatePangkatCountdownForPegawai(p) { 
-            this.recalculateAllCountdowns();
-            this.syncDatabase(); 
-        },
-        updateKgbCountdownForPegawai(p) { 
-            this.recalculateAllCountdowns();
-            this.syncDatabase(); 
-        },
-
-        // ====== HELPERS ======
         getUrgensiColorClass(days) {
             if (days <= 0) return 'bg-gray-400';
             if (days <= 30) return 'bg-red-600 animate-pulse';
@@ -1390,79 +424,46 @@ function sipandaApp() {
             return 'text-[#0B2341]';
         },
 
-        // ====== CALENDAR ======
         renderCalendar() {
-            const calendarEl = document.getElementById('fullCalendarTarget');
-            if (!calendarEl) return;
-
-            if (this.calendarInstance) {
-                this.calendarInstance.destroy();
-            }
-
+            const el = document.getElementById('fullCalendarTarget');
+            if (!el) return;
+            if (this.calendarInstance) this.calendarInstance.destroy();
             const events = this.cutiList.map(c => {
                 let color = '#2E7D32';
                 if (c.jenisCuti === 'Cuti Sakit') color = '#C62828';
                 if (c.jenisCuti === 'Cuti Izin') color = '#123B63';
                 if (c.jenisCuti === 'Cuti Besar' || c.jenisCuti === 'Cuti Melahirkan') color = '#E65100';
-
-                return {
-                    title: `${c.nama} (${c.jenisCuti})`,
-                    start: c.tanggalMulai,
-                    end: new Date(new Date(c.tanggalSelesai).getTime() + 24*60*60*1000).toISOString().split('T')[0],
-                    backgroundColor: color,
-                    borderColor: color,
-                    allDay: true
-                };
+                return { title: c.nama+' ('+c.jenisCuti+')', start: c.tanggalMulai, end: new Date(new Date(c.tanggalSelesai).getTime()+86400000).toISOString().split('T')[0], backgroundColor: color, borderColor: color, allDay: true };
             });
-
-            this.calendarInstance = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'id',
-                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
-                events: events
-            });
+            this.calendarInstance = new FullCalendar.Calendar(el, { initialView: 'dayGridMonth', locale: 'id', headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' }, events });
             this.calendarInstance.render();
         },
 
-        // ====== CHART ======
         initChart() {
             setTimeout(() => {
                 const ctx = document.getElementById('dashboardMainChart');
                 if (!ctx) return;
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Gol II/a', 'Gol II/b', 'Gol II/c', 'Gol II/d', 'Gol III/a', 'Gol III/b', 'Gol III/c'],
-                        datasets: [{
-                            label: 'Jumlah Pegawai Per Golongan',
-                            data: [3, 5, 12, 8, 15, 6, 4],
-                            backgroundColor: '#0B2341',
-                            borderRadius: 8
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false }
-                });
-            }, 400);
+                if (window.myChart) window.myChart.destroy();
+                const gol = ['II/a','II/b','II/c','II/d','III/a','III/b','III/c'];
+                const data = gol.map(g => this.pegawaiList.filter(p => p.golongan === g).length);
+                window.myChart = new Chart(ctx, { type: 'bar', data: { labels: gol, datasets: [{ label: 'Jumlah Pegawai', data, backgroundColor: '#0B2341', borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            }, 500);
         },
 
-        // ====== EXPORTS ======
-        exportDataToExcel() { alert("Mengonversi basis data Sipanda ke format Microsoft Excel .xlsx..."); },
-        exportDataToPDF() { alert("Mencetak dokumen PDF Ekspor Master Data Pegawai..."); },
-        triggerReportExport(type) { alert(`Mengunduh dokumen PDF Laporan Kepegawaian Kategori: ${type}`); },
+        exportDataToExcel() { alert("Export Excel..."); },
+        exportDataToPDF() { alert("Export PDF..."); },
+        triggerReportExport(type) { alert("Export Laporan "+type); },
         exportDatabaseBackup() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({pegawai: this.pegawaiList, cuti: this.cutiList}));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "SIPANDA_DATABASE_BACKUP.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
+            const data = "data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify({pegawai: this.pegawaiList, cuti: this.cutiList}));
+            const a = document.createElement('a');
+            a.href = data; a.download = "SIPANDA_BACKUP.json";
+            document.body.appendChild(a); a.click(); a.remove();
         },
-        runSmartSearch() { alert(`Pencarian Pintar AI SIPANDA menemukan data terkait: "${this.searchQuery}"`); },
-        handleLogout() { if(confirm("Keluar dari SIPANDA?")) this.isLoggedIn = false; },
+        runSmartSearch() { alert("🔍 Pencarian: "+this.searchQuery); },
+        handleLogout() { if (confirm("Keluar?")) this.isLoggedIn = false; },
         handleLogin() { this.isLoggedIn = true; this.initApp(); },
-        toggleTodo(id) { const t = this.todoList.find(x=>x.id===id); if(t) t.done = !t.done; },
-        addTodo() { if(this.newTodoText.trim()) { this.todoList.push({id:Date.now(), task:this.newTodoText, done:false}); this.newTodoText=''; } }
+        toggleTodo(id) { const t = this.todoList.find(x => x.id === id); if (t) t.done = !t.done; },
+        addTodo() { if (this.newTodoText.trim()) { this.todoList.push({ id: Date.now(), task: this.newTodoText, done: false }); this.newTodoText = ''; } }
     }
 }
 </script>
