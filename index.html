@@ -15,16 +15,11 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
 
-<!-- ALPINE JS - VERSI STABIL -->
+<!-- ALPINE JS -->
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
 
 <!-- Lucide Icons -->
 <script src="https://unpkg.com/lucide@latest"></script>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <style>
 #navbar-iframe, .navbar, .header-outer, .sidebar-outer, .footer-outer,
@@ -76,7 +71,7 @@ border: 1px solid rgba(255, 255, 255, 0.2);
 .app-bottombar { display: flex !important; }
 }
 
-/* PDF Viewer Modal - Fullscreen */
+/* PDF Viewer Modal */
 .pdf-viewer-overlay {
     position: fixed;
     inset: 0;
@@ -122,32 +117,16 @@ border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     background: white;
 }
+
+[x-cloak] { display: none !important; }
 </style>
 
-<script>
-// ============================================================
-// KONFIGURASI FIREBASE ANDA
-// ============================================================
-const IS_PREVIEW = true; // SET false untuk Firebase, true untuk LocalStorage
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCCaOPjOh1UxaliCm0GIJeYv6NJOBGyOtA",
-  authDomain: "sipanda-8045f.firebaseapp.com",
-  projectId: "sipanda-8045f",
-  storageBucket: "sipanda-8045f.firebasestorage.app",
-  messagingSenderId: "791646404329",
-  appId: "1:791646404329:web:1b225b79ee358b2e55ba78"
-};
-// ============================================================
-</script>
-
 </head>
-<body class="bg-[#F4F6F9] text-slate-800 antialiased min-h-screen">
+<body>
 
-<!-- APLIKASI UTAMA -->
 <div id="sipanda-app-root" x-data="sipandaApp()" x-init="initApp()" class="text-slate-800 min-h-screen flex flex-col antialiased">
 
-<!-- PAGE LOGIN -->
+<!-- LOGIN -->
 <div x-show="!isLoggedIn" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0B2341] p-4 bg-cover bg-center" style="background-image: linear-gradient(rgba(11, 35, 65, 0.95), rgba(18, 59, 99, 0.95)), url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=1200');">
 <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 max-w-md w-full border border-yellow-500/20 text-center">
 <div class="flex justify-center mb-4">
@@ -158,7 +137,6 @@ const firebaseConfig = {
 <h1 class="text-3xl font-extrabold text-[#0B2341] tracking-tight">SIPANDA</h1>
 <p class="text-xs font-semibold text-[#123B63] mt-1 uppercase tracking-wide">Sistem Informasi Pengelolaan Data & Arsip Pegawai</p>
 <p class="text-[11px] text-slate-500 mt-0.5">Lapas Kelas IIA Banyuasin</p>
-
 <form @submit.prevent="handleLogin" class="mt-8 text-left space-y-4">
 <div>
 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Email Admin</label>
@@ -189,11 +167,11 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- MAIN WORKSPACE -->
+<!-- MAIN -->
 <div x-show="isLoggedIn" class="flex-1 flex flex-col lg:flex-row min-h-screen">
 
 <!-- SIDEBAR -->
-<aside class="app-sidebar fixed inset-y-0 left-0 z-40 w-64 bg-[#0B2341] text-white flex-col border-r border-slate-800 shadow-2xl transition-transform duration-300">
+<aside class="app-sidebar fixed inset-y-0 left-0 z-40 w-64 bg-[#0B2341] text-white flex-col border-r border-slate-800 shadow-2xl">
 <div class="p-6 border-b border-slate-800 flex items-center space-x-3">
 <div class="w-10 h-10 bg-[#C9A227] rounded-full flex items-center justify-center shadow-md">
 <i data-lucide="shield" class="w-6 h-6 text-white"></i>
@@ -253,12 +231,6 @@ const firebaseConfig = {
 <h1 class="text-xl font-extrabold text-[#0B2341] tracking-tight">SIPANDA Dashboard</h1>
 <p class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Lembaga Pemasyarakatan Kelas IIA Banyuasin</p>
 </div>
-<template x-if="IS_PREVIEW">
-<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-bold">MODE DEMO (LOCAL STORAGE)</span>
-</template>
-<template x-if="!IS_PREVIEW">
-<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold">✅ MODE LIVE (FIREBASE)</span>
-</template>
 </div>
 <div class="flex items-center space-x-4">
 <div class="relative hidden md:block w-72">
@@ -270,7 +242,7 @@ const firebaseConfig = {
 </div>
 </header>
 
-<!-- BODY CONTENT -->
+<!-- BODY -->
 <div class="flex-1 p-6 space-y-6 overflow-y-auto">
 
 <!-- DASHBOARD -->
@@ -409,22 +381,12 @@ const firebaseConfig = {
 </div>
 <select x-model="filterGolongan" class="bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#C9A227] bg-white">
 <option value="">Semua Golongan</option>
-<option value="II/a">II/a (Pengatur Muda)</option>
-<option value="II/b">II/b (Pengatur Muda Tk. I)</option>
-<option value="II/c">II/c (Pengatur)</option>
-<option value="II/d">II/d (Pengatur Tk. I)</option>
-<option value="III/a">III/a (Penata Muda)</option>
-<option value="III/b">III/b (Penata Muda Tk. I)</option>
-<option value="III/c">III/c (Penata)</option>
-<option value="III/d">III/d (Penata Tk. I)</option>
-<option value="IV/a">IV/a (Pembina)</option>
-<option value="IV/b">IV/b (Pembina Tk. I)</option>
-<option value="IV/c">IV/c (Pembina Utama Muda)</option>
-<option value="IV/d">IV/d (Pembina Utama Madya)</option>
-<option value="IV/e">IV/e (Pembina Utama)</option>
+<option value="II/a">II/a</option><option value="II/b">II/b</option><option value="II/c">II/c</option><option value="II/d">II/d</option>
+<option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="III/d">III/d</option>
+<option value="IV/a">IV/a</option><option value="IV/b">IV/b</option><option value="IV/c">IV/c</option><option value="IV/d">IV/d</option><option value="IV/e">IV/e</option>
 </select>
 <select x-model="filterUrgensi" class="bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#C9A227] bg-white">
-<option value="">Semua Status Urgensi</option><option value="red">🔴 Mendesak (≤30 hari)</option><option value="orange">🟠 Perhatian (31-90 hari)</option><option value="yellow">🟡 Persiapan (91-180 hari)</option><option value="green">🟢 Aman (>180 hari)</option>
+<option value="">Semua Status</option><option value="red">🔴 Mendesak (≤30 hari)</option><option value="orange">🟠 Perhatian (31-90 hari)</option><option value="yellow">🟡 Persiapan (91-180 hari)</option><option value="green">🟢 Aman (>180 hari)</option>
 </select>
 </div>
 <div class="overflow-x-auto rounded-xl border border-slate-100">
@@ -464,7 +426,7 @@ const firebaseConfig = {
 <div class="relative flex flex-col md:flex-row items-center gap-6 z-10">
 <div class="relative">
 <img :src="selectedPegawai.foto || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=250'" class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-yellow-500 object-cover shadow-2xl" alt="Profil">
-<label class="absolute bottom-0 right-0 bg-[#C9A227] p-1.5 rounded-full cursor-pointer hover:bg-[#b08e20]">
+<label class="absolute bottom-0 right-0 bg-[#C9A227] p-1.5 rounded-full cursor-pointer hover:bg-[#b08e20] transition shadow-lg">
 <i data-lucide="camera" class="w-4 h-4 text-slate-900"></i>
 <input type="file" accept="image/*" @change="uploadFoto($event)" class="hidden">
 </label>
@@ -504,18 +466,19 @@ const firebaseConfig = {
 <button @click="selectedTab = 'cuti'" :class="selectedTab === 'cuti' ? 'border-b-2 border-[#C9A227] text-[#0B2341] font-bold' : 'text-slate-500'" class="px-4 py-2 text-xs whitespace-nowrap focus:outline-none">Riwayat Cuti</button>
 </div>
 <div class="mt-6">
+
 <!-- IDENTITAS -->
 <div x-show="selectedTab === 'identitas'" class="space-y-4">
 <h3 class="font-bold text-[#0B2341] text-xs">Informasi Data Pribadi Pegawai</h3>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-700">
 <div class="md:col-span-1">
 <span class="block text-slate-400">Nama Lengkap:</span>
-<input type="text" x-model="selectedPegawai.nama" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg font-bold text-[#0B2341]" placeholder="Nama Lengkap Pegawai">
+<input type="text" x-model="selectedPegawai.nama" @change="savePegawaiEdit()" class="w-full px-2 py-1 border rounded-lg font-bold text-[#0B2341]" placeholder="Nama Lengkap">
 </div>
 <div class="md:col-span-1">
-<span class="block text-slate-400">Nomor Induk Pegawai (NIP):</span>
+<span class="block text-slate-400">NIP:</span>
 <div class="flex gap-2">
-<input type="text" x-model="selectedPegawai.nip" disabled class="w-full px-2 py-1 border rounded-lg bg-slate-100 font-mono text-slate-500" placeholder="NIP Pegawai">
+<input type="text" x-model="selectedPegawai.nip" disabled class="w-full px-2 py-1 border rounded-lg bg-slate-100 font-mono text-slate-500">
 <button @click="openModalEditNip(selectedPegawai)" type="button" class="bg-[#0B2341] text-white px-3 py-1 rounded-lg font-bold text-[11px] whitespace-nowrap hover:bg-[#123B63]">Ubah NIP</button>
 </div>
 </div>
@@ -543,26 +506,16 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- KEPANGKATAN -->
+<!-- PANGKAT -->
 <div x-show="selectedTab === 'pangkat'" class="space-y-4">
 <div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Edit Data Kepangkatan</h3></div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <div class="space-y-2">
 <label class="text-xs font-bold">Golongan Saat Ini</label>
 <select x-model="selectedPegawai.golongan" @change="savePegawaiEdit(); updatePangkatCountdown()" class="w-full px-3 py-2 border rounded-lg bg-white">
-<option value="II/a">II/a (Pengatur Muda)</option>
-<option value="II/b">II/b (Pengatur Muda Tk. I)</option>
-<option value="II/c">II/c (Pengatur)</option>
-<option value="II/d">II/d (Pengatur Tk. I)</option>
-<option value="III/a">III/a (Penata Muda)</option>
-<option value="III/b">III/b (Penata Muda Tk. I)</option>
-<option value="III/c">III/c (Penata)</option>
-<option value="III/d">III/d (Penata Tk. I)</option>
-<option value="IV/a">IV/a (Pembina)</option>
-<option value="IV/b">IV/b (Pembina Tk. I)</option>
-<option value="IV/c">IV/c (Pembina Utama Muda)</option>
-<option value="IV/d">IV/d (Pembina Utama Madya)</option>
-<option value="IV/e">IV/e (Pembina Utama)</option>
+<option value="II/a">II/a</option><option value="II/b">II/b</option><option value="II/c">II/c</option><option value="II/d">II/d</option>
+<option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="III/d">III/d</option>
+<option value="IV/a">IV/a</option><option value="IV/b">IV/b</option><option value="IV/c">IV/c</option><option value="IV/d">IV/d</option><option value="IV/e">IV/e</option>
 </select>
 <label class="text-xs font-bold">TMT Pangkat Terakhir</label>
 <input type="date" x-model="selectedPegawai.tglPangkatTerakhir" @change="savePegawaiEdit(); updatePangkatCountdown()" class="w-full px-3 py-2 border rounded-lg">
@@ -611,7 +564,7 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- KGB & SK KGB -->
+<!-- KGB -->
 <div x-show="selectedTab === 'kgb'" class="space-y-4">
 <div class="flex justify-between items-center"><h3 class="font-bold text-[#0B2341] text-xs">Edit Data KGB & Upload SK</h3></div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -657,7 +610,6 @@ const firebaseConfig = {
 <input type="number" x-model="selectedPegawai.dokumen.skpKgb.tahun" @change="savePegawaiEdit()" class="w-full px-3 py-2 border rounded-lg">
 </div>
 </div>
-
 <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center text-slate-400 bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative mt-2 max-w-sm">
 <input type="file" accept="application/pdf" @change="handleDocUpload($event, 'skp')" class="absolute inset-0 opacity-0 cursor-pointer">
 <i data-lucide="upload-cloud" class="w-8 h-8 text-[#C9A227] mb-2"></i>
@@ -699,7 +651,7 @@ const firebaseConfig = {
 </template>
 </div>
 
-<!-- KGB -->
+<!-- KGB MENU -->
 <div x-show="activeMenu === 'kgb'" class="space-y-6">
 <div><h2 class="text-2xl font-extrabold text-[#0B2341]">Daftar Kenaikan Gaji Berkala (KGB)</h2><p class="text-xs text-slate-500">Pemantauan otomatis data kenaikan upah berdasarkan masa kerja pegawai.</p></div>
 <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
@@ -728,7 +680,7 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- PANGKAT -->
+<!-- PANGKAT MENU -->
 <div x-show="activeMenu === 'pangkat'" class="space-y-6">
 <div><h2 class="text-2xl font-extrabold text-[#0B2341]">Kepangkatan Pegawai</h2><p class="text-xs text-slate-500">Memonitor sisa waktu kenaikan pangkat reguler pegawai.</p></div>
 <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
@@ -762,7 +714,7 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- CUTI -->
+<!-- CUTI MENU -->
 <div x-show="activeMenu === 'cuti'" class="space-y-6">
 <div class="flex justify-between items-center">
 <div><h2 class="text-2xl font-extrabold text-[#0B2341]">Agenda & Jadwal Cuti Pegawai</h2><p class="text-xs text-slate-500">Visualisasi kalender interaktif berdasarkan kategori cuti dan aktivitas resmi.</p></div>
@@ -802,7 +754,7 @@ const firebaseConfig = {
 </div>
 
 <!-- MOBILE BOTTOM NAV -->
-<nav class="app-bottombar fixed bottom-0 left-0 right-0 z-40 bg-[#0B2341]/95 backdrop-blur-md border-t border-slate-800 py-3 px-4 justify-around items-center">
+<nav class="app-bottombar fixed bottom-0 left-0 right-0 z-40 bg-[#0B2341]/95 backdrop-blur-md border-t border-slate-800 py-3 px-4 flex justify-around items-center">
 <button @click="activeMenu = 'dashboard'" :class="activeMenu === 'dashboard' ? 'text-[#C9A227]' : 'text-slate-400'" class="flex flex-col items-center"><i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="text-[9px] mt-1">Beranda</span></button>
 <button @click="activeMenu = 'pegawai'" :class="activeMenu === 'pegawai' ? 'text-[#C9A227]' : 'text-slate-400'" class="flex flex-col items-center"><i data-lucide="users" class="w-5 h-5"></i><span class="text-[9px] mt-1">Pegawai</span></button>
 <button @click="activeMenu = 'kgb'" :class="activeMenu === 'kgb' ? 'text-[#C9A227]' : 'text-slate-400'" class="flex flex-col items-center"><i data-lucide="badge-percent" class="w-5 h-5"></i><span class="text-[9px] mt-1">KGB</span></button>
@@ -821,9 +773,9 @@ const firebaseConfig = {
 <div><label class="block font-bold text-slate-700 mb-1">NIP Pegawai (Wajib Unik)</label><input type="text" x-model="newPegawaiForm.nip" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="Contoh: 199508122020011002"></div>
 <div><label class="block font-bold text-slate-700 mb-1">Nama Lengkap</label><input type="text" x-model="newPegawaiForm.nama" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="Nama Lengkap & Gelar"></div>
 <div class="grid grid-cols-2 gap-4"><div><label class="block font-bold text-slate-700 mb-1">Golongan</label><select x-model="newPegawaiForm.golongan" required class="w-full px-3 py-2 border rounded-lg bg-white">
-<option value="II/a">II/a (Pengatur Muda)</option><option value="II/b">II/b (Pengatur Muda Tk. I)</option><option value="II/c">II/c (Pengatur)</option><option value="II/d">II/d (Pengatur Tk. I)</option>
-<option value="III/a">III/a (Penata Muda)</option><option value="III/b">III/b (Penata Muda Tk. I)</option><option value="III/c">III/c (Penata)</option><option value="III/d">III/d (Penata Tk. I)</option>
-<option value="IV/a">IV/a (Pembina)</option><option value="IV/b">IV/b (Pembina Tk. I)</option><option value="IV/c">IV/c (Pembina Utama Muda)</option><option value="IV/d">IV/d (Pembina Utama Madya)</option><option value="IV/e">IV/e (Pembina Utama)</option>
+<option value="II/a">II/a</option><option value="II/b">II/b</option><option value="II/c">II/c</option><option value="II/d">II/d</option>
+<option value="III/a">III/a</option><option value="III/b">III/b</option><option value="III/c">III/c</option><option value="III/d">III/d</option>
+<option value="IV/a">IV/a</option><option value="IV/b">IV/b</option><option value="IV/c">IV/c</option><option value="IV/d">IV/d</option><option value="IV/e">IV/e</option>
 </select></div><div><label class="block font-bold text-slate-700 mb-1">Jabatan</label><input type="text" x-model="newPegawaiForm.jabatan" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="Contoh: Penjaga Tahanan"></div></div>
 <div class="grid grid-cols-2 gap-4"><div><label class="block font-bold text-slate-700 mb-1">Nomor WhatsApp</label><input type="text" x-model="newPegawaiForm.noHp" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="081234567..."></div><div><label class="block font-bold text-slate-700 mb-1">Email</label><input type="email" x-model="newPegawaiForm.email" required class="w-full px-3 py-2 border rounded-lg focus:ring-[#C9A227]" placeholder="nama@kemenimipas.go.id"></div></div>
 <div class="flex justify-end gap-2 pt-4 border-t"><button type="button" @click="showModalAddPegawai = false" class="bg-slate-100 px-4 py-2 rounded-lg font-bold">Batal</button><button type="submit" class="bg-[#0B2341] text-white px-4 py-2 rounded-lg font-bold">Simpan Pegawai</button></div>
@@ -844,7 +796,7 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- MODAL TAMBAH CUTI - FIXED VERSION -->
+<!-- MODAL TAMBAH CUTI -->
 <div x-show="showModalAddCuti" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" x-cloak>
 <div class="bg-white rounded-3xl w-full max-w-md flex flex-col shadow-2xl border border-yellow-500/10">
 <div class="bg-[#0B2341] text-white px-6 py-4 flex justify-between items-center rounded-t-3xl"><h3 class="font-bold text-xs tracking-wide uppercase">✏️ Input Pengajuan Cuti Pegawai</h3><button @click="showModalAddCuti = false" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
@@ -888,7 +840,7 @@ const firebaseConfig = {
 </div>
 </div>
 
-<!-- PDF VIEWER MODAL - FULLY WORKING -->
+<!-- PDF VIEWER MODAL -->
 <div x-show="showPdfViewer" class="pdf-viewer-overlay" x-cloak @click.away="closePdfViewer()">
     <div class="pdf-viewer-container" @click.stop>
         <div class="pdf-viewer-header">
@@ -919,36 +871,26 @@ const firebaseConfig = {
     </div>
 </div>
 
-<!-- ADD STYLE X-CLOAK HIDE -->
-<style>
-[x-cloak] { display: none !important; }
-</style>
-
 </div>
 
-<!-- BUSINESS CORE ENGINE SCRIPT (ALPINE CODE) -->
 <script>
 function sipandaApp() {
     return {
-        // State Management
-        isLoggedIn: true, // Default true agar langsung masuk demi kemudahan preview Anda
+        isLoggedIn: true,
         activeMenu: 'dashboard',
         searchQuery: '',
         pegawaiSearch: '',
         filterGolongan: '',
         filterUrgensi: '',
         
-        // Form & Modals States
         showModalAddPegawai: false,
         showModalEditNip: false,
         showModalAddCuti: false,
         showPdfViewer: false,
         
-        // PDF Viewer Data Object
         currentPdfDoc: { namaFile: '', base64: '' },
         currentPdfType: '',
 
-        // Data Storage
         sessionUser: { nama: 'Tasya', foto: '' },
         loginForm: { username: '', password: '' },
         newTodoText: '',
@@ -980,7 +922,6 @@ function sipandaApp() {
             pensiunSegera: 0
         },
 
-        // Master Data Dummy Default
         pegawaiList: [
             {
                 nip: "199804152023012001",
@@ -1019,9 +960,8 @@ function sipandaApp() {
         calendarInstance: null,
         selectedPegawai: null,
 
-        // INIT APP
+        // ====== INIT ======
         initApp() {
-            // Load DB local dari LocalStorage jika ada
             if (localStorage.getItem("sipanda_pegawai")) {
                 this.pegawaiList = JSON.parse(localStorage.getItem("sipanda_pegawai"));
             }
@@ -1029,36 +969,20 @@ function sipandaApp() {
                 this.cutiList = JSON.parse(localStorage.getItem("sipanda_cuti"));
             }
             
+            this.recalculateAllCountdowns();
             this.hitungUrgensiDanMasaBerlaku();
             this.updateStats();
             this.initChart();
             
-            setTimeout(() => {
-                lucide.createIcons();
-            }, 300);
-        },
-
-        // FIRESTORE ATAU LOCALSTORAGE SYNC REUSABLE
-        syncDatabase() {
-            localStorage.setItem("sipanda_pegawai", JSON.stringify(this.pegawaiList));
-            localStorage.setItem("sipanda_cuti", JSON.stringify(this.cutiList));
-            this.hitungUrgensiDanMasaBerlaku();
-            this.updateStats();
+            setInterval(() => { this.syncDatabase(); }, 5000);
             
-            // JIKA FIREBASE LIVE AKTIF
-            if (!IS_PREVIEW && typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-                try {
-                    const db = firebase.firestore();
-                    // Simpan batch atau per-dokumen terstruktur jika diperlukan di cloud Anda
-                } catch(e) { console.error("Firebase sync error: ", e); }
-            }
+            setTimeout(() => { lucide.createIcons(); }, 300);
         },
 
-        // HITUNG DURASI / DATES SYSTEM
-        hitungUrgensiDanMasaBerlaku() {
+        // ====== RECALCULATE ALL COUNTDOWNS ======
+        recalculateAllCountdowns() {
             const today = new Date();
-            this.prioritasList = [];
-
+            
             this.pegawaiList.forEach(p => {
                 if (p.tglPangkatBerikutnya) {
                     const diff = new Date(p.tglPangkatBerikutnya) - today;
@@ -1074,36 +998,22 @@ function sipandaApp() {
                     const diff = pensiunDate - today;
                     p.pensiunCountdown = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
                 }
-
-                // Hitung Progress Berkas
-                let totalBerkas = 4; // skPangkat, skJabatan, skKgb, skp
-                let berkasAda = 0;
-                if (p.dokumen?.skPangkat?.namaFile) berkasAda++;
-                if (p.dokumen?.skJabatan?.namaFile) berkasAda++;
-                if (p.dokumen?.skKgb?.namaFile) berkasAda++;
-                if (p.dokumen?.skp?.namaFile) berkasAda++;
-                p.progressBerkas = Math.round((berkasAda / totalBerkas) * 100);
-
-                // Dorong ke list prioritas jika mendesak
-                if (p.pangkatCountdownDays <= 90) {
-                    this.prioritasList.push({
-                        nip: p.nip, nama: p.nama, golongan: p.golongan, jabatan: p.jabatan,
-                        status: "KP_NEAR", keterangan: `${p.pangkatCountdownDays} hari lagi menuju TMT Kepangkatan`,
-                    });
-                }
-                if (p.kgbCountdownDays <= 45) {
-                    this.prioritasList.push({
-                        nip: p.nip, nama: p.nama, golongan: p.golongan, jabatan: p.jabatan,
-                        status: "KGB_NEAR", keterangan: `${p.kgbCountdownDays} hari lagi jatuh tempo KGB`,
-                    });
-                }
             });
         },
 
+        // ====== SYNC DATABASE ======
+        syncDatabase() {
+            this.recalculateAllCountdowns();
+            localStorage.setItem("sipanda_pegawai", JSON.stringify(this.pegawaiList));
+            localStorage.setItem("sipanda_cuti", JSON.stringify(this.cutiList));
+            this.updateStats();
+            this.hitungUrgensiDanMasaBerlaku();
+        },
+
+        // ====== UPDATE STATS ======
         updateStats() {
             this.stats.totalPegawai = this.pegawaiList.length;
             
-            // Hitung Cuti hari ini
             const hariIniStr = new Date().toISOString().split('T')[0];
             const activeCuti = this.cutiList.filter(c => c.tanggalMulai <= hariIniStr && c.tanggalSelesai >= hariIniStr);
             this.stats.pegawaiCuti = activeCuti.length;
@@ -1126,7 +1036,36 @@ function sipandaApp() {
             this.stats.pensiunSegera = pensiun;
         },
 
-        // FILTER COMPUTED FOR PEGAWAI
+        // ====== HITUNG URGENSI ======
+        hitungUrgensiDanMasaBerlaku() {
+            this.recalculateAllCountdowns();
+            this.prioritasList = [];
+
+            this.pegawaiList.forEach(p => {
+                let totalBerkas = 4;
+                let berkasAda = 0;
+                if (p.dokumen?.skPangkat?.namaFile) berkasAda++;
+                if (p.dokumen?.skJabatan?.namaFile) berkasAda++;
+                if (p.dokumen?.skKgb?.namaFile) berkasAda++;
+                if (p.dokumen?.skp?.namaFile) berkasAda++;
+                p.progressBerkas = Math.round((berkasAda / totalBerkas) * 100);
+
+                if (p.pangkatCountdownDays <= 90) {
+                    this.prioritasList.push({
+                        nip: p.nip, nama: p.nama, golongan: p.golongan, jabatan: p.jabatan,
+                        status: "KP_NEAR", keterangan: `${p.pangkatCountdownDays} hari lagi menuju TMT Kepangkatan`,
+                    });
+                }
+                if (p.kgbCountdownDays <= 45) {
+                    this.prioritasList.push({
+                        nip: p.nip, nama: p.nama, golongan: p.golongan, jabatan: p.jabatan,
+                        status: "KGB_NEAR", keterangan: `${p.kgbCountdownDays} hari lagi jatuh tempo KGB`,
+                    });
+                }
+            });
+        },
+
+        // ====== FILTERED PEGAWAI ======
         get filteredPegawaiList() {
             return this.pegawaiList.filter(p => {
                 const matchQuery = p.nama.toLowerCase().includes(this.pegawaiSearch.toLowerCase()) || 
@@ -1148,62 +1087,38 @@ function sipandaApp() {
             return this.cutiList;
         },
 
-        // CORE FEATURES - INPUT CUTI (FIXED)
-        saveNewCuti() {
-            if (!this.newCutiForm.nip || !this.newCutiForm.tanggalMulai || !this.newCutiForm.tanggalSelesai) {
-                alert("Harap lengkapi semua field yang berbintang merah!");
+        // ====== UPLOAD FOTO ======
+        uploadFoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 2 * 1024 * 1024) {
+                alert("Ukuran file terlalu besar! Maksimal 2MB.");
+                return;
+            }
+            if (!file.type.startsWith('image/')) {
+                alert("File harus berupa gambar!");
                 return;
             }
 
-            const peg = this.pegawaiList.find(p => p.nip === this.newCutiForm.nip);
-            if (!peg) {
-                alert("Pegawai tidak ditemukan!");
-                return;
-            }
-
-            const randId = "C-" + Math.floor(1000 + Math.random() * 9000);
-            const dataCutiBaru = {
-                cutiId: randId,
-                nip: this.newCutiForm.nip,
-                nama: peg.nama,
-                jenisCuti: this.newCutiForm.jenisCuti,
-                tanggalMulai: this.newCutiForm.tanggalMulai,
-                tanggalSelesai: this.newCutiForm.tanggalSelesai,
-                keterangan: this.newCutiForm.keterangan || '-',
-                status: "Disetujui"
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const base64Data = e.target.result;
+                if (this.selectedPegawai) {
+                    this.selectedPegawai.foto = base64Data;
+                    const index = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
+                    if (index !== -1) {
+                        this.pegawaiList[index].foto = base64Data;
+                    }
+                    this.syncDatabase();
+                    alert("Foto profil berhasil diperbarui!");
+                }
             };
-
-            this.cutiList.push(dataCutiBaru);
-            this.syncDatabase();
-            
-            // Log audit trail
-            this.auditLogs.unshift({
-                aksi: "ADD_CUTI",
-                detail: `Menginput data cuti ${dataCutiBaru.jenisCuti} untuk ${dataCutiBaru.nama}`,
-                timestamp: new Date().toLocaleTimeString()
-            });
-
-            alert(`Sukses mendaftarkan cuti untuk ${peg.nama}!`);
-            
-            // Reset form & tutup modal
-            this.newCutiForm = { nip: '', jenisCuti: 'Cuti Tahunan', keterangan: '', tanggalMulai: '', tanggalSelesai: '' };
-            this.showModalAddCuti = false;
-
-            // Render ulang kalender apabila sedang berada di menu cuti
-            if (this.activeMenu === 'cuti') {
-                setTimeout(() => this.renderCalendar(), 200);
-            }
+            reader.readAsDataURL(file);
+            event.target.value = '';
         },
 
-        hapusCuti(id) {
-            if (confirm("Apakah Anda yakin ingin menghapus data riwayat cuti ini?")) {
-                this.cutiList = this.cutiList.filter(c => c.cutiId !== id);
-                this.syncDatabase();
-                if (this.activeMenu === 'cuti') setTimeout(() => this.renderCalendar(), 200);
-            }
-        },
-
-        // UPLOAD DOKUMEN - FIXED
+        // ====== UPLOAD DOKUMEN ======
         handleDocUpload(event, type) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1239,23 +1154,20 @@ function sipandaApp() {
 
                 this.savePegawaiEdit();
                 alert(`Sukses mengunggah dokumen ${file.name}!`);
-                
-                // Reset file input
                 event.target.value = '';
             };
             reader.readAsDataURL(file);
         },
 
-        // FITUR BUKA & DOWNLOAD DOKUMEN - FIXED
+        // ====== OPEN PDF VIEWER ======
         openPdfViewer(docObj, typeLabel = 'Dokumen Kedinasan') {
             if (!docObj || !docObj.base64) {
-                alert("Maaf, file dokumen biner belum diunggah atau tidak valid!");
+                alert("Maaf, file dokumen belum diunggah atau tidak valid!");
                 return;
             }
             this.currentPdfDoc = docObj;
             this.currentPdfType = typeLabel;
             this.showPdfViewer = true;
-            
             setTimeout(() => { lucide.createIcons(); }, 100);
         },
 
@@ -1264,7 +1176,59 @@ function sipandaApp() {
             this.currentPdfDoc = { namaFile: '', base64: '' };
         },
 
-        // PEGAWAI CRUD & UTILITIES
+        // ====== SAVE NEW CUTI ======
+        saveNewCuti() {
+            if (!this.newCutiForm.nip || !this.newCutiForm.tanggalMulai || !this.newCutiForm.tanggalSelesai) {
+                alert("Harap lengkapi semua field yang berbintang merah!");
+                return;
+            }
+
+            const peg = this.pegawaiList.find(p => p.nip === this.newCutiForm.nip);
+            if (!peg) {
+                alert("Pegawai tidak ditemukan!");
+                return;
+            }
+
+            const randId = "C-" + Math.floor(1000 + Math.random() * 9000);
+            const dataCutiBaru = {
+                cutiId: randId,
+                nip: this.newCutiForm.nip,
+                nama: peg.nama,
+                jenisCuti: this.newCutiForm.jenisCuti,
+                tanggalMulai: this.newCutiForm.tanggalMulai,
+                tanggalSelesai: this.newCutiForm.tanggalSelesai,
+                keterangan: this.newCutiForm.keterangan || '-',
+                status: "Disetujui"
+            };
+
+            this.cutiList.push(dataCutiBaru);
+            this.syncDatabase();
+            
+            this.auditLogs.unshift({
+                aksi: "ADD_CUTI",
+                detail: `Menginput data cuti ${dataCutiBaru.jenisCuti} untuk ${dataCutiBaru.nama}`,
+                timestamp: new Date().toLocaleTimeString()
+            });
+
+            alert(`Sukses mendaftarkan cuti untuk ${peg.nama}!`);
+            
+            this.newCutiForm = { nip: '', jenisCuti: 'Cuti Tahunan', keterangan: '', tanggalMulai: '', tanggalSelesai: '' };
+            this.showModalAddCuti = false;
+
+            if (this.activeMenu === 'cuti') {
+                setTimeout(() => this.renderCalendar(), 200);
+            }
+        },
+
+        hapusCuti(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus data riwayat cuti ini?")) {
+                this.cutiList = this.cutiList.filter(c => c.cutiId !== id);
+                this.syncDatabase();
+                if (this.activeMenu === 'cuti') setTimeout(() => this.renderCalendar(), 200);
+            }
+        },
+
+        // ====== PEGAWAI CRUD ======
         saveNewPegawai() {
             const exists = this.pegawaiList.some(p => p.nip === this.newPegawaiForm.nip);
             if (exists) {
@@ -1308,6 +1272,12 @@ function sipandaApp() {
         },
 
         savePegawaiEdit() {
+            if (this.selectedPegawai) {
+                const index = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
+                if (index !== -1) {
+                    this.pegawaiList[index] = { ...this.selectedPegawai };
+                }
+            }
             this.syncDatabase();
         },
 
@@ -1332,7 +1302,6 @@ function sipandaApp() {
             const target = this.pegawaiList.find(p => p.nip === this.nipEditForm.oldNip);
             if (target) {
                 target.nip = this.nipEditForm.newNip;
-                // Update NIP di list cuti juga
                 this.cutiList.forEach(c => { if(c.nip === this.nipEditForm.oldNip) c.nip = this.nipEditForm.newNip; });
                 this.syncDatabase();
                 this.showModalEditNip = false;
@@ -1340,7 +1309,14 @@ function sipandaApp() {
             }
         },
 
-        // DYNAMIC RESPONSIVE COLOR SCHEMES
+        // ====== COUNTDOWN UPDATE FUNCTIONS ======
+        updatePangkatCountdown() { this.syncDatabase(); },
+        updateKgbCountdown() { this.syncDatabase(); },
+        updatePensiunCountdown() { this.syncDatabase(); },
+        updatePangkatCountdownForPegawai(p) { this.syncDatabase(); },
+        updateKgbCountdownForPegawai(p) { this.syncDatabase(); },
+
+        // ====== HELPERS ======
         getUrgensiColorClass(days) {
             if (days <= 30) return 'bg-red-600 animate-pulse';
             if (days <= 90) return 'bg-orange-500';
@@ -1354,14 +1330,7 @@ function sipandaApp() {
             return 'text-[#0B2341]';
         },
 
-        // INLINE COUPLING ALTERS ON EDITS
-        updatePangkatCountdown() { this.hitungUrgensiDanMasaBerlaku(); this.updateStats(); },
-        updateKgbCountdown() { this.hitungUrgensiDanMasaBerlaku(); this.updateStats(); },
-        updatePensiunCountdown() { this.hitungUrgensiDanMasaBerlaku(); this.updateStats(); },
-        updatePangkatCountdownForPegawai(p) { this.hitungUrgensiDanMasaBerlaku(); this.updateStats(); },
-        updateKgbCountdownForPegawai(p) { this.hitungUrgensiDanMasaBerlaku(); this.updateStats(); },
-
-        // ENGINE INTERFACES (CALENDAR & CHART REAL RENDER)
+        // ====== CALENDAR ======
         renderCalendar() {
             const calendarEl = document.getElementById('fullCalendarTarget');
             if (!calendarEl) return;
@@ -1371,7 +1340,7 @@ function sipandaApp() {
             }
 
             const events = this.cutiList.map(c => {
-                let color = '#2E7D32'; // Tahunan
+                let color = '#2E7D32';
                 if (c.jenisCuti === 'Cuti Sakit') color = '#C62828';
                 if (c.jenisCuti === 'Cuti Izin') color = '#123B63';
                 if (c.jenisCuti === 'Cuti Besar' || c.jenisCuti === 'Cuti Melahirkan') color = '#E65100';
@@ -1395,6 +1364,7 @@ function sipandaApp() {
             this.calendarInstance.render();
         },
 
+        // ====== CHART ======
         initChart() {
             setTimeout(() => {
                 const ctx = document.getElementById('dashboardMainChart');
@@ -1415,7 +1385,7 @@ function sipandaApp() {
             }, 400);
         },
 
-        // EXPORT MISC ENGINE STANDARDS
+        // ====== EXPORTS ======
         exportDataToExcel() { alert("Mengonversi basis data Sipanda ke format Microsoft Excel .xlsx..."); },
         exportDataToPDF() { alert("Mencetak dokumen PDF Ekspor Master Data Pegawai..."); },
         triggerReportExport(type) { alert(`Mengunduh dokumen PDF Laporan Kepegawaian Kategori: ${type}`); },
@@ -1432,21 +1402,7 @@ function sipandaApp() {
         handleLogout() { if(confirm("Keluar dari SIPANDA?")) this.isLoggedIn = false; },
         handleLogin() { this.isLoggedIn = true; this.initApp(); },
         toggleTodo(id) { const t = this.todoList.find(x=>x.id===id); if(t) t.done = !t.done; },
-        addTodo() { if(this.newTodoText.trim()) { this.todoList.push({id:Date.now(), task:this.newTodoText, done:false}); this.newTodoText=''; } },
-        uploadFoto(e) { 
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    if (this.selectedPegawai) {
-                        this.selectedPegawai.foto = ev.target.result;
-                        this.savePegawaiEdit();
-                        alert("Foto profil berhasil diperbarui!");
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        }
+        addTodo() { if(this.newTodoText.trim()) { this.todoList.push({id:Date.now(), task:this.newTodoText, done:false}); this.newTodoText=''; } }
     }
 }
 </script>
