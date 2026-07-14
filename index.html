@@ -71,7 +71,6 @@ border: 1px solid rgba(255, 255, 255, 0.2);
 .app-bottombar { display: flex !important; }
 }
 
-/* PDF Viewer Modal */
 .pdf-viewer-overlay {
     position: fixed;
     inset: 0;
@@ -935,10 +934,10 @@ function sipandaApp() {
                 email: "ananda@kemenimipas.go.id",
                 noHp: "081273948211",
                 foto: "",
-                pangkatCountdownDays: 120,
-                kgbCountdownDays: 45,
-                pensiunCountdown: 11000,
-                progressBerkas: 75,
+                pangkatCountdownDays: 0,
+                kgbCountdownDays: 0,
+                pensiunCountdown: 0,
+                progressBerkas: 0,
                 tglPangkatTerakhir: "2024-02-01",
                 tglPangkatBerikutnya: "2026-10-01",
                 tglKgbTerakhir: "2024-06-01",
@@ -962,6 +961,7 @@ function sipandaApp() {
 
         // ====== INIT ======
         initApp() {
+            // Load dari LocalStorage
             if (localStorage.getItem("sipanda_pegawai")) {
                 this.pegawaiList = JSON.parse(localStorage.getItem("sipanda_pegawai"));
             }
@@ -969,34 +969,57 @@ function sipandaApp() {
                 this.cutiList = JSON.parse(localStorage.getItem("sipanda_cuti"));
             }
             
+            // Hitung ulang semua countdown
             this.recalculateAllCountdowns();
             this.hitungUrgensiDanMasaBerlaku();
             this.updateStats();
             this.initChart();
             
-            setInterval(() => { this.syncDatabase(); }, 5000);
+            // Auto-save setiap 10 detik
+            setInterval(() => { this.syncDatabase(); }, 10000);
             
-            setTimeout(() => { lucide.createIcons(); }, 300);
+            setTimeout(() => { 
+                lucide.createIcons(); 
+            }, 300);
         },
 
-        // ====== RECALCULATE ALL COUNTDOWNS ======
+        // ====== RECALCULATE ALL COUNTDOWNS (FIXED) ======
         recalculateAllCountdowns() {
             const today = new Date();
+            // Reset waktu ke 00:00:00 untuk perhitungan yang akurat
+            today.setHours(0, 0, 0, 0);
             
             this.pegawaiList.forEach(p => {
+                // COUNTDOWN PANGKAT
                 if (p.tglPangkatBerikutnya) {
-                    const diff = new Date(p.tglPangkatBerikutnya) - today;
-                    p.pangkatCountdownDays = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+                    const tmtDate = new Date(p.tglPangkatBerikutnya);
+                    tmtDate.setHours(0, 0, 0, 0);
+                    const diffTime = tmtDate.getTime() - today.getTime();
+                    p.pangkatCountdownDays = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+                } else {
+                    p.pangkatCountdownDays = 0;
                 }
+                
+                // COUNTDOWN KGB
                 if (p.tglKgbBerikutnya) {
-                    const diff = new Date(p.tglKgbBerikutnya) - today;
-                    p.kgbCountdownDays = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+                    const tmtDate = new Date(p.tglKgbBerikutnya);
+                    tmtDate.setHours(0, 0, 0, 0);
+                    const diffTime = tmtDate.getTime() - today.getTime();
+                    p.kgbCountdownDays = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+                } else {
+                    p.kgbCountdownDays = 0;
                 }
+                
+                // COUNTDOWN PENSIUN (58 tahun)
                 if (p.tglLahir) {
                     const lahir = new Date(p.tglLahir);
+                    lahir.setHours(0, 0, 0, 0);
                     const pensiunDate = new Date(lahir.getFullYear() + 58, lahir.getMonth(), lahir.getDate());
-                    const diff = pensiunDate - today;
-                    p.pensiunCountdown = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+                    pensiunDate.setHours(0, 0, 0, 0);
+                    const diffTime = pensiunDate.getTime() - today.getTime();
+                    p.pensiunCountdown = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+                } else {
+                    p.pensiunCountdown = 0;
                 }
             });
         },
@@ -1006,8 +1029,8 @@ function sipandaApp() {
             this.recalculateAllCountdowns();
             localStorage.setItem("sipanda_pegawai", JSON.stringify(this.pegawaiList));
             localStorage.setItem("sipanda_cuti", JSON.stringify(this.cutiList));
-            this.updateStats();
             this.hitungUrgensiDanMasaBerlaku();
+            this.updateStats();
         },
 
         // ====== UPDATE STATS ======
@@ -1042,6 +1065,7 @@ function sipandaApp() {
             this.prioritasList = [];
 
             this.pegawaiList.forEach(p => {
+                // Hitung progress berkas
                 let totalBerkas = 4;
                 let berkasAda = 0;
                 if (p.dokumen?.skPangkat?.namaFile) berkasAda++;
@@ -1050,13 +1074,14 @@ function sipandaApp() {
                 if (p.dokumen?.skp?.namaFile) berkasAda++;
                 p.progressBerkas = Math.round((berkasAda / totalBerkas) * 100);
 
-                if (p.pangkatCountdownDays <= 90) {
+                // Prioritas jika mendekati batas
+                if (p.pangkatCountdownDays <= 90 && p.pangkatCountdownDays > 0) {
                     this.prioritasList.push({
                         nip: p.nip, nama: p.nama, golongan: p.golongan, jabatan: p.jabatan,
                         status: "KP_NEAR", keterangan: `${p.pangkatCountdownDays} hari lagi menuju TMT Kepangkatan`,
                     });
                 }
-                if (p.kgbCountdownDays <= 45) {
+                if (p.kgbCountdownDays <= 45 && p.kgbCountdownDays > 0) {
                     this.prioritasList.push({
                         nip: p.nip, nama: p.nama, golongan: p.golongan, jabatan: p.jabatan,
                         status: "KGB_NEAR", keterangan: `${p.kgbCountdownDays} hari lagi jatuh tempo KGB`,
@@ -1087,7 +1112,7 @@ function sipandaApp() {
             return this.cutiList;
         },
 
-        // ====== UPLOAD FOTO ======
+        // ====== UPLOAD FOTO (FIXED - LANGSUNG TAMPIL) ======
         uploadFoto(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1105,12 +1130,21 @@ function sipandaApp() {
             reader.onload = (e) => {
                 const base64Data = e.target.result;
                 if (this.selectedPegawai) {
+                    // Update di selectedPegawai
                     this.selectedPegawai.foto = base64Data;
+                    
+                    // Update di pegawaiList
                     const index = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
                     if (index !== -1) {
                         this.pegawaiList[index].foto = base64Data;
                     }
+                    
+                    // Simpan ke localStorage
                     this.syncDatabase();
+                    
+                    // Refresh icon
+                    setTimeout(() => { lucide.createIcons(); }, 100);
+                    
                     alert("Foto profil berhasil diperbarui!");
                 }
             };
@@ -1152,7 +1186,13 @@ function sipandaApp() {
                     this.selectedPegawai.dokumen.skp = { namaFile: file.name, base64: base64Data };
                 }
 
-                this.savePegawaiEdit();
+                // Update di pegawaiList juga
+                const index = this.pegawaiList.findIndex(p => p.nip === this.selectedPegawai.nip);
+                if (index !== -1) {
+                    this.pegawaiList[index].dokumen = { ...this.selectedPegawai.dokumen };
+                }
+
+                this.syncDatabase();
                 alert(`Sukses mengunggah dokumen ${file.name}!`);
                 event.target.value = '';
             };
@@ -1236,6 +1276,7 @@ function sipandaApp() {
                 return;
             }
 
+            const today = new Date().toISOString().split('T')[0];
             const item = {
                 ...this.newPegawaiForm,
                 tglLahir: "1995-01-01", gender: "Laki-laki", tmtCpns: "2024-01-01", tmtPns: "2025-03-01",
@@ -1252,6 +1293,7 @@ function sipandaApp() {
             };
 
             this.pegawaiList.push(item);
+            this.recalculateAllCountdowns();
             this.syncDatabase();
             
             this.showModalAddPegawai = false;
@@ -1278,6 +1320,7 @@ function sipandaApp() {
                     this.pegawaiList[index] = { ...this.selectedPegawai };
                 }
             }
+            this.recalculateAllCountdowns();
             this.syncDatabase();
         },
 
@@ -1310,14 +1353,30 @@ function sipandaApp() {
         },
 
         // ====== COUNTDOWN UPDATE FUNCTIONS ======
-        updatePangkatCountdown() { this.syncDatabase(); },
-        updateKgbCountdown() { this.syncDatabase(); },
-        updatePensiunCountdown() { this.syncDatabase(); },
-        updatePangkatCountdownForPegawai(p) { this.syncDatabase(); },
-        updateKgbCountdownForPegawai(p) { this.syncDatabase(); },
+        updatePangkatCountdown() { 
+            this.recalculateAllCountdowns();
+            this.syncDatabase(); 
+        },
+        updateKgbCountdown() { 
+            this.recalculateAllCountdowns();
+            this.syncDatabase(); 
+        },
+        updatePensiunCountdown() { 
+            this.recalculateAllCountdowns();
+            this.syncDatabase(); 
+        },
+        updatePangkatCountdownForPegawai(p) { 
+            this.recalculateAllCountdowns();
+            this.syncDatabase(); 
+        },
+        updateKgbCountdownForPegawai(p) { 
+            this.recalculateAllCountdowns();
+            this.syncDatabase(); 
+        },
 
         // ====== HELPERS ======
         getUrgensiColorClass(days) {
+            if (days <= 0) return 'bg-gray-400';
             if (days <= 30) return 'bg-red-600 animate-pulse';
             if (days <= 90) return 'bg-orange-500';
             if (days <= 180) return 'bg-yellow-500';
@@ -1325,6 +1384,7 @@ function sipandaApp() {
         },
 
         getCountdownClass(days) {
+            if (days <= 0) return 'text-gray-400';
             if (days <= 30) return 'text-red-600';
             if (days <= 90) return 'text-orange-500';
             return 'text-[#0B2341]';
